@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.arz.pmp.base.mapper.ex.PmpRoomExMapper">
+
+    <resultMap id="RoomBaseMap" type="com.arz.pmp.base.entity.PmpTeachingRoomEntity">
+        <id column="room_id" jdbcType="BIGINT" property="roomId"/>
+        <result column="course_id" jdbcType="BIGINT" property="courseId"/>
+        <result column="place_id" jdbcType="BIGINT" property="placeId"/>
+        <result column="type_id" jdbcType="BIGINT" property="typeId"/>
+        <result column="room_name" jdbcType="VARCHAR" property="roomName"/>
+        <result column="room_desc" jdbcType="VARCHAR" property="roomDesc"/>
+        <result column="room_address" jdbcType="VARCHAR" property="roomAddress"/>
+        <result column="admin_id" jdbcType="BIGINT" property="adminId"/>
+        <result column="teacher_name" jdbcType="VARCHAR" property="teacherName"/>
+        <result column="teacher_phone" jdbcType="VARCHAR" property="teacherPhone"/>
+        <result column="room_code" jdbcType="VARCHAR" property="roomCode"/>
+        <result column="start_time" jdbcType="BIGINT" property="startTime"/>
+        <result column="end_time" jdbcType="BIGINT" property="endTime"/>
+        <result column="sort" jdbcType="INTEGER" property="sort"/>
+        <result column="use_on" jdbcType="BIT" property="useOn"/>
+        <result column="create_time" jdbcType="BIGINT" property="createTime"/>
+        <result column="update_time" jdbcType="BIGINT" property="updateTime"/>
+        <result column="create_manager" jdbcType="BIGINT" property="createManager"/>
+        <result column="update_manager" jdbcType="BIGINT" property="updateManager"/>
+        <result column="del_on" jdbcType="BIT" property="delOn"/>
+    </resultMap>
+
+    <resultMap id="AdminBaseMap" type="com.arz.pmp.base.entity.PmpAdminEntity">
+        <id column="admin_id" jdbcType="BIGINT" property="adminId"/>
+        <result column="user_name" jdbcType="VARCHAR" property="userName"/>
+        <result column="avatar" jdbcType="VARCHAR" property="avatar"/>
+        <result column="nickName" jdbcType="VARCHAR" property="nickname"/>
+        <result column="email" jdbcType="VARCHAR" property="email"/>
+    </resultMap>
+
+    <resultMap id="PlaceBaseMap" type="com.arz.pmp.base.entity.PmpTeachingPlaceEntity">
+        <id column="place_id" jdbcType="BIGINT" property="placeId"/>
+        <result column="place_name" jdbcType="VARCHAR" property="placeName"/>
+        <result column="place_desc" jdbcType="VARCHAR" property="placeDesc"/>
+        <result column="address" jdbcType="VARCHAR" property="address"/>
+        <result column="contact_name" jdbcType="VARCHAR" property="contactName"/>
+        <result column="contact_phone" jdbcType="VARCHAR" property="contactPhone"/>
+        <result column="sort" jdbcType="INTEGER" property="sort"/>
+        <result column="use_on" jdbcType="BIT" property="useOn"/>
+        <result column="del_on" jdbcType="BIT" property="delOn"/>
+        <result column="create_time" jdbcType="BIGINT" property="createTime"/>
+        <result column="update_time" jdbcType="BIGINT" property="updateTime"/>
+        <result column="create_manager" jdbcType="BIGINT" property="createManager"/>
+        <result column="update_manager" jdbcType="BIGINT" property="updateManager"/>
+    </resultMap>
+    <resultMap id="RoomDataMap" type="com.arz.pmp.base.api.bo.room.RoomDataResp">
+        <id column="room_id" jdbcType="BIGINT" property="roomId"/>
+        <association property="roomInfo" resultMap="RoomBaseMap"></association>
+        <association property="adminInfo" resultMap="AdminBaseMap"></association>
+        <association property="placeInfo" resultMap="PlaceBaseMap"></association>
+    </resultMap>
+
+    <select id="selectRoomList" resultMap="RoomDataMap">
+        SELECT
+        a.room_id, a.course_id, a.place_id, a.type_id, a.room_name, a.room_desc, a.room_address, a.admin_id,
+        a.teacher_name, a.teacher_phone, a.room_code, a.start_time, a.end_time, a.sort, a.use_on, a.create_time,
+        a.update_time, a.create_manager, a.update_manager, a.del_on,
+        b.course_name,c.place_name,d.type_name,e.nickName
+        FROM pmp_teaching_room a
+        LEFT JOIN pmp_course b ON a.course_id=b.course_id
+        LEFT JOIN pmp_teaching_place c ON a.place_id=c.place_id
+        LEFT JOIN pmp_teaching_type d ON a.type_id=d.type_id
+        LEFT JOIN pmp_admin e ON a.admin_id=e.admin_id
+        WHERE a.del_on = 0
+        <if test="keyWord!=null and keyWord!='' ">
+            AND (a.room_name LIKE CONCAT('%', #{keyWord}, '%') OR a.teacher_name LIKE CONCAT('%', #{keyWord}, '%')
+            OR a.room_code LIKE CONCAT('%', #{keyWord}, '%'))
+        </if>
+        <if test="useOn!=null">
+            AND a.use_on = #{useOn,jdbcType=BIGINT}
+        </if>
+        <if test="courseId!=null and courseId!=0 ">
+            AND a.course_id = #{courseId,jdbcType=BIGINT}
+        </if>
+        <if test="placeId!=null and placeId!=0">
+            AND a.place_id = #{placeId,jdbcType=BIGINT}
+        </if>
+        <if test="typeId!=null and typeId!=0">
+            AND a.type_id = #{typeId,jdbcType=BIGINT}
+        </if>
+        <if test="adminId!=null and adminId!=0">
+            AND a.admin_id = #{adminId,jdbcType=BIGINT}
+        </if>
+        <if test="startTime!=null and startTime!=0">
+            AND a.end_time > #{startTime}
+        </if>
+        <if test="endTime!=null and endTime!=0">
+            AND #{endTime} > a.start_time
+        </if>
+
+        ORDER BY a.sort, a.room_id
+    </select>
+
+    <select id="selectRoomSimpleList" resultType="com.arz.pmp.base.entity.PmpTeachingRoomEntity">
+        SELECT
+        a.room_id, a.room_name, a.room_desc, a.room_address,
+        a.teacher_name
+        FROM pmp_teaching_room a
+        WHERE a.del_on = 0
+        <if test="keyWord!=null and keyWord!='' ">
+            AND (a.room_name LIKE CONCAT('%', #{keyWord}, '%') OR a.teacher_name LIKE CONCAT('%', #{keyWord}, '%')
+            OR a.room_code LIKE CONCAT('%', #{keyWord}, '%'))
+        </if>
+        <if test="useOn!=null">
+            AND a.use_on = #{useOn,jdbcType=BIGINT}
+        </if>
+
+        ORDER BY a.sort, a.room_id
+    </select>
+
+    <select id="selectRoomByName" resultType="Long">
+        SELECT a.room_id
+        FROM pmp_teaching_room a
+        WHERE a.del_on = 0 AND a.room_name = #{roomName,jdbcType=VARCHAR} LIMIT 1;
+    </select>
+
+    <select id="selectTypeList" resultType="com.arz.pmp.base.entity.PmpTeachingTypeEntity">
+
+        SELECT
+            a.type_id,
+            a.type_name,
+            a.type_desc
+        FROM pmp_teaching_type a
+        WHERE a.del_on = 0
+        ORDER BY a.sort, a.type_id
+    </select>
+
+</mapper>

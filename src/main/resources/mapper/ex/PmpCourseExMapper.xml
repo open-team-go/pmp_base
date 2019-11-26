@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.arz.pmp.base.mapper.ex.PmpCourseExMapper">
+
+    <select id="getCourseList" resultType="com.arz.pmp.base.entity.PmpCourseEntity">
+        SELECT
+        a.course_id,
+        a.course_name,
+        a.course_desc,
+        a.sort,
+        a.use_on,
+        a.del_on,
+        a.create_time,
+        a.update_time,
+        a.create_manager,
+        a.update_manager
+        FROM pmp_course a
+        WHERE a.del_on = 0
+        <if test="keyWord!=null and keyWord!='' ">
+            AND a.course_name LIKE CONCAT('%', #{keyWord}, '%')
+        </if>
+        <if test="useOn!=null">
+            AND a.use_on = #{useOn,jdbcType=BIT}
+        </if>
+
+        ORDER BY a.sort, a.course_id
+    </select>
+    <select id="selectCourseByName" resultType="Long">
+        SELECT a.course_id
+        FROM pmp_course a
+        WHERE a.del_on = 0 AND a.course_name = #{courseName,jdbcType=VARCHAR} LIMIT 1;
+    </select>
+
+</mapper>

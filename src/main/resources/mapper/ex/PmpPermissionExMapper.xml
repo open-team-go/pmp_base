@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.arz.pmp.base.mapper.ex.PmpPermissionExMapper">
+
+
+    <select id="selectPermListByRoleId" resultType="com.arz.pmp.base.entity.PmpPermissionEntity">
+
+        SELECT
+        <include refid="PERM_BASE_COLUMNS"></include>
+        FROM pmp_role_permission a
+        JOIN pmp_permission b ON a.perm_id = b.perm_id
+        WHERE a.del_on = 0 AND b.del_on = 0 AND a.role_id = #{roleId}
+        ORDER BY b.perm_level, b.sort, b.perm_id;
+
+    </select>
+
+    <sql id="PERM_BASE_COLUMNS">
+        b.perm_id,
+        b.perm_level,
+        b.perm_name,
+        b.pid,
+        b.perm_value,
+        b.perm_uri,
+        b.sort,
+        b.create_time,
+        b.update_time,
+        b.create_manager,
+        b.update_manager,
+        b.del_on
+    </sql>
+
+    <select id="selectPermsListPage" resultType="com.arz.pmp.base.entity.PmpPermissionEntity">
+
+        SELECT
+        <include refid="PERM_BASE_COLUMNS"></include>
+        FROM pmp_permission b
+        WHERE b.del_on = 0
+        ORDER BY b.perm_level, b.sort, b.perm_id
+    </select>
+
+    <sql id="ROLE_BASE_COLUMNS">
+        a.role_id, a.description, a.role_name, a.role_code, a.sort, a.create_time, a.update_time, a.create_manager,
+        a.update_manager, a.del_on
+    </sql>
+
+    <select id="selectRolesListPage" resultType="com.arz.pmp.base.entity.PmpRoleEntity">
+
+        SELECT
+        <include refid="ROLE_BASE_COLUMNS"></include>
+        FROM pmp_role a
+        WHERE a.del_on = 0
+        ORDER BY a.sort, a.role_id
+    </select>
+
+    <select id="selectPermIds" resultType="Long">
+        SELECT a.perm_id
+        FROM pmp_role_permission a
+        WHERE a.role_id = #{roleId} AND a.del_on = 0
+        <if test="permIdList !=null">
+            AND a.perm_id IN
+            <foreach collection="permIdList" open="(" close=")" separator="," item="permId">
+                #{permId}
+            </foreach>
+        </if>
+        ;
+    </select>
+
+    <delete id="deleteRolePerm">
+        UPDATE pmp_role_permission a SET a.del_on=1,a.update_manager=#{operationId},a.update_time=#{curTime}
+        WHERE a.role_id=#{roleId}
+        <if test="permIdList !=null">
+            AND a.perm_id NOT IN
+            <foreach collection="permIdList" open="(" close=")" separator="," item="permId">
+                #{permId}
+            </foreach>
+        </if>
+        ;
+    </delete>
+
+    <insert id="insertRolePermsButch">
+
+        insert into pmp_role_permission (role_id, perm_id, create_time,
+        update_time, create_manager, update_manager,
+        del_on)
+        values
+        <foreach collection="permIdList" separator="," item="permId">
+            (#{roleId,jdbcType=BIGINT}, #{permId,jdbcType=BIGINT}, #{curTime,jdbcType=BIGINT},
+            null, #{operationId,jdbcType=BIGINT}, null,
+            0)
+        </foreach>
+
+    </insert>
+
+</mapper>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.arz.pmp.base.mapper.ex.PmpPlaceExMapper">
+
+    <select id="getPlaceList" resultType="com.arz.pmp.base.entity.PmpTeachingPlaceEntity">
+        SELECT
+        a.place_id, a.place_name, a.place_desc, a.address, a.contact_name, a.contact_phone, a.sort, a.use_on,
+        a.del_on, a.create_time, a.update_time, a.create_manager, a.update_manager
+        FROM pmp_teaching_place a
+        WHERE a.del_on = 0
+        <if test="keyWord!=null and keyWord!='' ">
+            AND a.place_name LIKE CONCAT('%', #{keyWord}, '%')
+        </if>
+        <if test="useOn!=null">
+            AND a.use_on = #{useOn,jdbcType=BIT}
+        </if>
+
+        ORDER BY a.sort, a.place_id
+    </select>
+
+    <select id="selectPlaceByName" resultType="Long">
+        SELECT a.place_id
+        FROM pmp_teaching_place a
+        WHERE a.del_on = 0 AND a.place_name = #{placeName,jdbcType=VARCHAR} LIMIT 1;
+    </select>
+
+</mapper>

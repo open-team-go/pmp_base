@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.arz.pmp.base.mapper.ex.PmpUserExMapper">
+
+    <select id="selectUserList" resultType="com.arz.pmp.base.api.bo.user.UserDataResp">
+        SELECT a.user_id, a.education_id, a.pay_id, a.room_id, a.user_name, a.gender, a.nationality, a.birthday,
+        a.phone_no, a.fixed_telephone, a.email, a.backup_email, a.wechat_no, a.qq, a.identity_no, a.zip_code,
+        a.user_address, a.graduation_time, a.graduation_school, a.school_major, a.industry, a.com_name,
+        a.com_department, a.com_position, a.invoice_header, a.invoice_code, a.user_type, a.admin_id,
+        a.course_id, a.graduation_status, a.cert_no, a.cert_user_name, a.cert_password, a.remark, a.create_time,
+        b.nickName salesAdminName,c.course_name,d.room_name,e.education_name,f.pay_name,
+        (SELECT b_1.nickName FROM pmp_admin b_1 WHERE d.admin_id=b_1.admin_id) educationAdminName
+        FROM pmp_user a
+        LEFT JOIN pmp_admin b ON a.admin_id=b.admin_id
+        LEFT JOIN pmp_course c ON a.course_id=c.course_id
+        LEFT JOIN pmp_teaching_room d ON a.room_id=d.room_id
+        LEFT JOIN pmp_user_education e ON a.education_id=e.education_id
+        LEFT JOIN pmp_user_pay_type f ON a.pay_id=f.pay_id
+        <if test="educationAdminId != null and educationAdminId!=0 ">
+            LEFT JOIN pmp_admin b_2 ON d.admin_id=b_2.admin_id
+        </if>
+        WHERE a.del_on=0
+        <if test="educationAdminId != null and educationAdminId!=0 ">
+            AND d.admin_id = #{educationAdminId,jdbcType=BIGINT}
+        </if>
+        <if test="educationId != null">
+            AND a.education_id = #{educationId,jdbcType=BIGINT}
+        </if>
+        <if test="payId != null">
+            AND a.pay_id = #{payId,jdbcType=BIGINT}
+        </if>
+        <if test="roomId != null">
+            AND a.room_id = #{roomId,jdbcType=BIGINT}
+        </if>
+        <if test="keyWord != null and keyWord!='' ">
+            AND (a.user_name LIKE CONCAT('%',#{keyWord},'%') OR a.phone_no LIKE CONCAT('%',#{phoneNo},'%')
+            OR a.fixed_telephone LIKE CONCAT('%',#{fixedTelephone},'%') )
+        </if>
+        <if test="gender != null">
+            AND a.gender = #{gender,jdbcType=BIT}
+        </if>
+        <if test="email != null and email!='' ">
+            AND a.email LIKE CONCAT('%',#{email},'%')
+        </if>
+        <if test="wechatNo != null and wechatNo!='' ">
+            AND a.wechat_no LIKE CONCAT('%',#{wechatNo},'%')
+        </if>
+        <if test="qq != null and qq!='' ">
+            AND a.qq LIKE CONCAT('%',#{qq},'%')
+        </if>
+        <if test="identityNo != null and identityNo!='' ">
+            AND a.aidentity_no LIKE CONCAT('%',#{identityNo},'%')
+        </if>
+        <if test="zipCode != null and zipCode!='' ">
+            AND a.zip_code LIKE CONCAT('%',#{zipCode},'%')
+        </if>
+        <if test="userType != null and userType!=0 ">
+            AND a.user_type = #{userType,jdbcType=INTEGER}
+        </if>
+        <if test="salesAdminId != null and salesAdminId!=0 ">
+            AND a.admin_id = #{salesAdminId,jdbcType=BIGINT}
+        </if>
+        <if test="courseId != null and courseId!=0 ">
+            AND a.course_id = #{courseId,jdbcType=BIGINT}
+        </if>
+        <if test="graduationStatus != null and graduationStatus!=0 ">
+            AND a.graduation_status = #{graduationStatus,jdbcType=INTEGER}
+        </if>
+        <if test="startTime != null and startTime!=0 ">
+            AND a.create_time>=#{startTime,jdbcType=BIGINT}
+        </if>
+        <if test="endTime != null and endTime!=0 ">
+            AND #{endTime,jdbcType=BIGINT}>=a.create_time
+        </if>
+        ORDER BY a.create_time DESC,a.admin_id,c.sort
+    </select>
+
+    <select id="selectUserByName" resultType="Long">
+        SELECT a.user_id FROM pmp_user a
+        WHERE a.phone_no=#{phoneNo,jdbcType=VARCHAR} AND a.user_name=#{userName,jdbcType=VARCHAR} LIMIT 1;
+    </select>
+
+    <select id="selectEducationList" resultType="com.arz.pmp.base.entity.PmpUserEducationEntity">
+
+        SELECT a.education_id,a.education_name
+        FROM pmp_user_education a WHERE a.del_on=0
+        ORDER BY a.sort,a.education_id;
+    </select>
+
+    <select id="selectUserPayTypeList" resultType="com.arz.pmp.base.entity.PmpUserPayTypeEntity">
+
+        SELECT a.pay_id,a.pay_name
+        FROM pmp_user_pay_type a WHERE a.del_on=0
+        ORDER BY a.sort,a.pay_id;
+    </select>
+
+</mapper>
