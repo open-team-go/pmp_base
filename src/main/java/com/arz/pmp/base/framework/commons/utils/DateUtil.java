@@ -141,4 +141,11 @@ public class DateUtil {
 
         return getCurDateTime().getTime() / 1000;
     }
+
+    public static void main(String[] args){
+//        System.out.println(DateUtil.strToDate("1993-09-08","yyyy-MM-dd").getTime()/1000);
+        System.out.println(getCurSecond());
+    }
+
+
 }

@@ -38,7 +38,7 @@ public class UserEditorReq {
 
     @ApiModelProperty("付款方式信息表ID")
     @Positive
-    private String payId;
+    private Long payId;
 
     @ApiModelProperty("姓名")
     @Pattern(regexp = "\\S{1,30}", message = "非空1-100位")
@@ -107,8 +107,8 @@ public class UserEditorReq {
     @ApiModelProperty("学员类型（1、内部学员，2、外部续证学员，3、联系中未报名）")
     private Integer userType;
 
-    @ApiModelProperty("课程名")
-    private String courseName;
+    @ApiModelProperty("课程ID")
+    private Long courseId;
 
     @ApiModelProperty("结业状态（0、未知，1、通过，2、未通过，3、缓考，4、缓读）")
     private Integer graduationStatus;

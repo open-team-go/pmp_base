@@ -26,15 +26,12 @@
         <if test="educationId != null">
             AND a.education_id = #{educationId,jdbcType=BIGINT}
         </if>
-        <if test="payId != null">
-            AND a.pay_id = #{payId,jdbcType=BIGINT}
-        </if>
         <if test="roomId != null">
             AND a.room_id = #{roomId,jdbcType=BIGINT}
         </if>
         <if test="keyWord != null and keyWord!='' ">
-            AND (a.user_name LIKE CONCAT('%',#{keyWord},'%') OR a.phone_no LIKE CONCAT('%',#{phoneNo},'%')
-            OR a.fixed_telephone LIKE CONCAT('%',#{fixedTelephone},'%') )
+            AND (a.user_name LIKE CONCAT('%',#{keyWord},'%') OR a.phone_no LIKE CONCAT('%',#{keyWord},'%')
+            OR a.fixed_telephone LIKE CONCAT('%',#{keyWord},'%') )
         </if>
         <if test="gender != null">
             AND a.gender = #{gender,jdbcType=BIT}
@@ -49,10 +46,7 @@
             AND a.qq LIKE CONCAT('%',#{qq},'%')
         </if>
         <if test="identityNo != null and identityNo!='' ">
-            AND a.aidentity_no LIKE CONCAT('%',#{identityNo},'%')
-        </if>
-        <if test="zipCode != null and zipCode!='' ">
-            AND a.zip_code LIKE CONCAT('%',#{zipCode},'%')
+            AND a.identity_no LIKE CONCAT('%',#{identityNo},'%')
         </if>
         <if test="userType != null and userType!=0 ">
             AND a.user_type = #{userType,jdbcType=INTEGER}
