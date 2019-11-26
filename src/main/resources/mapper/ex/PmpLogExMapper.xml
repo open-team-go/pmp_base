@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.arz.pmp.base.mapper.ex.PmpLogExMapper">
+
+    <select id="selectLogList" resultType="com.arz.pmp.base.api.bo.log.LogDataResp">
+        SELECT a.log_id, a.admin_id, a.create_time, a.update_time, a.create_manager, a.update_manager, a.del_on,
+        a.opt_module, a.opt_type, a.opt_api, a.opt_desc, a.request_ip,
+        b.nickName,b.user_name
+        FROM pmp_system_log a
+        LEFT JOIN pmp_admin b ON a.admin_id=b.admin_id
+        WHERE a.del_on=0
+        <if test="keyWord !=null and keyWord!=''">
+            AND (a.opt_desc LIKE CONCAT('%',#{keyWord},'%') OR b.nickName LIKE CONCAT('%',#{keyWord},'%') )
+        </if>
+        <if test="adminId !=null and adminId!=0">
+            AND a.admin_id = #{adminId}
+        </if>
+        <if test="optModule !=null and optModule!=''">
+            AND a.opt_module = #{optModule}
+        </if>
+        <if test="optType !=null and optType!=''">
+            AND a.opt_type = #{optType}
+        </if>
+        <if test="ip !=null and ip!=''">
+            AND a.request_ip LIKE CONCAT('%',#{ip},'%')
+        </if>
+        <if test="startTime !=null and startTime!=0">
+            AND a.create_time >=#{startTime}
+        </if>
+        <if test="endTime !=null and endTime!=0">
+            AND #{endTime} >= a.create_time
+        </if>
+        ORDER BY a.create_time DESC , a.log_id DESC
+    </select>
+
+</mapper>

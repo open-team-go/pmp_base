@@ -18,7 +18,7 @@
         ORDER BY a.sort, a.place_id
     </select>
 
-    <select id="selectPlaceByName" resultType="Long">
+    <select id="selectPlaceByName" resultType="java.lang.Long">
         SELECT a.place_id
         FROM pmp_teaching_place a
         WHERE a.del_on = 0 AND a.place_name = #{placeName,jdbcType=VARCHAR} LIMIT 1;

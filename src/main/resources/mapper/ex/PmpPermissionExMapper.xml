@@ -52,7 +52,7 @@
         ORDER BY a.sort, a.role_id
     </select>
 
-    <select id="selectPermIds" resultType="Long">
+    <select id="selectPermIds" resultType="java.lang.Long">
         SELECT a.perm_id
         FROM pmp_role_permission a
         WHERE a.role_id = #{roleId} AND a.del_on = 0

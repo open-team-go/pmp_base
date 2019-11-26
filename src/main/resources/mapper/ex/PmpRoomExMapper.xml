@@ -113,7 +113,7 @@
         ORDER BY a.sort, a.room_id
     </select>
 
-    <select id="selectRoomByName" resultType="Long">
+    <select id="selectRoomByName" resultType="java.lang.Long">
         SELECT a.room_id
         FROM pmp_teaching_room a
         WHERE a.del_on = 0 AND a.room_name = #{roomName,jdbcType=VARCHAR} LIMIT 1;

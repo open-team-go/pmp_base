@@ -25,7 +25,7 @@
 
         ORDER BY a.sort, a.course_id
     </select>
-    <select id="selectCourseByName" resultType="Long">
+    <select id="selectCourseByName" resultType="java.lang.Long">
         SELECT a.course_id
         FROM pmp_course a
         WHERE a.del_on = 0 AND a.course_name = #{courseName,jdbcType=VARCHAR} LIMIT 1;
