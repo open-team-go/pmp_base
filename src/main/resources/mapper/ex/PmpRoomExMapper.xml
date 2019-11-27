@@ -109,6 +109,9 @@
         <if test="useOn!=null">
             AND a.use_on = #{useOn,jdbcType=BIGINT}
         </if>
+        <if test="adminId!=null and adminId!=0">
+            AND a.admin_id = #{adminId,jdbcType=BIGINT}
+        </if>
 
         ORDER BY a.sort, a.room_id
     </select>

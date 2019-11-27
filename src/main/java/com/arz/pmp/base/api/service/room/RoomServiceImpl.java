@@ -2,6 +2,8 @@ package com.arz.pmp.base.api.service.room;
 
 import java.util.List;
 
+import com.arz.pmp.base.api.service.admin.AdminService;
+import com.arz.pmp.base.framework.core.enums.SysPermEnumClass;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,9 +30,9 @@ import ma.glasnost.orika.MapperFacade;
  *
  * @author chen wei
  * @version 1.0
- *          <p>
- *          Copyright: Copyright (c) 2019
- *          </p>
+ * <p>
+ * Copyright: Copyright (c) 2019
+ * </p>
  * @date 2019/11/14 17:31
  */
 @Service
@@ -44,23 +46,27 @@ public class RoomServiceImpl implements RoomService {
     private MapperFacade mapperFacade;
     @Autowired
     private RedisService redisService;
+    @Autowired
+    private AdminService adminService;
 
     @Override
     public PageInfo<List<PmpTeachingRoomEntity>> getRoomListPage(RestRequest<RoomSearchReq> req) {
 
         RequestHeader requestHeader = req.getHeader();
         RoomSearchReq search = req.getBody();
+        search.setAdminId(adminService.getRoleAdminId(req.getHeader().getAuthentication(), SysPermEnumClass.RoleEnum.EDUCATION));
         PageInfo pageInfo = PageHelper.startPage(requestHeader.confirmCurrentPage(), requestHeader.confirmShowNum())
-            .doSelectPage(() -> {
-                pmpRoomExMapper.selectRoomList(search);
-            }).toPageInfo();
+                .doSelectPage(() -> {
+                    pmpRoomExMapper.selectRoomList(search);
+                }).toPageInfo();
         return pageInfo;
 
     }
 
     @Override
-    public List<PmpTeachingRoomEntity> getRoomAll(RoomSearchReq search) {
-
+    public List<PmpTeachingRoomEntity> getRoomAll(RestRequest<RoomSearchReq> req) {
+        RoomSearchReq search = req.getBody();
+        search.setAdminId(adminService.getRoleAdminId(req.getHeader().getAuthentication(), SysPermEnumClass.RoleEnum.EDUCATION));
         return pmpRoomExMapper.selectRoomSimpleList(search);
     }
 

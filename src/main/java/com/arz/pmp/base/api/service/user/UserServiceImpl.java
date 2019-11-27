@@ -2,6 +2,10 @@ package com.arz.pmp.base.api.service.user;
 
 import java.util.List;
 
+import com.arz.pmp.base.api.service.admin.AdminService;
+import com.arz.pmp.base.api.service.permission.PermissionService;
+import com.arz.pmp.base.entity.*;
+import com.arz.pmp.base.framework.core.enums.SysPermEnumClass;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,9 +14,6 @@ import com.arz.pmp.base.api.bo.user.UserDataResp;
 import com.arz.pmp.base.api.bo.user.UserEditorReq;
 import com.arz.pmp.base.api.bo.user.UserSearchReq;
 import com.arz.pmp.base.api.service.redis.RedisService;
-import com.arz.pmp.base.entity.PmpUserEducationEntity;
-import com.arz.pmp.base.entity.PmpUserEntity;
-import com.arz.pmp.base.entity.PmpUserPayTypeEntity;
 import com.arz.pmp.base.framework.commons.RequestHeader;
 import com.arz.pmp.base.framework.commons.RestRequest;
 import com.arz.pmp.base.framework.commons.enums.CommonCodeEnum;
@@ -30,9 +31,9 @@ import ma.glasnost.orika.MapperFacade;
  *
  * @author chen wei
  * @version 1.0
- *          <p>
- *          Copyright: Copyright (c) 2019
- *          </p>
+ * <p>
+ * Copyright: Copyright (c) 2019
+ * </p>
  * @date 2019/11/14 17:31
  */
 @Service
@@ -46,16 +47,22 @@ public class UserServiceImpl implements UserService {
     private MapperFacade mapperFacade;
     @Autowired
     private RedisService redisService;
+    @Autowired
+    private AdminService adminService;
 
     @Override
     public PageInfo<List<UserDataResp>> getUserListPage(RestRequest<UserSearchReq> req) {
 
         RequestHeader requestHeader = req.getHeader();
         UserSearchReq search = req.getBody();
+
+        // 判斷是否是教务人员
+        search.setEducationAdminId(adminService.getRoleAdminId(req.getHeader().getAuthentication(), SysPermEnumClass.RoleEnum.EDUCATION));
+
         PageInfo pageInfo = PageHelper.startPage(requestHeader.confirmCurrentPage(), requestHeader.confirmShowNum())
-            .doSelectPage(() -> {
-                pmpUserExMapper.selectUserList(search);
-            }).toPageInfo();
+                .doSelectPage(() -> {
+                    pmpUserExMapper.selectUserList(search);
+                }).toPageInfo();
         return pageInfo;
 
     }

@@ -14,16 +14,16 @@ import java.util.List;
  *
  * @author chen wei
  * @version 1.0
- *          <p>
- *          Copyright: Copyright (c) 2019
- *          </p>
+ * <p>
+ * Copyright: Copyright (c) 2019
+ * </p>
  * @date 2019/11/14 17:31
  */
 public interface RoomService {
 
     PageInfo<List<PmpTeachingRoomEntity>> getRoomListPage(RestRequest<RoomSearchReq> req);
 
-    List<PmpTeachingRoomEntity> getRoomAll(RoomSearchReq search);
+    List<PmpTeachingRoomEntity> getRoomAll(RestRequest<RoomSearchReq> req);
 
     Long addOrUpRoom(RoomEditorReq data, boolean addOn, String authentication);
 

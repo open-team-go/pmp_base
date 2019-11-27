@@ -27,9 +27,9 @@ import java.util.List;
  *
  * @author chen wei
  * @version 1.0
- *          <p>
- *          Copyright: Copyright (c) 2019
- *          </p>
+ * <p>
+ * Copyright: Copyright (c) 2019
+ * </p>
  * @date 2019/11/11 21:42
  */
 @Api(value = "后端 班级操作API集", tags = "后端 班级操作API集")
@@ -44,7 +44,7 @@ public class RoomRestController {
     @PostMapping("/index")
     @RequiresPermissions({"room:read"})
     public RestResponse<PageInfo<List<PmpTeachingRoomEntity>>>
-        getRoomListPage(@RequestBody @Valid RestRequest<RoomSearchReq> data) {
+    getRoomListPage(@RequestBody @Valid RestRequest<RoomSearchReq> data) {
 
         PageInfo pageInfo = roomService.getRoomListPage(data);
 
@@ -55,7 +55,7 @@ public class RoomRestController {
     @PostMapping("/all")
     public RestResponse<List<PmpTeachingRoomEntity>> getRoomAll(@RequestBody @Valid RestRequest<RoomSearchReq> data) {
 
-        List<PmpTeachingRoomEntity> list = roomService.getRoomAll(data.getBody());
+        List<PmpTeachingRoomEntity> list = roomService.getRoomAll(data);
 
         return RestResponse.success(list);
     }
@@ -64,7 +64,7 @@ public class RoomRestController {
     @PostMapping("/add")
     @RequiresPermissions({"room:add"})
     @SysLog(type = SysLogEnumClass.OptionTypeEnum.ADD, module = SysLogEnumClass.OptionModuleEnum.SYS_ROOM,
-        describe = "添加班级信息")
+            describe = "添加班级信息")
     public RestResponse<Long> addRoom(@RequestBody @Valid RestRequest<RoomEditorReq> data) {
 
         Long id = roomService.addOrUpRoom(data.getBody(), true, data.getHeader().getAuthentication());
@@ -76,7 +76,7 @@ public class RoomRestController {
     @PostMapping("/update")
     @RequiresPermissions({"room:update"})
     @SysLog(type = SysLogEnumClass.OptionTypeEnum.UPDATE, module = SysLogEnumClass.OptionModuleEnum.SYS_ROOM,
-        describe = "更新班级信息")
+            describe = "更新班级信息")
     public RestResponse<Long> updateRoom(@RequestBody @Valid RestRequest<RoomEditorReq> data) {
 
         Long id = roomService.addOrUpRoom(data.getBody(), false, data.getHeader().getAuthentication());
@@ -88,7 +88,7 @@ public class RoomRestController {
     @PostMapping("/delete")
     @RequiresPermissions({"room:delete"})
     @SysLog(type = SysLogEnumClass.OptionTypeEnum.DELETE, module = SysLogEnumClass.OptionModuleEnum.SYS_ROOM,
-        describe = "删除班级信息")
+            describe = "删除班级信息")
     public RestResponse deleteRoom(@RequestBody @Valid RestRequest<Long> data) {
 
         roomService.deleteRoom(data.getBody(), data.getHeader().getAuthentication());

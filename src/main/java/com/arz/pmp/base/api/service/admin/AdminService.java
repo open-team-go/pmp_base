@@ -4,7 +4,9 @@ import com.arz.pmp.base.api.bo.adminn.AdminEditorReq;
 import com.arz.pmp.base.api.bo.adminn.AdminLoginResp;
 import com.arz.pmp.base.api.bo.adminn.AdminSearchReq;
 import com.arz.pmp.base.entity.PmpAdminEntity;
+import com.arz.pmp.base.entity.PmpRoleEntity;
 import com.arz.pmp.base.framework.commons.RestRequest;
+import com.arz.pmp.base.framework.core.enums.SysPermEnumClass;
 import com.github.pagehelper.PageInfo;
 
 import java.util.List;
@@ -28,4 +30,6 @@ public interface AdminService {
     void deleteAdmin(Long adminId, String authentication);
 
     List<PmpAdminEntity> getAdminList(AdminSearchReq data);
+
+    Long getRoleAdminId(String authentication, SysPermEnumClass.RoleEnum roleEnum);
 }

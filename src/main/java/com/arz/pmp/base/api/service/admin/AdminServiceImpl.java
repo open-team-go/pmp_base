@@ -3,6 +3,7 @@ package com.arz.pmp.base.api.service.admin;
 import java.util.List;
 import java.util.UUID;
 
+import com.arz.pmp.base.framework.core.enums.SysPermEnumClass;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,7 +33,7 @@ import ma.glasnost.orika.MapperFacade;
 
 /**
  * description admin
- * 
+ *
  * @author chen wei
  * @date 2019/11/12
  */
@@ -86,9 +87,9 @@ public class AdminServiceImpl implements AdminService {
         RequestHeader requestHeader = data.getHeader();
         AdminSearchReq search = data.getBody();
         PageInfo pageInfo = PageHelper.startPage(requestHeader.confirmCurrentPage(), requestHeader.confirmShowNum())
-            .doSelectPage(() -> {
-                pmpAdminExMapper.selectAdminInfoList(search);
-            }).toPageInfo();
+                .doSelectPage(() -> {
+                    pmpAdminExMapper.selectAdminInfoList(search);
+                }).toPageInfo();
         return pageInfo;
     }
 
@@ -154,6 +155,20 @@ public class AdminServiceImpl implements AdminService {
         return pmpAdminExMapper.selectAdminList(data);
     }
 
+    @Override
+    public Long getRoleAdminId(String authentication, SysPermEnumClass.RoleEnum roleEnum) {
+        // 判断当前管理员角色
+        PmpAdminEntity adminEntity = redisService.getOperatorByToken(authentication);
+        if (adminEntity == null) {
+            return null;
+        }
+        PmpRoleEntity roleEntity = permissionService.getRoleById(adminEntity.getRoleId());
+        if(roleEntity != null && roleEnum.getCode().equalsIgnoreCase(roleEntity.getRoleCode())){
+            return adminEntity.getAdminId();
+        }
+        return null;
+    }
+
     private String cacheRedisAdmin(AdminLoginResp resp) {
 
         // 缓存token
@@ -175,10 +190,10 @@ public class AdminServiceImpl implements AdminService {
 
     /**
      * description 验证登录信息
-     * 
+     *
+     * @return com.arz.pmp.base.entity.PmpAdminEntity
      * @author chen wei
      * @date 2019/11/12
-     * @return com.arz.pmp.base.entity.PmpAdminEntity
      */
     public PmpAdminEntity validUser(String userName, String password) {
         PmpAdminEntity user = pmpAdminExMapper.selectAdminByName(userName);
@@ -186,7 +201,7 @@ public class AdminServiceImpl implements AdminService {
         Assert.isTrue(user != null, CommonCodeEnum.PARAM_ERROR_LOGIN_USERNAME);
         // 验证密码
         Assert.isTrue(doCredentialsMatch(password, user.getSalt(), user.getPassword()),
-            CommonCodeEnum.PARAM_ERROR_LOGIN_PASSWORD);
+                CommonCodeEnum.PARAM_ERROR_LOGIN_PASSWORD);
         user.setPassword(null);
         user.setSalt(null);
         return user;

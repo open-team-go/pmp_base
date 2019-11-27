@@ -16,9 +16,6 @@
         LEFT JOIN pmp_teaching_room d ON a.room_id=d.room_id
         LEFT JOIN pmp_user_education e ON a.education_id=e.education_id
         LEFT JOIN pmp_user_pay_type f ON a.pay_id=f.pay_id
-        <if test="educationAdminId != null and educationAdminId!=0 ">
-            LEFT JOIN pmp_admin b_2 ON d.admin_id=b_2.admin_id
-        </if>
         WHERE a.del_on=0
         <if test="educationAdminId != null and educationAdminId!=0 ">
             AND d.admin_id = #{educationAdminId,jdbcType=BIGINT}
