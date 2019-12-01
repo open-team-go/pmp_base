@@ -1,6 +1,7 @@
 package com.arz.pmp.base.api.controller.back;
 
 import com.arz.pmp.base.api.aop.annotation.RequirePermissions;
+import com.arz.pmp.base.api.bo.CommonDataReq;
 import com.arz.pmp.base.api.bo.user.UserDataResp;
 import com.arz.pmp.base.api.bo.user.UserEditorReq;
 import com.arz.pmp.base.api.bo.user.UserSearchReq;
@@ -94,9 +95,9 @@ public class UserRestController {
     @RequirePermissions({USER_DEL})
     @SysLog(type = SysLogEnumClass.OptionTypeEnum.DELETE, module = SysLogEnumClass.OptionModuleEnum.SYS_USER,
         describe = "删除学员信息")
-    public RestResponse deleteUser(@RequestBody @Valid RestRequest<Long> data) {
+    public RestResponse deleteUser(@RequestBody @Valid RestRequest<CommonDataReq> data) {
 
-        userService.deleteUser(data.getBody(), data.getHeader().getAuthentication());
+        userService.deleteUser(data.getBody().getId(), data.getHeader().getAuthentication());
 
         return RestResponse.success();
     }

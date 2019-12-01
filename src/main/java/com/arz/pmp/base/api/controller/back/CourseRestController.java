@@ -7,6 +7,7 @@ import java.util.List;
 import javax.annotation.Resource;
 import javax.validation.Valid;
 
+import com.arz.pmp.base.api.bo.CommonDataReq;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -88,14 +89,14 @@ public class CourseRestController {
         return RestResponse.success(id);
     }
 
-    @ApiOperation(value = "课程 课程更新", notes = "更新课程")
+    @ApiOperation(value = "课程 课程删除", notes = "更新删除")
     @PostMapping("/delete")
     @RequirePermissions({COURSE_DEL})
     @SysLog(type = SysLogEnumClass.OptionTypeEnum.DELETE, module = SysLogEnumClass.OptionModuleEnum.SYS_COURSE,
         describe = "删除课程信息")
-    public RestResponse deleteCourse(@RequestBody @Valid RestRequest<Long> data) {
+    public RestResponse deleteCourse(@RequestBody @Valid RestRequest<CommonDataReq> data) {
 
-        courseService.deleteCourse(data.getBody(), data.getHeader().getAuthentication());
+        courseService.deleteCourse(data.getBody().getId(), data.getHeader().getAuthentication());
 
         return RestResponse.success();
     }

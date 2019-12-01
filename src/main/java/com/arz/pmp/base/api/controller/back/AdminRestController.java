@@ -7,6 +7,7 @@ import java.util.List;
 import javax.annotation.Resource;
 import javax.validation.Valid;
 
+import com.arz.pmp.base.api.bo.CommonDataReq;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -109,9 +110,9 @@ public class AdminRestController {
     @RequirePermissions({ADMIN_DEL})
     @SysLog(type = SysLogEnumClass.OptionTypeEnum.DELETE, module = SysLogEnumClass.OptionModuleEnum.SYS_ADMIN,
         describe = "删除管理员信息")
-    public RestResponse deleteAdmin(@RequestBody @Valid RestRequest<Long> data) {
+    public RestResponse deleteAdmin(@RequestBody @Valid RestRequest<CommonDataReq> data) {
 
-        adminService.deleteAdmin(data.getBody(), data.getHeader().getAuthentication());
+        adminService.deleteAdmin(data.getBody().getId(), data.getHeader().getAuthentication());
 
         return RestResponse.success();
     }

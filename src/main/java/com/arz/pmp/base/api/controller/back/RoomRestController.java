@@ -1,6 +1,7 @@
 package com.arz.pmp.base.api.controller.back;
 
 import com.arz.pmp.base.api.aop.annotation.RequirePermissions;
+import com.arz.pmp.base.api.bo.CommonDataReq;
 import com.arz.pmp.base.api.bo.room.RoomEditorReq;
 import com.arz.pmp.base.api.bo.room.RoomSearchReq;
 import com.arz.pmp.base.api.service.room.RoomService;
@@ -92,9 +93,9 @@ public class RoomRestController {
     @RequirePermissions({ROOM_DEL})
     @SysLog(type = SysLogEnumClass.OptionTypeEnum.DELETE, module = SysLogEnumClass.OptionModuleEnum.SYS_ROOM,
             describe = "删除班级信息")
-    public RestResponse deleteRoom(@RequestBody @Valid RestRequest<Long> data) {
+    public RestResponse deleteRoom(@RequestBody @Valid RestRequest<CommonDataReq> data) {
 
-        roomService.deleteRoom(data.getBody(), data.getHeader().getAuthentication());
+        roomService.deleteRoom(data.getBody().getId(), data.getHeader().getAuthentication());
 
         return RestResponse.success();
     }

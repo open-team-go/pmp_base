@@ -1,5 +1,6 @@
 package com.arz.pmp.base.api.controller.back;
 
+import com.arz.pmp.base.api.aop.annotation.RequirePermissions;
 import com.arz.pmp.base.api.bo.adminn.AdminLoginResp;
 import com.arz.pmp.base.api.bo.excel.UserDataImport;
 import com.arz.pmp.base.api.bo.excel.UserImportResp;
@@ -7,6 +8,7 @@ import com.arz.pmp.base.api.service.excel.ExcelService;
 import com.arz.pmp.base.api.service.user.UserService;
 import com.arz.pmp.base.entity.PmpUserEntity;
 import com.arz.pmp.base.framework.commons.response.RestResponse;
+import com.arz.pmp.base.framework.core.enums.SysPermEnumClass;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -31,6 +33,7 @@ public class ImportRestController {
 
     @ApiOperation(value = "学员信息导入", notes = "学员信息导入")
     @PostMapping(value = "/user")
+    @RequirePermissions({SysPermEnumClass.PermissionEnum.USER_IMPORT})
     public RestResponse<UserImportResp> importUser(@PathParam( value = "file") MultipartFile file) throws Exception {
         // 获取文件中数据
         List<UserDataImport> list = excelService.importUser(file);

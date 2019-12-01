@@ -1,6 +1,7 @@
 package com.arz.pmp.base.api.controller.back;
 
 import com.arz.pmp.base.api.aop.annotation.RequirePermissions;
+import com.arz.pmp.base.api.bo.CommonDataReq;
 import com.arz.pmp.base.api.bo.place.PlaceEditorReq;
 import com.arz.pmp.base.api.bo.place.PlaceSearchReq;
 import com.arz.pmp.base.api.service.place.PlaceService;
@@ -92,9 +93,9 @@ public class PlaceRestController {
     @RequirePermissions({PLACE_DEL})
     @SysLog(type = SysLogEnumClass.OptionTypeEnum.DELETE, module = SysLogEnumClass.OptionModuleEnum.SYS_TEACHING_PLACE,
         describe = "删除教学点信息")
-    public RestResponse deletePlace(@RequestBody @Valid RestRequest<Long> data) {
+    public RestResponse deletePlace(@RequestBody @Valid RestRequest<CommonDataReq> data) {
 
-        placeService.deletePlace(data.getBody(), data.getHeader().getAuthentication());
+        placeService.deletePlace(data.getBody().getId(), data.getHeader().getAuthentication());
 
         return RestResponse.success();
     }
