@@ -1,6 +1,10 @@
 package com.arz.pmp.base.api.service.user;
 
+import java.util.List;
+
 import com.arz.pmp.base.api.bo.excel.UserDataExport;
+import com.arz.pmp.base.api.bo.excel.UserDataImport;
+import com.arz.pmp.base.api.bo.excel.UserImportResp;
 import com.arz.pmp.base.api.bo.user.UserDataResp;
 import com.arz.pmp.base.api.bo.user.UserEditorReq;
 import com.arz.pmp.base.api.bo.user.UserSearchReq;
@@ -8,8 +12,6 @@ import com.arz.pmp.base.entity.PmpUserEducationEntity;
 import com.arz.pmp.base.entity.PmpUserPayTypeEntity;
 import com.arz.pmp.base.framework.commons.RestRequest;
 import com.github.pagehelper.PageInfo;
-
-import java.util.List;
 
 /**
  * description 学员业务
@@ -36,4 +38,6 @@ public interface UserService {
     List<UserDataExport> getExportUserList(UserSearchReq search, String authentication);
 
     UserDataResp getUserDetailByKey(Long userId);
+
+    UserImportResp insertUserBatch(List<UserDataImport> list);
 }

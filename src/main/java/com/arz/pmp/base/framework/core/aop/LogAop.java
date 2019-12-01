@@ -1,6 +1,8 @@
 package com.arz.pmp.base.framework.core.aop;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -30,6 +32,7 @@ import com.arz.pmp.base.framework.core.utils.WebUtil;
 import com.arz.pmp.base.mapper.PmpSystemLogEntityMapper;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.multipart.MultipartFile;
 
 @Aspect
 @Component
@@ -52,21 +55,30 @@ public class LogAop {
     @Around("log()")
     public Object doBeforeMethod(JoinPoint jp) throws Throwable {
         MethodInvocationProceedingJoinPoint joinPoint = (MethodInvocationProceedingJoinPoint)jp;
+
+        // 封装相关信息
+        FrameworkLog frameworkLog = new FrameworkLog();
         // 请求参数
         Object[] args = joinPoint.getArgs();
         // 返回参数
-
+        // 过滤文件类型参数
+        if(!ArrayUtils.isEmpty(args)){
+            List<Object> params = new ArrayList();
+            for(Object item : args){
+                if(item!=null && item instanceof MultipartFile){
+                    params.add(((MultipartFile) item).getOriginalFilename());
+                }else{
+                    params.add(item);
+                }
+            }
+            frameworkLog.setRequest(params);
+        }
         String methodName = jp.getSignature().getName();
         String clazzName = jp.getTarget().getClass().getName();
 
         HttpServletRequest req = WebUtil.getRequest();
         // 请求地址IP
         String ip = WebUtil.getIpAddress(req);
-
-        // 封装相关信息
-        FrameworkLog frameworkLog = new FrameworkLog();
-
-        frameworkLog.setRequest(args);
 
         frameworkLog.setIp(ip);
         frameworkLog.setRequestUri(req.getRequestURI());

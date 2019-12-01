@@ -12,9 +12,6 @@ import java.util.Date;
 
 @Data
 public class UserDataExport extends BaseRowModel {
-    @ExcelProperty(index = 0, value = "用户表ID")
-    private Long userId;
-
     @ExcelProperty("班级信息")
     private PmpTeachingRoomEntity roomInfo;
 

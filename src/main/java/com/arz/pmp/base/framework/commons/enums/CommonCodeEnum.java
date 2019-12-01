@@ -44,6 +44,10 @@ public enum CommonCodeEnum implements StatusCode {
      * 系统错误，非程序数据错误，监控日志时，需要关注
      */
     SYSTEM_ERROR("系统异常", "SYSTEM_ERROR"),
+    /**
+     * 系统错误，EXCEL文件解析異常
+     */
+    SYSTEM_ERROR_EXCEL_PARSING_ERROR("EXCEL文件解析异常", "SYSTEM_ERROR_EXCEL_PARSING_ERROR"),
 
     /**
      * 系统错误，非程序数据错误，监控日志时，需要关注

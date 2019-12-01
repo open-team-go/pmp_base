@@ -13,25 +13,6 @@ import java.util.Date;
  * @author
  */
 public class DateUtil {
-    public final static String YYYYMMDD = "yyyyMMdd";
-
-    public final static String YYYYMMDDHH24MISS = "yyyyMMddHHmmss";
-
-    public final static String HH24MISS = "HHmmss";
-
-    /**
-     * 日期格式
-     */
-    public static final String DATE = "yyyy-MM-dd";
-
-    /**
-     * 日期时间格式
-     */
-    public static final String DATETIME = "yyyy-MM-dd HH:mm:ss";
-    /**
-     * 日期时间格式 精确到分
-     */
-    public static final String DATETIMEMIN = "yyyy-MM-dd HH:mm";
 
     /**
      * 时间串转化为Date
@@ -96,28 +77,6 @@ public class DateUtil {
     }
 
     /**
-     * 获取当前时间 - 秒
-     *
-     * @return
-     */
-    public static long getCurIntegerDate() {
-        return Long.valueOf((System.currentTimeMillis() / 1000)).intValue();
-    }
-
-    /**
-     * 获取年
-     *
-     * @param yDate
-     * @return
-     */
-    public static int yearOfDate(Date yDate) {
-        Calendar aCalendar = Calendar.getInstance();
-        aCalendar.setTime(yDate);
-        int year = aCalendar.get(Calendar.YEAR);
-        return year;
-    }
-
-    /**
      * description 获取当前时间date
      *
      * @author chen wei
@@ -139,6 +98,19 @@ public class DateUtil {
     public static long getCurSecond() {
 
         return getCurDateTime().getTime() / 1000;
+    }
+    /**
+     * description 获取当前时间秒
+     *
+     * @author chen wei
+     * @date 2019/12/1
+     * @return java.util.Date
+     */
+    public static Long getDateSecond(Date d) {
+        if(d == null){
+            return null;
+        }
+        return d.getTime() / 1000;
     }
 
     public interface DateStrFormat {
