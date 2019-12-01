@@ -2,6 +2,7 @@ package com.arz.pmp.base.framework.core.filter;
 
 import com.arz.pmp.base.framework.core.bean.BodyReaderHttpServletRequestWrapper;
 import com.arz.pmp.base.framework.core.utils.WebUtil;
+import org.springframework.stereotype.Component;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
@@ -13,7 +14,7 @@ import java.io.IOException;
  * @author chen wei
  * @date 2019/11/12
  */
-
+@Component
 public class BodyReaderFilter implements Filter {
 
     @Override

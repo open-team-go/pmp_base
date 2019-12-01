@@ -1,5 +1,6 @@
 package com.arz.pmp.base.api.aop.annotation;
 
+import com.arz.pmp.base.framework.core.enums.SysPermEnumClass;
 import org.apache.shiro.authz.annotation.Logical;
 
 import java.lang.annotation.ElementType;
@@ -15,13 +16,13 @@ import java.lang.annotation.Target;
  */
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface RequiresRoles {
+public @interface RequireRoles {
 
     /**
      * A single String role name or multiple comma-delimited role names required in order for the method invocation to
      * be allowed.
      */
-    String[] value();
+    SysPermEnumClass.RoleEnum[] value();
 
     /**
      * The logical operation for the permission check in case multiple roles are specified. AND is the default

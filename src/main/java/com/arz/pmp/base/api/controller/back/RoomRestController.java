@@ -1,5 +1,6 @@
 package com.arz.pmp.base.api.controller.back;
 
+import com.arz.pmp.base.api.aop.annotation.RequirePermissions;
 import com.arz.pmp.base.api.bo.room.RoomEditorReq;
 import com.arz.pmp.base.api.bo.room.RoomSearchReq;
 import com.arz.pmp.base.api.service.room.RoomService;
@@ -22,6 +23,8 @@ import javax.annotation.Resource;
 import javax.validation.Valid;
 import java.util.List;
 
+import static com.arz.pmp.base.framework.core.enums.SysPermEnumClass.PermissionEnum.*;
+
 /**
  * description 班级操作
  *
@@ -42,7 +45,7 @@ public class RoomRestController {
 
     @ApiOperation(value = "班级 列表查看", notes = "分页查看班级")
     @PostMapping("/index")
-    @RequiresPermissions({"room:read"})
+    @RequirePermissions({ROOM_READ})
     public RestResponse<PageInfo<List<PmpTeachingRoomEntity>>>
     getRoomListPage(@RequestBody @Valid RestRequest<RoomSearchReq> data) {
 
@@ -62,7 +65,7 @@ public class RoomRestController {
 
     @ApiOperation(value = "班级 班级添加", notes = "添加新的班级")
     @PostMapping("/add")
-    @RequiresPermissions({"room:add"})
+    @RequirePermissions({ROOM_ADD})
     @SysLog(type = SysLogEnumClass.OptionTypeEnum.ADD, module = SysLogEnumClass.OptionModuleEnum.SYS_ROOM,
             describe = "添加班级信息")
     public RestResponse<Long> addRoom(@RequestBody @Valid RestRequest<RoomEditorReq> data) {
@@ -74,7 +77,7 @@ public class RoomRestController {
 
     @ApiOperation(value = "班级 班级更新", notes = "更新班级")
     @PostMapping("/update")
-    @RequiresPermissions({"room:update"})
+    @RequirePermissions({ROOM_UPDATE})
     @SysLog(type = SysLogEnumClass.OptionTypeEnum.UPDATE, module = SysLogEnumClass.OptionModuleEnum.SYS_ROOM,
             describe = "更新班级信息")
     public RestResponse<Long> updateRoom(@RequestBody @Valid RestRequest<RoomEditorReq> data) {
@@ -86,7 +89,7 @@ public class RoomRestController {
 
     @ApiOperation(value = "班级 班级删除", notes = "班级删除")
     @PostMapping("/delete")
-    @RequiresPermissions({"room:delete"})
+    @RequirePermissions({ROOM_DEL})
     @SysLog(type = SysLogEnumClass.OptionTypeEnum.DELETE, module = SysLogEnumClass.OptionModuleEnum.SYS_ROOM,
             describe = "删除班级信息")
     public RestResponse deleteRoom(@RequestBody @Valid RestRequest<Long> data) {

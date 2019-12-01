@@ -1,7 +1,9 @@
 package com.arz.pmp.base.api.service.user;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import com.arz.pmp.base.api.bo.excel.UserDataExport;
 import com.arz.pmp.base.api.service.admin.AdminService;
 import com.arz.pmp.base.api.service.permission.PermissionService;
 import com.arz.pmp.base.entity.*;
@@ -31,9 +33,9 @@ import ma.glasnost.orika.MapperFacade;
  *
  * @author chen wei
  * @version 1.0
- * <p>
- * Copyright: Copyright (c) 2019
- * </p>
+ *          <p>
+ *          Copyright: Copyright (c) 2019
+ *          </p>
  * @date 2019/11/14 17:31
  */
 @Service
@@ -57,12 +59,13 @@ public class UserServiceImpl implements UserService {
         UserSearchReq search = req.getBody();
 
         // 判斷是否是教务人员
-        search.setEducationAdminId(adminService.getRoleAdminId(req.getHeader().getAuthentication(), SysPermEnumClass.RoleEnum.EDUCATION));
+        search.setEducationAdminId(
+            adminService.getRoleAdminId(req.getHeader().getAuthentication(), SysPermEnumClass.RoleEnum.EDUCATION));
 
         PageInfo pageInfo = PageHelper.startPage(requestHeader.confirmCurrentPage(), requestHeader.confirmShowNum())
-                .doSelectPage(() -> {
-                    pmpUserExMapper.selectUserList(search);
-                }).toPageInfo();
+            .doSelectPage(() -> {
+                pmpUserExMapper.selectUserList(search);
+            }).toPageInfo();
         return pageInfo;
 
     }
@@ -123,5 +126,20 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<PmpUserPayTypeEntity> getPayTypeList() {
         return pmpUserExMapper.selectUserPayTypeList();
+    }
+
+    @Override
+    public List<UserDataExport> getExportUserList(UserSearchReq search, String authentication) {
+        // 判斷是否是教务人员
+        search.setEducationAdminId(adminService.getRoleAdminId(authentication, SysPermEnumClass.RoleEnum.EDUCATION));
+        List<UserDataResp> list = pmpUserExMapper.selectExportUserList(search);
+        List<UserDataExport> exportList = new ArrayList<>();
+        mapperFacade.mapAsCollection(list, exportList, UserDataExport.class);
+        return exportList;
+    }
+
+    @Override
+    public UserDataResp getUserDetailByKey(Long userId) {
+        return pmpUserExMapper.selectUserDetail(userId, null, null);
     }
 }

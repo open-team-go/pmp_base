@@ -1,5 +1,6 @@
 package com.arz.pmp.base.framework.core.config;
 
+import ma.glasnost.orika.MappingContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

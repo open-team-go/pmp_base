@@ -109,7 +109,7 @@ public class WebUtil {
      * @date 2019/7/15
      */
     public static void sendExcelResponse(HttpServletResponse response, String fileName,
-        List<? extends BaseRowModel> list) {
+        List<? extends BaseRowModel> list, Class cla) {
         if (response == null) {
             return;
         }
@@ -119,7 +119,7 @@ public class WebUtil {
 
         try {
             ServletOutputStream out = response.getOutputStream();
-            ExcelUtil.writeExcelResponse(fileName, out, list);
+            ExcelUtil.writeExcelResponse(fileName, out, list, cla);
             out.flush();
         } catch (IOException e) {
             e.printStackTrace();

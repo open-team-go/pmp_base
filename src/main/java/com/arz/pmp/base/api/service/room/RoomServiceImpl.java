@@ -72,7 +72,6 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public Long addOrUpRoom(RoomEditorReq data, boolean addOn, String authentication) {
-
         String name = data.getRoomName();
         Long roomId = data.getRoomId();
         if (StringUtils.isNotBlank(name)) {

@@ -2,14 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.arz.pmp.base.mapper.ex.PmpUserExMapper">
 
-    <select id="selectUserList" resultType="com.arz.pmp.base.api.bo.user.UserDataResp">
-        SELECT a.user_id, a.education_id, a.pay_id, a.room_id, a.user_name, a.gender, a.nationality, a.birthday,
-        a.phone_no, a.fixed_telephone, a.email, a.backup_email, a.wechat_no, a.qq, a.identity_no, a.zip_code,
-        a.user_address, a.graduation_time, a.graduation_school, a.school_major, a.industry, a.com_name,
-        a.com_department, a.com_position, a.invoice_header, a.invoice_code, a.user_type, a.admin_id,
-        a.course_id, a.graduation_status, a.cert_no, a.cert_user_name, a.cert_password, a.remark, a.create_time,
-        b.nickName salesAdminName,c.course_name,d.room_name,e.education_name,f.pay_name,
-        (SELECT b_1.nickName FROM pmp_admin b_1 WHERE d.admin_id=b_1.admin_id) educationAdminName
+    <sql id="Sql_export_select">
         FROM pmp_user a
         LEFT JOIN pmp_admin b ON a.admin_id=b.admin_id
         LEFT JOIN pmp_course c ON a.course_id=c.course_id
@@ -64,6 +57,16 @@
             AND #{endTime,jdbcType=BIGINT}>=a.create_time
         </if>
         ORDER BY a.create_time DESC,a.admin_id,c.sort
+    </sql>
+    <select id="selectUserList" resultType="com.arz.pmp.base.api.bo.user.UserDataResp">
+        SELECT a.user_id, a.user_name, a.gender, a.nationality,
+        a.phone_no,a.user_type,a.graduation_status, a.cert_no, a.cert_user_name, a.cert_password, a.remark,
+        a.create_time,
+        b.nickName salesAdminName,c.course_name,d.room_name,
+        (SELECT b_1.nickName FROM pmp_admin b_1 WHERE d.admin_id=b_1.admin_id) educationAdminName
+
+        <include refid="Sql_export_select"></include>
+
     </select>
 
     <select id="selectUserByName" resultType="Long">
@@ -83,6 +86,45 @@
         SELECT a.pay_id,a.pay_name
         FROM pmp_user_pay_type a WHERE a.del_on=0
         ORDER BY a.sort,a.pay_id;
+    </select>
+
+    <select id="selectExportUserList" resultType="com.arz.pmp.base.api.bo.user.UserDataResp">
+        SELECT a.user_id, a.education_id, a.pay_id, a.room_id, a.user_name, a.gender, a.nationality, a.birthday,
+        a.phone_no, a.fixed_telephone, a.email, a.backup_email, a.wechat_no, a.qq, a.identity_no, a.zip_code,
+        a.user_address, a.graduation_time, a.graduation_school, a.school_major, a.industry, a.com_name,
+        a.com_department, a.com_position, a.invoice_header, a.invoice_code, a.user_type, a.admin_id,
+        a.course_id, a.graduation_status, a.cert_no, a.cert_user_name, a.cert_password, a.remark, a.create_time,
+        b.nickName salesAdminName,c.course_name,d.room_name,e.education_name,f.pay_name,
+        (SELECT b_1.nickName FROM pmp_admin b_1 WHERE d.admin_id=b_1.admin_id) educationAdminName
+
+        <include refid="Sql_export_select"></include>
+    </select>
+
+    <select id="selectUserDetail" resultType="com.arz.pmp.base.api.bo.user.UserDataResp">
+
+        SELECT a.user_id, a.education_id, a.pay_id, a.room_id, a.user_name, a.gender, a.nationality, a.birthday,
+        a.phone_no, a.fixed_telephone, a.email, a.backup_email, a.wechat_no, a.qq, a.identity_no, a.zip_code,
+        a.user_address, a.graduation_time, a.graduation_school, a.school_major, a.industry, a.com_name,
+        a.com_department, a.com_position, a.invoice_header, a.invoice_code, a.user_type, a.admin_id,
+        a.course_id, a.graduation_status, a.cert_no, a.cert_user_name, a.cert_password, a.remark, a.create_time,
+        b.nickName salesAdminName,c.course_name,d.room_name,e.education_name,f.pay_name,
+        (SELECT b_1.nickName FROM pmp_admin b_1 WHERE d.admin_id=b_1.admin_id) educationAdminName
+        FROM pmp_user a
+        LEFT JOIN pmp_admin b ON a.admin_id=b.admin_id
+        LEFT JOIN pmp_course c ON a.course_id=c.course_id
+        LEFT JOIN pmp_teaching_room d ON a.room_id=d.room_id
+        LEFT JOIN pmp_user_education e ON a.education_id=e.education_id
+        LEFT JOIN pmp_user_pay_type f ON a.pay_id=f.pay_id
+        WHERE a.del_on=0
+        <if test="userId != null">
+            AND a.user_id = #{userId,jdbcType=BIGINT}
+        </if>
+        <if test="phoneNo != null">
+            AND a.phone_no = #{phoneNo,jdbcType=VARCHAR}
+        </if>
+        <if test="keyWord != null">
+            AND a.identity_no = LIKE CONCAT('%',#{keyWord})
+        </if>
     </select>
 
 </mapper>

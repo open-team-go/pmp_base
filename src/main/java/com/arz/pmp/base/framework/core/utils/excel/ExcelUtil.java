@@ -50,11 +50,10 @@ public class ExcelUtil {
         return new BufferedOutputStream(new FileOutputStream(new File(filePath)));
     }
 
-    public static void writeExcelResponse(String fileName, ServletOutputStream out, List<? extends BaseRowModel> list) {
-
+    public static void writeExcelResponse(String fileName, ServletOutputStream out, List<? extends BaseRowModel> list,Class cla) {
         ExcelWriter writer = new ExcelWriter(out, ExcelTypeEnum.XLSX, true);
-        Sheet sheet1 = new Sheet(1, 0, TestModel.class);
-        sheet1.setSheetName("sheet1");
+        Sheet sheet1 = new Sheet(1, 0, cla);
+        sheet1.setSheetName(fileName);
         writer.write(list, sheet1);
         writer.finish();
 

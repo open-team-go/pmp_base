@@ -18,4 +18,8 @@ public interface PmpUserExMapper {
 
     List<PmpUserPayTypeEntity> selectUserPayTypeList();
 
+    UserDataResp selectUserDetail(@Param("userId") Long userId, @Param("phoneNo") String phoneNo,
+        @Param("keyWord") String keyWord);
+
+    List<UserDataResp> selectExportUserList(UserSearchReq search);
 }

@@ -1,5 +1,6 @@
 package com.arz.pmp.base.api.controller.back;
 
+import com.arz.pmp.base.api.aop.annotation.RequirePermissions;
 import com.arz.pmp.base.api.service.permission.PermissionService;
 import com.arz.pmp.base.entity.PmpPermissionEntity;
 import com.arz.pmp.base.framework.commons.RestRequest;
@@ -16,6 +17,9 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 import javax.validation.Valid;
 import java.util.List;
+
+import static com.arz.pmp.base.framework.core.enums.SysPermEnumClass.PermissionEnum.LOG_READ;
+import static com.arz.pmp.base.framework.core.enums.SysPermEnumClass.PermissionEnum.PERM_READ;
 
 /**
  * description 功能权限操作
@@ -37,7 +41,7 @@ public class PermissionRestController {
 
     @ApiOperation(value = "权限 列表查看", notes = "分页查看权限")
     @PostMapping("/index")
-    @RequiresPermissions({"perm:read"})
+    @RequirePermissions({PERM_READ})
     public RestResponse<PageInfo<List<PmpPermissionEntity>>> getPermsList(@RequestBody @Valid RestRequest data) {
 
         PageInfo pageInfo = permissionService.getPermsListPage(data);
@@ -47,7 +51,7 @@ public class PermissionRestController {
 
     @ApiOperation(value = "权限 所有功能权限", notes = "获取所有功能权限")
     @PostMapping("/all")
-    @RequiresPermissions({"perm:read"})
+    @RequirePermissions({PERM_READ})
     public RestResponse<List<PmpPermissionEntity>> getPermsAll(@RequestBody @Valid RestRequest data) {
 
         List<PmpPermissionEntity> pageInfo = permissionService.getPermsAll();

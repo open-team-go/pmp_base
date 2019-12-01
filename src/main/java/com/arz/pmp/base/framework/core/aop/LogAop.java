@@ -4,6 +4,7 @@ import java.lang.reflect.Method;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.JoinPoint;
@@ -70,10 +71,10 @@ public class LogAop {
         frameworkLog.setIp(ip);
         frameworkLog.setRequestUri(req.getRequestURI());
         frameworkLog.setClazz(clazzName + "." + methodName);
-        log.info("Request=={}", JSON.toJSONString(frameworkLog));
+        log.info("Request=={}", JSONObject.toJSONString(frameworkLog));
         Object object = joinPoint.proceed();
         frameworkLog.setResponse(object);
-        log.info("Response=={}", JSON.toJSONString(frameworkLog));
+        log.info("Response=={}", JSONObject.toJSONString(frameworkLog));
         // 判断是否需要写入数据库
         Method method = ((MethodSignature)jp.getSignature()).getMethod();
         if (method.isAnnotationPresent(SysLog.class) && object != null && object instanceof RestResponse) {

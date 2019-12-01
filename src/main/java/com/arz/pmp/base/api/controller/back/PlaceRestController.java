@@ -1,5 +1,6 @@
 package com.arz.pmp.base.api.controller.back;
 
+import com.arz.pmp.base.api.aop.annotation.RequirePermissions;
 import com.arz.pmp.base.api.bo.place.PlaceEditorReq;
 import com.arz.pmp.base.api.bo.place.PlaceSearchReq;
 import com.arz.pmp.base.api.service.place.PlaceService;
@@ -21,6 +22,8 @@ import javax.annotation.Resource;
 import javax.validation.Valid;
 import java.util.List;
 
+import static com.arz.pmp.base.framework.core.enums.SysPermEnumClass.PermissionEnum.*;
+
 /**
  * description 教学点操作
  *
@@ -41,7 +44,7 @@ public class PlaceRestController {
 
     @ApiOperation(value = "教学点 列表查看", notes = "分页查看教学点")
     @PostMapping("/index")
-    @RequiresPermissions({"place:read"})
+    @RequirePermissions({PLACE_READ})
     public RestResponse<PageInfo<List<PmpTeachingPlaceEntity>>>
         getPlaceListPage(@RequestBody @Valid RestRequest<PlaceSearchReq> data) {
 
@@ -62,7 +65,7 @@ public class PlaceRestController {
 
     @ApiOperation(value = "教学点 教学点添加", notes = "添加新的教学点")
     @PostMapping("/add")
-    @RequiresPermissions({"place:add"})
+    @RequirePermissions({PLACE_ADD})
     @SysLog(type = SysLogEnumClass.OptionTypeEnum.ADD, module = SysLogEnumClass.OptionModuleEnum.SYS_TEACHING_PLACE,
         describe = "添加教学点信息")
     public RestResponse<Long> addPlace(@RequestBody @Valid RestRequest<PlaceEditorReq> data) {
@@ -74,7 +77,7 @@ public class PlaceRestController {
 
     @ApiOperation(value = "教学点 教学点更新", notes = "更新教学点")
     @PostMapping("/update")
-    @RequiresPermissions({"place:update"})
+    @RequirePermissions({PLACE_UPDATE})
     @SysLog(type = SysLogEnumClass.OptionTypeEnum.UPDATE, module = SysLogEnumClass.OptionModuleEnum.SYS_TEACHING_PLACE,
         describe = "更新教学点信息")
     public RestResponse<Long> updatePlace(@RequestBody @Valid RestRequest<PlaceEditorReq> data) {
@@ -86,7 +89,7 @@ public class PlaceRestController {
 
     @ApiOperation(value = "教学点 教学点删除", notes = "删除教学点")
     @PostMapping("/delete")
-    @RequiresPermissions({"place:delete"})
+    @RequirePermissions({PLACE_DEL})
     @SysLog(type = SysLogEnumClass.OptionTypeEnum.DELETE, module = SysLogEnumClass.OptionModuleEnum.SYS_TEACHING_PLACE,
         describe = "删除教学点信息")
     public RestResponse deletePlace(@RequestBody @Valid RestRequest<Long> data) {

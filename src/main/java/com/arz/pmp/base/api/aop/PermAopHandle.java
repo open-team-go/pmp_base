@@ -1,20 +1,13 @@
 package com.arz.pmp.base.api.aop;
 
-import com.arz.pmp.base.api.aop.annotation.RequiresRoles;
-import com.arz.pmp.base.api.service.permission.PermissionService;
-import com.arz.pmp.base.api.service.redis.RedisService;
-import com.arz.pmp.base.entity.PmpAdminEntity;
-import com.arz.pmp.base.entity.PmpPermissionEntity;
-import com.arz.pmp.base.entity.PmpRoleEntity;
-import com.arz.pmp.base.framework.commons.RequestHeader;
-import com.arz.pmp.base.framework.commons.RestRequest;
-import com.arz.pmp.base.framework.commons.enums.CommonCodeEnum;
-import com.arz.pmp.base.framework.commons.utils.Assert;
-import com.arz.pmp.base.framework.commons.utils.NumberUtil;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.List;
+
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.shiro.authz.Permission;
 import org.apache.shiro.authz.annotation.Logical;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.authz.permission.WildcardPermission;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
@@ -26,10 +19,19 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.List;
+import com.arz.pmp.base.api.aop.annotation.RequirePermissions;
+import com.arz.pmp.base.api.aop.annotation.RequireRoles;
+import com.arz.pmp.base.api.service.permission.PermissionService;
+import com.arz.pmp.base.api.service.redis.RedisService;
+import com.arz.pmp.base.entity.PmpAdminEntity;
+import com.arz.pmp.base.entity.PmpPermissionEntity;
+import com.arz.pmp.base.entity.PmpRoleEntity;
+import com.arz.pmp.base.framework.commons.RequestHeader;
+import com.arz.pmp.base.framework.commons.RestRequest;
+import com.arz.pmp.base.framework.commons.enums.CommonCodeEnum;
+import com.arz.pmp.base.framework.commons.utils.Assert;
+import com.arz.pmp.base.framework.commons.utils.NumberUtil;
+import com.arz.pmp.base.framework.core.enums.SysPermEnumClass;
 
 /**
  * description 权限aop类
@@ -56,10 +58,10 @@ public class PermAopHandle {
      * @author chen wei
      * @date 2019/7/11
      */
-    @Before(value = "@annotation(requiresRoles)")
-    private void prePerms(JoinPoint jp, RequiresRoles requiresRoles) {
-
-        assertPermissions(jp, requiresRoles, null, true);
+    @Before(value = "@annotation(requireRoles)")
+    private void prePerms(JoinPoint jp, RequireRoles requireRoles) {
+        String token = getHeaderToken(getRestRequest(jp));
+        assertPermissions(token, getPerms(requireRoles.value(), null), requireRoles.logical(), true);
     }
 
     /**
@@ -69,9 +71,28 @@ public class PermAopHandle {
      * @date 2019/7/11
      */
     @Before(value = "@annotation(requiresPermissions)")
-    private void prePerms(JoinPoint jp, RequiresPermissions requiresPermissions) {
+    private void prePerms(JoinPoint jp, RequirePermissions requiresPermissions) {
+        String token = getHeaderToken(getRestRequest(jp));
+        assertPermissions(token, getPerms(null, requiresPermissions.value()), requiresPermissions.logical(), false);
+    }
 
-        assertPermissions(jp, null, requiresPermissions, false);
+    public String[] getPerms(SysPermEnumClass.RoleEnum[] roles, SysPermEnumClass.PermissionEnum[] permissions) {
+        if (ArrayUtils.isEmpty(roles) && ArrayUtils.isEmpty(permissions)) {
+            return null;
+        }
+        String[] perms = ArrayUtils.isEmpty(roles) ? new String[permissions.length] : new String[roles.length];
+        int i = 0;
+        if (!ArrayUtils.isEmpty(roles)) {
+
+            for (SysPermEnumClass.RoleEnum item : roles) {
+                perms[i++] = item.getCode();
+            }
+        } else {
+            for (SysPermEnumClass.PermissionEnum item : permissions) {
+                perms[i++] = item.getCode();
+            }
+        }
+        return perms;
     }
 
     /**
@@ -80,40 +101,25 @@ public class PermAopHandle {
      * @author chen wei
      * @date 2019/11/14
      */
-    private void assertPermissions(JoinPoint jp, RequiresRoles requiresRoles, RequiresPermissions requiresPermissions,
-        boolean roleOn) {
+    public void assertPermissions(String token, String[] perms, Logical logical, boolean roleOn) {
         if (!authEnable) {
             logger.info("properties配置中关闭权限验证");
             return;
         }
-        if (roleOn && requiresRoles == null) {
+        if (ArrayUtils.isEmpty(perms)) {
             return;
         }
-        if (!roleOn && requiresPermissions == null) {
-            return;
-        }
-        RestRequest restRequest = getRestRequest(jp);
-
-        if (restRequest == null) {
-            return;
-        }
-        String appToken = getHeaderToken(restRequest);
-
-        PmpAdminEntity userInfo = redisService.getOperatorByToken(appToken);
+        PmpAdminEntity userInfo = redisService.getOperatorByToken(token);
         Assert.isTrue(userInfo != null, CommonCodeEnum.PERMISSION_ERROR_LOGIN);
         boolean flag;
         if (roleOn) {
-            String[] rolesArr = requiresRoles.value();
-            Logical logical = requiresRoles.logical();
             Assert.isTrue(NumberUtil.isPositive(userInfo.getRoleId()), CommonCodeEnum.PERMISSION_ERROR);
             PmpRoleEntity roleEntity = permissionService.getRoleById(userInfo.getRoleId());
-            flag = checkRoles(rolesArr, logical, roleEntity.getRoleCode());
+            flag = checkRoles(perms, logical, roleEntity.getRoleCode());
 
         } else {
-            String[] requirePerms = requiresPermissions.value();
-            Logical logical = requiresPermissions.logical();
             List<PmpPermissionEntity> permList = permissionService.getPermListByRoleId(userInfo.getRoleId());
-            flag = checkPermits(requirePerms, permList, logical);
+            flag = checkPermits(perms, permList, logical);
         }
         Assert.isTrue(flag, CommonCodeEnum.PERMISSION_ERROR);
 
@@ -166,7 +172,7 @@ public class PermAopHandle {
      * @date 2019/8/8
      * @return boolean
      */
-    public boolean checkPermits(String[] requirePerms, Collection<PmpPermissionEntity> stringPerms, Logical logical) {
+    private boolean checkPermits(String[] requirePerms, Collection<PmpPermissionEntity> stringPerms, Logical logical) {
 
         Collection<Permission> perms = resolvePermissions(stringPerms);
 

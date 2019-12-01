@@ -1,5 +1,18 @@
 package com.arz.pmp.base.api.controller.back;
 
+import static com.arz.pmp.base.framework.core.enums.SysPermEnumClass.PermissionEnum.*;
+
+import java.util.List;
+
+import javax.annotation.Resource;
+import javax.validation.Valid;
+
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.arz.pmp.base.api.aop.annotation.RequirePermissions;
 import com.arz.pmp.base.api.bo.adminn.AdminEditorReq;
 import com.arz.pmp.base.api.bo.adminn.AdminLoginReq;
 import com.arz.pmp.base.api.bo.adminn.AdminLoginResp;
@@ -13,17 +26,9 @@ import com.arz.pmp.base.framework.commons.utils.Assert;
 import com.arz.pmp.base.framework.core.annotation.SysLog;
 import com.arz.pmp.base.framework.core.enums.SysLogEnumClass;
 import com.github.pagehelper.PageInfo;
+
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import javax.annotation.Resource;
-import javax.validation.Valid;
-import java.util.List;
 
 /**
  * description 管理员操作
@@ -67,18 +72,17 @@ public class AdminRestController {
 
     @ApiOperation(value = "管理员 列表查看", notes = "分页查看管理员")
     @PostMapping("/index")
-    @RequiresPermissions({"admin:read"})
+    @RequirePermissions({ADMIN_READ})
     public RestResponse<PageInfo<List<AdminLoginResp>>>
         getAdminList(@RequestBody @Valid RestRequest<AdminSearchReq> data) {
 
         PageInfo<List<AdminLoginResp>> pageInfo = adminService.getAdminListPage(data);
-
         return RestResponse.success(pageInfo);
     }
 
     @ApiOperation(value = "管理员 添加", notes = "添加新管理员")
     @PostMapping("/add")
-    @RequiresPermissions({"admin:add"})
+    @RequirePermissions({ADMIN_ADD})
     @SysLog(type = SysLogEnumClass.OptionTypeEnum.ADD, module = SysLogEnumClass.OptionModuleEnum.SYS_ADMIN,
         describe = "添加新管理员")
     public RestResponse<Long> addAdmin(@RequestBody @Valid RestRequest<AdminEditorReq> data) {
@@ -90,7 +94,7 @@ public class AdminRestController {
 
     @ApiOperation(value = "管理员 更新", notes = "修改管理员信息")
     @PostMapping("/update")
-    @RequiresPermissions({"admin:update"})
+    @RequirePermissions({ADMIN_UPDATE})
     @SysLog(type = SysLogEnumClass.OptionTypeEnum.UPDATE, module = SysLogEnumClass.OptionModuleEnum.SYS_ADMIN,
         describe = "修改管理员信息")
     public RestResponse<Long> updateAdmin(@RequestBody @Valid RestRequest<AdminEditorReq> data) {
@@ -102,7 +106,7 @@ public class AdminRestController {
 
     @ApiOperation(value = "管理员 删除", notes = "删除管理员信息")
     @PostMapping("/delete")
-    @RequiresPermissions({"admin:delete"})
+    @RequirePermissions({ADMIN_DEL})
     @SysLog(type = SysLogEnumClass.OptionTypeEnum.DELETE, module = SysLogEnumClass.OptionModuleEnum.SYS_ADMIN,
         describe = "删除管理员信息")
     public RestResponse deleteAdmin(@RequestBody @Valid RestRequest<Long> data) {

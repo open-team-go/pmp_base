@@ -2,6 +2,7 @@ package com.arz.pmp.base.framework.commons.utils;
 
 import com.google.common.base.Strings;
 
+import java.security.PublicKey;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -54,7 +55,6 @@ public class DateUtil {
         }
     }
 
-
     /**
      * Date转化为dateFormat时间格式的字符串
      *
@@ -104,7 +104,6 @@ public class DateUtil {
         return Long.valueOf((System.currentTimeMillis() / 1000)).intValue();
     }
 
-
     /**
      * 获取年
      *
@@ -142,10 +141,18 @@ public class DateUtil {
         return getCurDateTime().getTime() / 1000;
     }
 
-    public static void main(String[] args){
-//        System.out.println(DateUtil.strToDate("1993-09-08","yyyy-MM-dd").getTime()/1000);
-        System.out.println(getCurSecond());
+    public interface DateStrFormat {
+        /** YYYY-MM-dd HH:mm:ss */
+        String f_1 = "YYYY-MM-dd HH:mm:ss";
+        /** YYYY-MM-dds */
+        String f_2 = "YYYY-MM-dd";
     }
 
+    public static String getSecToStr(Long second, String format) {
+        if (!NumberUtil.isPositive(second)) {
+            return null;
+        }
 
+        return dateToStr(new Date(second * 1000), format);
+    }
 }

@@ -39,7 +39,18 @@
     <result column="cert_no" jdbcType="VARCHAR" property="certNo" />
     <result column="cert_user_name" jdbcType="VARCHAR" property="certUserName" />
     <result column="cert_password" jdbcType="VARCHAR" property="certPassword" />
+    <result column="cert_start_time" jdbcType="BIGINT" property="certStartTime" />
+    <result column="cert_end_time" jdbcType="BIGINT" property="certEndTime" />
     <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="exam_name" jdbcType="VARCHAR" property="examName" />
+    <result column="institution" jdbcType="VARCHAR" property="institution" />
+    <result column="exam_place" jdbcType="VARCHAR" property="examPlace" />
+    <result column="ease_out" jdbcType="BIT" property="easeOut" />
+    <result column="ease_in" jdbcType="BIT" property="easeIn" />
+    <result column="withdraw_on" jdbcType="BIT" property="withdrawOn" />
+    <result column="audit_on" jdbcType="BIT" property="auditOn" />
+    <result column="receive_type" jdbcType="INTEGER" property="receiveType" />
+    <result column="re_examine_on" jdbcType="BIT" property="reExamineOn" />
     <result column="create_time" jdbcType="BIGINT" property="createTime" />
     <result column="update_time" jdbcType="BIGINT" property="updateTime" />
     <result column="create_manager" jdbcType="BIGINT" property="createManager" />
@@ -55,8 +66,10 @@
     phone_no, fixed_telephone, email, backup_email, wechat_no, qq, identity_no, zip_code, 
     user_address, graduation_time, graduation_school, school_major, industry, com_name, 
     com_department, com_position, invoice_header, invoice_code, user_type, admin_id, 
-    course_id, graduation_status, cert_no, cert_user_name, cert_password, remark, create_time, 
-    update_time, create_manager, update_manager, del_on
+    course_id, graduation_status, cert_no, cert_user_name, cert_password, cert_start_time, 
+    cert_end_time, remark, exam_name, institution, exam_place, ease_out, ease_in, withdraw_on, 
+    audit_on, receive_type, re_examine_on, create_time, update_time, create_manager, 
+    update_manager, del_on
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     <!--
@@ -94,9 +107,13 @@
       com_department, com_position, invoice_header, 
       invoice_code, user_type, admin_id, 
       course_id, graduation_status, cert_no, 
-      cert_user_name, cert_password, remark, 
-      create_time, update_time, create_manager, 
-      update_manager, del_on)
+      cert_user_name, cert_password, cert_start_time, 
+      cert_end_time, remark, exam_name, 
+      institution, exam_place, ease_out, 
+      ease_in, withdraw_on, audit_on, receive_type, 
+      re_examine_on, create_time, update_time, 
+      create_manager, update_manager, del_on
+      )
     values (#{educationId,jdbcType=BIGINT}, #{payId,jdbcType=BIGINT}, #{roomId,jdbcType=BIGINT}, 
       #{userName,jdbcType=VARCHAR}, #{gender,jdbcType=BIT}, #{nationality,jdbcType=VARCHAR}, 
       #{birthday,jdbcType=BIGINT}, #{phoneNo,jdbcType=VARCHAR}, #{fixedTelephone,jdbcType=VARCHAR}, 
@@ -107,9 +124,13 @@
       #{comDepartment,jdbcType=VARCHAR}, #{comPosition,jdbcType=VARCHAR}, #{invoiceHeader,jdbcType=VARCHAR}, 
       #{invoiceCode,jdbcType=VARCHAR}, #{userType,jdbcType=INTEGER}, #{adminId,jdbcType=BIGINT}, 
       #{courseId,jdbcType=BIGINT}, #{graduationStatus,jdbcType=INTEGER}, #{certNo,jdbcType=VARCHAR}, 
-      #{certUserName,jdbcType=VARCHAR}, #{certPassword,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, 
-      #{createTime,jdbcType=BIGINT}, #{updateTime,jdbcType=BIGINT}, #{createManager,jdbcType=BIGINT}, 
-      #{updateManager,jdbcType=BIGINT}, #{delOn,jdbcType=BIT})
+      #{certUserName,jdbcType=VARCHAR}, #{certPassword,jdbcType=VARCHAR}, #{certStartTime,jdbcType=BIGINT}, 
+      #{certEndTime,jdbcType=BIGINT}, #{remark,jdbcType=VARCHAR}, #{examName,jdbcType=VARCHAR}, 
+      #{institution,jdbcType=VARCHAR}, #{examPlace,jdbcType=VARCHAR}, #{easeOut,jdbcType=BIT}, 
+      #{easeIn,jdbcType=BIT}, #{withdrawOn,jdbcType=BIT}, #{auditOn,jdbcType=BIT}, #{receiveType,jdbcType=INTEGER}, 
+      #{reExamineOn,jdbcType=BIT}, #{createTime,jdbcType=BIGINT}, #{updateTime,jdbcType=BIGINT}, 
+      #{createManager,jdbcType=BIGINT}, #{updateManager,jdbcType=BIGINT}, #{delOn,jdbcType=BIT}
+      )
   </insert>
   <insert id="insertSelective" parameterType="com.arz.pmp.base.entity.PmpUserEntity">
     <!--
@@ -217,8 +238,41 @@
       <if test="certPassword != null">
         cert_password,
       </if>
+      <if test="certStartTime != null">
+        cert_start_time,
+      </if>
+      <if test="certEndTime != null">
+        cert_end_time,
+      </if>
       <if test="remark != null">
         remark,
+      </if>
+      <if test="examName != null">
+        exam_name,
+      </if>
+      <if test="institution != null">
+        institution,
+      </if>
+      <if test="examPlace != null">
+        exam_place,
+      </if>
+      <if test="easeOut != null">
+        ease_out,
+      </if>
+      <if test="easeIn != null">
+        ease_in,
+      </if>
+      <if test="withdrawOn != null">
+        withdraw_on,
+      </if>
+      <if test="auditOn != null">
+        audit_on,
+      </if>
+      <if test="receiveType != null">
+        receive_type,
+      </if>
+      <if test="reExamineOn != null">
+        re_examine_on,
       </if>
       <if test="createTime != null">
         create_time,
@@ -333,8 +387,41 @@
       <if test="certPassword != null">
         #{certPassword,jdbcType=VARCHAR},
       </if>
+      <if test="certStartTime != null">
+        #{certStartTime,jdbcType=BIGINT},
+      </if>
+      <if test="certEndTime != null">
+        #{certEndTime,jdbcType=BIGINT},
+      </if>
       <if test="remark != null">
         #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="examName != null">
+        #{examName,jdbcType=VARCHAR},
+      </if>
+      <if test="institution != null">
+        #{institution,jdbcType=VARCHAR},
+      </if>
+      <if test="examPlace != null">
+        #{examPlace,jdbcType=VARCHAR},
+      </if>
+      <if test="easeOut != null">
+        #{easeOut,jdbcType=BIT},
+      </if>
+      <if test="easeIn != null">
+        #{easeIn,jdbcType=BIT},
+      </if>
+      <if test="withdrawOn != null">
+        #{withdrawOn,jdbcType=BIT},
+      </if>
+      <if test="auditOn != null">
+        #{auditOn,jdbcType=BIT},
+      </if>
+      <if test="receiveType != null">
+        #{receiveType,jdbcType=INTEGER},
+      </if>
+      <if test="reExamineOn != null">
+        #{reExamineOn,jdbcType=BIT},
       </if>
       <if test="createTime != null">
         #{createTime,jdbcType=BIGINT},
@@ -456,8 +543,41 @@
       <if test="certPassword != null">
         cert_password = #{certPassword,jdbcType=VARCHAR},
       </if>
+      <if test="certStartTime != null">
+        cert_start_time = #{certStartTime,jdbcType=BIGINT},
+      </if>
+      <if test="certEndTime != null">
+        cert_end_time = #{certEndTime,jdbcType=BIGINT},
+      </if>
       <if test="remark != null">
         remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="examName != null">
+        exam_name = #{examName,jdbcType=VARCHAR},
+      </if>
+      <if test="institution != null">
+        institution = #{institution,jdbcType=VARCHAR},
+      </if>
+      <if test="examPlace != null">
+        exam_place = #{examPlace,jdbcType=VARCHAR},
+      </if>
+      <if test="easeOut != null">
+        ease_out = #{easeOut,jdbcType=BIT},
+      </if>
+      <if test="easeIn != null">
+        ease_in = #{easeIn,jdbcType=BIT},
+      </if>
+      <if test="withdrawOn != null">
+        withdraw_on = #{withdrawOn,jdbcType=BIT},
+      </if>
+      <if test="auditOn != null">
+        audit_on = #{auditOn,jdbcType=BIT},
+      </if>
+      <if test="receiveType != null">
+        receive_type = #{receiveType,jdbcType=INTEGER},
+      </if>
+      <if test="reExamineOn != null">
+        re_examine_on = #{reExamineOn,jdbcType=BIT},
       </if>
       <if test="createTime != null">
         create_time = #{createTime,jdbcType=BIGINT},
@@ -515,7 +635,18 @@
       cert_no = #{certNo,jdbcType=VARCHAR},
       cert_user_name = #{certUserName,jdbcType=VARCHAR},
       cert_password = #{certPassword,jdbcType=VARCHAR},
+      cert_start_time = #{certStartTime,jdbcType=BIGINT},
+      cert_end_time = #{certEndTime,jdbcType=BIGINT},
       remark = #{remark,jdbcType=VARCHAR},
+      exam_name = #{examName,jdbcType=VARCHAR},
+      institution = #{institution,jdbcType=VARCHAR},
+      exam_place = #{examPlace,jdbcType=VARCHAR},
+      ease_out = #{easeOut,jdbcType=BIT},
+      ease_in = #{easeIn,jdbcType=BIT},
+      withdraw_on = #{withdrawOn,jdbcType=BIT},
+      audit_on = #{auditOn,jdbcType=BIT},
+      receive_type = #{receiveType,jdbcType=INTEGER},
+      re_examine_on = #{reExamineOn,jdbcType=BIT},
       create_time = #{createTime,jdbcType=BIGINT},
       update_time = #{updateTime,jdbcType=BIGINT},
       create_manager = #{createManager,jdbcType=BIGINT},

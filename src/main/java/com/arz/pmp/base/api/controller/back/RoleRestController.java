@@ -1,5 +1,6 @@
 package com.arz.pmp.base.api.controller.back;
 
+import com.arz.pmp.base.api.aop.annotation.RequirePermissions;
 import com.arz.pmp.base.api.bo.permission.RolePermsData;
 import com.arz.pmp.base.api.service.permission.PermissionService;
 import com.arz.pmp.base.entity.PmpPermissionEntity;
@@ -21,6 +22,10 @@ import javax.annotation.Resource;
 import javax.validation.Valid;
 import java.util.List;
 
+import static com.arz.pmp.base.framework.core.enums.SysPermEnumClass.PermissionEnum.PLACE_READ;
+import static com.arz.pmp.base.framework.core.enums.SysPermEnumClass.PermissionEnum.ROLE_READ;
+import static com.arz.pmp.base.framework.core.enums.SysPermEnumClass.PermissionEnum.ROLE_UPDATE;
+
 /**
  * description 角色操作
  *
@@ -41,7 +46,7 @@ public class RoleRestController {
 
     @ApiOperation(value = "角色 列表查看", notes = "分页查看角色")
     @PostMapping("/index")
-    @RequiresPermissions({"role:read"})
+    @RequirePermissions({ROLE_READ})
     public RestResponse<PageInfo<List<PmpRoleEntity>>> getRoleList(@RequestBody @Valid RestRequest data) {
 
         PageInfo<List<PmpRoleEntity>> pageInfo = permissionService.getRolesListPage(data);
@@ -51,7 +56,7 @@ public class RoleRestController {
 
     @ApiOperation(value = "角色 所有角色", notes = "获取所有角色")
     @PostMapping("/all")
-    @RequiresPermissions({"role:read"})
+    @RequirePermissions({ROLE_READ})
     public RestResponse<List<PmpRoleEntity>> getRoleAll(@RequestBody @Valid RestRequest data) {
 
         List<PmpRoleEntity> list = permissionService.getRolesAll();
@@ -61,7 +66,7 @@ public class RoleRestController {
 
     @ApiOperation(value = "角色 拥有的功能权限", notes = "获取角色下功能权限")
     @PostMapping("/perms")
-    @RequiresPermissions({"role:read"})
+    @RequirePermissions({ROLE_READ})
     public RestResponse<List<PmpPermissionEntity>> getRolePerms(@RequestBody @Valid RestRequest<Long> data) {
 
         List<PmpPermissionEntity> list = permissionService.getPermListByRoleId(data.getBody());
@@ -71,7 +76,7 @@ public class RoleRestController {
 
     @ApiOperation(value = "角色 更新角色的功能权限", notes = "更新角色的功能权限")
     @PostMapping("/perms/update")
-    @RequiresPermissions({"role:update"})
+    @RequirePermissions({ROLE_UPDATE})
     @SysLog(type = SysLogEnumClass.OptionTypeEnum.UPDATE, module = SysLogEnumClass.OptionModuleEnum.SYS_ROLE,
         describe = "更新角色权限信息")
     public RestResponse updateRolePerms(@RequestBody @Valid RestRequest<RolePermsData> data) {

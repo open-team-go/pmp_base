@@ -1,5 +1,6 @@
 package com.arz.pmp.base.api.service.user;
 
+import com.arz.pmp.base.api.bo.excel.UserDataExport;
 import com.arz.pmp.base.api.bo.user.UserDataResp;
 import com.arz.pmp.base.api.bo.user.UserEditorReq;
 import com.arz.pmp.base.api.bo.user.UserSearchReq;
@@ -32,4 +33,7 @@ public interface UserService {
 
     List<PmpUserPayTypeEntity> getPayTypeList();
 
+    List<UserDataExport> getExportUserList(UserSearchReq search, String authentication);
+
+    UserDataResp getUserDetailByKey(Long userId);
 }

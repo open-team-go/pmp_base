@@ -9,9 +9,9 @@ import lombok.Data;
  *
  * @author chen wei
  * @version 1.0
- * <p>
- * Copyright: Copyright (c) 2019
- * </p>
+ *          <p>
+ *          Copyright: Copyright (c) 2019
+ *          </p>
  * @date 2019/11/14 17:34
  */
 @ApiModel

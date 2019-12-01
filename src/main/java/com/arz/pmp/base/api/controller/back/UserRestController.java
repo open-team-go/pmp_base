@@ -1,5 +1,6 @@
 package com.arz.pmp.base.api.controller.back;
 
+import com.arz.pmp.base.api.aop.annotation.RequirePermissions;
 import com.arz.pmp.base.api.bo.user.UserDataResp;
 import com.arz.pmp.base.api.bo.user.UserEditorReq;
 import com.arz.pmp.base.api.bo.user.UserSearchReq;
@@ -23,6 +24,8 @@ import javax.annotation.Resource;
 import javax.validation.Valid;
 import java.util.List;
 
+import static com.arz.pmp.base.framework.core.enums.SysPermEnumClass.PermissionEnum.*;
+
 /**
  * description 学员操作
  *
@@ -43,7 +46,7 @@ public class UserRestController {
 
     @ApiOperation(value = "学员 列表查看", notes = "分页查看学员")
     @PostMapping("/index")
-    @RequiresPermissions({"user:read"})
+    @RequirePermissions({USER_READ})
     public RestResponse<PageInfo<List<UserDataResp>>>
         getUserListPage(@RequestBody @Valid RestRequest<UserSearchReq> data) {
 
@@ -52,9 +55,19 @@ public class UserRestController {
         return RestResponse.success(pageInfo);
     }
 
+    @ApiOperation(value = "学员 详情查看", notes = "查看学员详细信息")
+    @PostMapping("/detail")
+    @RequirePermissions({USER_READ})
+    public RestResponse<UserDataResp> getUserDetail(@RequestBody @Valid RestRequest<Long> data) {
+
+        UserDataResp userData = userService.getUserDetailByKey(data.getBody());
+
+        return RestResponse.success(userData);
+    }
+
     @ApiOperation(value = "学员 学员添加", notes = "添加新的学员")
     @PostMapping("/add")
-    @RequiresPermissions({"user:add"})
+    @RequirePermissions({USER_ADD})
     @SysLog(type = SysLogEnumClass.OptionTypeEnum.ADD, module = SysLogEnumClass.OptionModuleEnum.SYS_USER,
         describe = "添加学员信息")
     public RestResponse<Long> addUser(@RequestBody @Valid RestRequest<UserEditorReq> data) {
@@ -66,7 +79,7 @@ public class UserRestController {
 
     @ApiOperation(value = "学员 学员更新", notes = "更新学员")
     @PostMapping("/update")
-    @RequiresPermissions({"user:update"})
+    @RequirePermissions({USER_UPDATE})
     @SysLog(type = SysLogEnumClass.OptionTypeEnum.UPDATE, module = SysLogEnumClass.OptionModuleEnum.SYS_USER,
         describe = "更新学员信息")
     public RestResponse<Long> updateUser(@RequestBody @Valid RestRequest<UserEditorReq> data) {
@@ -78,7 +91,7 @@ public class UserRestController {
 
     @ApiOperation(value = "学员 学员删除", notes = "学员删除")
     @PostMapping("/delete")
-    @RequiresPermissions({"user:delete"})
+    @RequirePermissions({USER_DEL})
     @SysLog(type = SysLogEnumClass.OptionTypeEnum.DELETE, module = SysLogEnumClass.OptionModuleEnum.SYS_USER,
         describe = "删除学员信息")
     public RestResponse deleteUser(@RequestBody @Valid RestRequest<Long> data) {
