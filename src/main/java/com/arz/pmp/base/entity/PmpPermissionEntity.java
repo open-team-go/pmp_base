@@ -28,7 +28,7 @@ public class PmpPermissionEntity {
      *
      * @mbg.generated
      */
-    private Boolean permLevel;
+    private Integer permLevel;
 
     /**
      * Database Column Remarks:
@@ -172,7 +172,7 @@ public class PmpPermissionEntity {
      *
      * @mbg.generated
      */
-    public Boolean getPermLevel() {
+    public Integer getPermLevel() {
         return permLevel;
     }
 
@@ -184,7 +184,7 @@ public class PmpPermissionEntity {
      *
      * @mbg.generated
      */
-    public void setPermLevel(Boolean permLevel) {
+    public void setPermLevel(Integer permLevel) {
         this.permLevel = permLevel;
     }
 

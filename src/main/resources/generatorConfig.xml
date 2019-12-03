@@ -66,7 +66,7 @@
                enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false"
                selectByExampleQueryId="false">
             <generatedKey column="course_id" sqlStatement="MySql" identity="true"/>
-        </table>
+        </table>-->
 
         <table tableName="pmp_permission" domainObjectName="PmpPermissionEntity" schema="pmp_base"
                enableCountByExample="false"
@@ -75,7 +75,7 @@
             <generatedKey column="perm_id" sqlStatement="MySql" identity="true"/>
         </table>
 
-        <table tableName="pmp_role" domainObjectName="PmpRoleEntity" schema="pmp_base"
+        <!--<table tableName="pmp_role" domainObjectName="PmpRoleEntity" schema="pmp_base"
                enableCountByExample="false"
                enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false"
                selectByExampleQueryId="false">
@@ -118,14 +118,14 @@
             <generatedKey column="type_id" sqlStatement="MySql" identity="true"/>
         </table>-->
 
-        <table tableName="pmp_user" domainObjectName="PmpUserEntity" schema="pmp_base"
+        <!--<table tableName="pmp_user" domainObjectName="PmpUserEntity" schema="pmp_base"
                enableCountByExample="false"
                enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false"
                selectByExampleQueryId="false">
             <generatedKey column="user_id" sqlStatement="MySql" identity="true"/>
         </table>
 
-        <!--<<table tableName="pmp_user_education" domainObjectName="PmpUserEducationEntity" schema="pmp_base"
+        <table tableName="pmp_user_education" domainObjectName="PmpUserEducationEntity" schema="pmp_base"
                enableCountByExample="false"
                enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false"
                selectByExampleQueryId="false">
