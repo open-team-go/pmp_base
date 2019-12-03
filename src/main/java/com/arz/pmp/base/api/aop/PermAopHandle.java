@@ -60,6 +60,10 @@ public class PermAopHandle {
      */
     @Before(value = "@annotation(requireRoles)")
     private void prePerms(JoinPoint jp, RequireRoles requireRoles) {
+        if (!authEnable) {
+            logger.info("properties配置中关闭权限验证");
+            return;
+        }
         String token = getHeaderToken(getRestRequest(jp));
         assertPermissions(token, getPerms(requireRoles.value(), null), requireRoles.logical(), true);
     }
@@ -72,6 +76,10 @@ public class PermAopHandle {
      */
     @Before(value = "@annotation(requiresPermissions)")
     private void prePerms(JoinPoint jp, RequirePermissions requiresPermissions) {
+        if (!authEnable) {
+            logger.info("properties配置中关闭权限验证");
+            return;
+        }
         String token = getHeaderToken(getRestRequest(jp));
         assertPermissions(token, getPerms(null, requiresPermissions.value()), requiresPermissions.logical(), false);
     }
