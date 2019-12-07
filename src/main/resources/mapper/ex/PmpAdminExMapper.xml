@@ -63,7 +63,7 @@
         SELECT
         a.admin_id,
         a.user_name,
-        a.password,
+--         a.password,
         a.salt,
         a.avatar,
         a.nickName,

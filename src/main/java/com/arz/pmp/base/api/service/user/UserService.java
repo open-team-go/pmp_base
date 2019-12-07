@@ -8,6 +8,8 @@ import com.arz.pmp.base.api.bo.excel.UserImportResp;
 import com.arz.pmp.base.api.bo.user.UserDataResp;
 import com.arz.pmp.base.api.bo.user.UserEditorReq;
 import com.arz.pmp.base.api.bo.user.UserSearchReq;
+import com.arz.pmp.base.api.bo.user.front.UserCheckReq;
+import com.arz.pmp.base.api.bo.user.front.UserRegistReq;
 import com.arz.pmp.base.entity.PmpUserEducationEntity;
 import com.arz.pmp.base.entity.PmpUserPayTypeEntity;
 import com.arz.pmp.base.framework.commons.RestRequest;
@@ -40,4 +42,10 @@ public interface UserService {
     UserDataResp getUserDetailByKey(Long userId);
 
     UserImportResp insertUserBatch(List<UserDataImport> list);
+
+    Long insertUserRegister(UserRegistReq data);
+
+    void updateUserRegister(UserRegistReq data);
+
+    UserDataResp getFrontUser(UserCheckReq data);
 }

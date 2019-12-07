@@ -3,6 +3,8 @@ package com.arz.pmp.base.api.service.user;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.arz.pmp.base.api.bo.user.front.UserCheckReq;
+import com.arz.pmp.base.api.bo.user.front.UserRegistReq;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,9 +84,10 @@ public class UserServiceImpl implements UserService {
         String name = data.getUserName();
         Long userId = data.getUserId();
         String phoneNo = data.getPhoneNo();
+        String identityNo = data.getIdentityNo();
         if (StringUtils.isNotBlank(name)) {
 
-            Long id = pmpUserExMapper.selectUserByName(name, phoneNo);
+            Long id = pmpUserExMapper.selectUserByName(name, identityNo);
             boolean flag = id == null || (!addOn && id.equals(userId));
             Assert.isTrue(flag, CommonCodeEnum.PARAM_ERROR_USERNAME_MULTI, "已存在同名同手机号学员信息");
         }
@@ -99,7 +102,7 @@ public class UserServiceImpl implements UserService {
             entity.setCreateTime(curTimeSec);
             entity.setCreateManager(operatorId);
             entity.setDelOn(false);
-            pmpUserEntityMapper.insert(entity);
+            pmpUserEntityMapper.insertSelective(entity);
             userId = entity.getUserId();
 
         } else {
@@ -146,7 +149,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDataResp getUserDetailByKey(Long userId) {
-        return pmpUserExMapper.selectUserDetail(userId, null, null);
+        return pmpUserExMapper.selectUserDetail(userId, null, null,null,null);
     }
 
     @Override
@@ -160,19 +163,22 @@ public class UserServiceImpl implements UserService {
         for(PmpUserEntity item : userList){
 
             String userName = item.getUserName();
-            String phoneNo = item.getPhoneNo();
-            if(StringUtils.isBlank(userName) || StringUtils.isBlank(phoneNo)){
+            String identityNo = item.getIdentityNo();
+            if(StringUtils.isBlank(userName) || StringUtils.isBlank(identityNo)){
                 logger.info("用户数据导入不处理信息====user=={}",item);
                 continue;
             }
-            Long userId = pmpUserExMapper.selectUserByName(userName,phoneNo);
+            Long userId = pmpUserExMapper.selectUserByName(userName,identityNo);
+            Long curTime = DateUtil.getCurSecond();
             if(userId != null){
                 // 修改
                 item.setUserId(userId);
+                item.setUpdateTime(curTime);
                 pmpUserEntityMapper.updateByPrimaryKeySelective(item);
                 j++;
             }else{
-                pmpUserEntityMapper.insert(item);
+                item.setCreateTime(curTime);
+                pmpUserEntityMapper.insertSelective(item);
                 i++;
             }
 
@@ -180,5 +186,40 @@ public class UserServiceImpl implements UserService {
         result.setAddCount(i);
         result.setUpdateCount(j);
         return result;
+    }
+
+    @Override
+    public Long insertUserRegister(UserRegistReq data) {
+
+        PmpUserEntity userEntity = mapperFacade.map(data,PmpUserEntity.class);
+
+        Long hasUserId = pmpUserExMapper.selectUserByName(data.getUserName(),data.getIdentityNo());
+        Assert.isTrue(hasUserId == null,CommonCodeEnum.PARAM_ERROR_USER_MULTI_ERROR);
+        Long curTime = DateUtil.getCurSecond();
+        userEntity.setCreateTime(curTime);
+        pmpUserEntityMapper.insertSelective(userEntity);
+        logger.info("新注册学员====userId=={}",userEntity.getUserId());
+        return userEntity.getUserId();
+    }
+
+    @Override
+    public void updateUserRegister(UserRegistReq data) {
+
+        Long hasUserId = pmpUserExMapper.selectUserByName(data.getUserName(),data.getIdentityNo());
+        PmpUserEntity userEntity = mapperFacade.map(data,PmpUserEntity.class);
+        Long curTime = DateUtil.getCurSecond();
+        if(hasUserId == null){
+            userEntity.setCreateTime(curTime);
+            pmpUserEntityMapper.insertSelective(userEntity);
+        }else{
+            userEntity.setUserId(hasUserId);
+            userEntity.setUpdateTime(curTime);
+            pmpUserEntityMapper.updateByPrimaryKeySelective(userEntity);
+        }
+    }
+
+    @Override
+    public UserDataResp getFrontUser(UserCheckReq data) {
+        return pmpUserExMapper.selectUserDetail(null,null,null,data.getUserName(),data.getIdentityNo());
     }
 }

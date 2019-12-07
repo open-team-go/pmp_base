@@ -20,6 +20,7 @@ public enum CommonCodeEnum implements StatusCode {
     PARAM_ERROR_LOGIN_PASSWORD("登录密码错误", "PARAM_ERROR_LOGIN_PASSWORD"),
     PARAM_ERROR_USERNAME_MULTI("用户名重复", "PARAM_ERROR_USERNAME_MULTI"),
     PARAM_ERROR_ADMIN("超级管理员不支持修改、删除操作", "PARAM_ERROR_ADMIN"),
+    PARAM_ERROR_USER_MULTI_ERROR("学员信息已存在，请不要重复提交", "PARAM_ERROR_USER_MULTI_ERROR"),
 
     /**
      * 访问权限异常

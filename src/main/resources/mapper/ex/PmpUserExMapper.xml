@@ -71,7 +71,8 @@
 
     <select id="selectUserByName" resultType="Long">
         SELECT a.user_id FROM pmp_user a
-        WHERE a.phone_no=#{phoneNo,jdbcType=VARCHAR} AND a.user_name=#{userName,jdbcType=VARCHAR} LIMIT 1;
+        WHERE  a.user_name=#{userName,jdbcType=VARCHAR}
+        AND a.identity_no=#{identityNo,jdbcType=VARCHAR} LIMIT 1;
     </select>
 
     <select id="selectEducationList" resultType="com.arz.pmp.base.entity.PmpUserEducationEntity">
@@ -124,6 +125,12 @@
         </if>
         <if test="keyWord != null">
             AND a.identity_no = LIKE CONCAT('%',#{keyWord})
+        </if>
+        <if test="userName != null">
+            AND a.user_name = #{userName}
+        </if>
+        <if test="identityNo != null">
+            AND a.identity_no = #{identityNo}
         </if>
     </select>
 

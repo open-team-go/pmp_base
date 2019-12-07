@@ -184,7 +184,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
                     <fork>true</fork>
-                    <mainClass>com.arz.pmp.Application</mainClass>
+                    <mainClass>com.arz.pmp.base.Application</mainClass>
                 </configuration>
                 <executions>
                     <execution>
