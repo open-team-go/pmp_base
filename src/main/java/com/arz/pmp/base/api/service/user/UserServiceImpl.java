@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.arz.pmp.base.api.bo.user.front.UserCheckReq;
 import com.arz.pmp.base.api.bo.user.front.UserRegistReq;
+import com.arz.pmp.base.framework.commons.constants.Constants;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -160,12 +161,21 @@ public class UserServiceImpl implements UserService {
         mapperFacade.mapAsCollection(list,userList,PmpUserEntity.class);
         int i=0;
         int j=0;
+        // 导入失败记录
+        List<PmpUserEntity> errorList = null;
         for(PmpUserEntity item : userList){
 
             String userName = item.getUserName();
             String identityNo = item.getIdentityNo();
-            if(StringUtils.isBlank(userName) || StringUtils.isBlank(identityNo)){
+
+
+            if(StringUtils.isBlank(userName) || StringUtils.isBlank(identityNo) || !identityNo.matches(Constants.REGEX_IDENTITY_NO)){
                 logger.info("用户数据导入不处理信息====user=={}",item);
+                if(errorList == null){
+                    errorList = new ArrayList<>();
+                    result.setErrorList(errorList);
+                }
+                errorList.add(item);
                 continue;
             }
             Long userId = pmpUserExMapper.selectUserByName(userName,identityNo);

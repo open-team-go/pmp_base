@@ -2,6 +2,7 @@ package com.arz.pmp.base.api.bo.user.front;
 
 import javax.validation.constraints.*;
 
+import com.arz.pmp.base.framework.commons.constants.Constants;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -72,6 +73,7 @@ public class UserRegistReq {
 
     @ApiModelProperty("身份证号码")
     @NotEmpty
+    @Pattern(regexp = Constants.REGEX_IDENTITY_NO)
     private String identityNo;
 
     @ApiModelProperty("邮编")

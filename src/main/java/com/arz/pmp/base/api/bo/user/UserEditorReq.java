@@ -1,8 +1,10 @@
 package com.arz.pmp.base.api.bo.user;
 
+import com.arz.pmp.base.framework.commons.constants.Constants;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.Value;
 
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Positive;
@@ -69,6 +71,7 @@ public class UserEditorReq {
     private String qq;
 
     @ApiModelProperty("身份证号码")
+    @Pattern(regexp = Constants.REGEX_IDENTITY_NO)
     private String identityNo;
 
     @ApiModelProperty("邮编")

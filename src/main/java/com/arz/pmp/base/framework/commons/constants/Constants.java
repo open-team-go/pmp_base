@@ -54,6 +54,12 @@ public final class Constants {
         "^([a-z0-9A-Z]+[-|\\.]?)+[a-z0-9A-Z]@([a-z0-9A-Z]+(-[a-z0-9A-Z]+)?\\.)+[a-zA-Z]{2,}$";
 
     public static final Pattern REGEX_EMAIL = Pattern.compile(REGEX_EMAIL_STR);
+    /**
+     * 身份证正则
+     */
+    public static final String REGEX_IDENTITY_NO =
+            "^[1-9]\\d{5}(18|19|20)\\d{2}((0[1-9])|(1[0-2]))(([0-2][1-9])|10|20|30|31)\\d{3}[0-9Xx]$";
+
 
     /**
      * 管理员默认登录密码
