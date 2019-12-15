@@ -2,6 +2,7 @@ package com.arz.pmp.base.api.service.room;
 
 import java.util.List;
 
+import com.arz.pmp.base.api.bo.room.RoomDataResp;
 import com.arz.pmp.base.api.service.admin.AdminService;
 import com.arz.pmp.base.framework.core.enums.SysPermEnumClass;
 import org.apache.commons.lang3.StringUtils;
@@ -50,7 +51,7 @@ public class RoomServiceImpl implements RoomService {
     private AdminService adminService;
 
     @Override
-    public PageInfo<List<PmpTeachingRoomEntity>> getRoomListPage(RestRequest<RoomSearchReq> req) {
+    public PageInfo<List<RoomDataResp>> getRoomListPage(RestRequest<RoomSearchReq> req) {
 
         RequestHeader requestHeader = req.getHeader();
         RoomSearchReq search = req.getBody();

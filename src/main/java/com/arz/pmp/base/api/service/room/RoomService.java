@@ -1,5 +1,6 @@
 package com.arz.pmp.base.api.service.room;
 
+import com.arz.pmp.base.api.bo.room.RoomDataResp;
 import com.arz.pmp.base.api.bo.room.RoomEditorReq;
 import com.arz.pmp.base.api.bo.room.RoomSearchReq;
 import com.arz.pmp.base.entity.PmpTeachingRoomEntity;
@@ -21,7 +22,7 @@ import java.util.List;
  */
 public interface RoomService {
 
-    PageInfo<List<PmpTeachingRoomEntity>> getRoomListPage(RestRequest<RoomSearchReq> req);
+    PageInfo<List<RoomDataResp>> getRoomListPage(RestRequest<RoomSearchReq> req);
 
     List<PmpTeachingRoomEntity> getRoomAll(RestRequest<RoomSearchReq> req);
 

@@ -2,6 +2,7 @@ package com.arz.pmp.base.api.controller.back;
 
 import com.arz.pmp.base.api.aop.annotation.RequirePermissions;
 import com.arz.pmp.base.api.bo.CommonDataReq;
+import com.arz.pmp.base.api.bo.room.RoomDataResp;
 import com.arz.pmp.base.api.bo.room.RoomEditorReq;
 import com.arz.pmp.base.api.bo.room.RoomSearchReq;
 import com.arz.pmp.base.api.service.room.RoomService;
@@ -47,7 +48,7 @@ public class RoomRestController {
     @ApiOperation(value = "班级 列表查看", notes = "分页查看班级")
     @PostMapping("/index")
     @RequirePermissions({ROOM_READ})
-    public RestResponse<PageInfo<List<PmpTeachingRoomEntity>>>
+    public RestResponse<PageInfo<List<RoomDataResp>>>
     getRoomListPage(@RequestBody @Valid RestRequest<RoomSearchReq> data) {
 
         PageInfo pageInfo = roomService.getRoomListPage(data);
