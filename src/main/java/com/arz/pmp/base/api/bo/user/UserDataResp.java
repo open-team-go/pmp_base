@@ -22,11 +22,14 @@ public class UserDataResp {
     @ApiModelProperty("用户表ID")
     private Long userId;
 
-    @ApiModelProperty("班级信息")
-    private PmpTeachingRoomEntity roomInfo;
+    @ApiModelProperty("班级名称")
+    private String roomName;
 
-    @ApiModelProperty("课程顾问信息")
-    private PmpAdminEntity adminInfo;
+    @ApiModelProperty("课程顾问名称")
+    private String salesAdminName;
+
+    @ApiModelProperty("课程名称")
+    private String courseName;
 
     @ApiModelProperty("学历")
     private String educationName;
@@ -99,9 +102,6 @@ public class UserDataResp {
 
     @ApiModelProperty("学员类型（1、内部学员，2、外部续证学员，3、联系中未报名）")
     private Integer userType;
-
-    @ApiModelProperty("课程名")
-    private String courseName;
 
     @ApiModelProperty("结业状态（0、未知，1、通过，2、未通过，3、缓考，4、缓读）")
     private Integer graduationStatus;
