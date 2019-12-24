@@ -5,6 +5,8 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 /**
  * description 学员信息类
  *
@@ -106,14 +108,29 @@ public class UserDataResp {
     @ApiModelProperty("结业状态（0、未知，1、通过，2、未通过，3、缓考，4、缓读）")
     private Integer graduationStatus;
 
-    @ApiModelProperty("证书号")
+    @ApiModelProperty("PMI ID号")
     private String certNo;
 
-    @ApiModelProperty("证书用户名")
-    private String certUserName;
+    @ApiModelProperty("英文网站用户名")
+    private String certEnName;
 
-    @ApiModelProperty("证书密码")
-    private String certPassword;
+    @ApiModelProperty("英文网站密码")
+    private String certEnPasw;
+
+    @ApiModelProperty("中文网站用户名")
+    private String certCnName;
+
+    @ApiModelProperty("中文网站密码")
+    private String certCnPasw;
+
+    @ApiModelProperty("考试时间")
+    private Long examinationTime;
+
+    @ApiModelProperty("付款金额")
+    private BigDecimal payTotal;
+
+    @ApiModelProperty("付款时间")
+    private Long payTime;
 
     @ApiModelProperty("备注")
     private String remark;
