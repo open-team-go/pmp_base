@@ -59,7 +59,7 @@ public final class Constants {
      */
     public static final String REGEX_IDENTITY_NO =
             "^[1-9]\\d{5}(18|19|20)\\d{2}((0[1-9])|(1[0-2]))(([0-2][1-9])|10|20|30|31)\\d{3}[0-9Xx]$";
-
+    public static final String REGEX_IDENTITY_NO_MESSAGE = "身份证号码格式不正确";
 
     /**
      * 管理员默认登录密码

@@ -44,7 +44,6 @@ public class UserRegistReq {
     private Boolean gender;
 
     @ApiModelProperty("民族")
-    @NotEmpty
     private String nationality;
 
     @ApiModelProperty("出生时间")
@@ -73,7 +72,7 @@ public class UserRegistReq {
 
     @ApiModelProperty("身份证号码")
     @NotEmpty
-    @Pattern(regexp = Constants.REGEX_IDENTITY_NO)
+    @Pattern(regexp = Constants.REGEX_IDENTITY_NO,message = Constants.REGEX_IDENTITY_NO_MESSAGE)
     private String identityNo;
 
     @ApiModelProperty("邮编")
@@ -104,4 +103,13 @@ public class UserRegistReq {
     @ApiModelProperty("公司职位名称")
     private String comPosition;
 
+    @ApiModelProperty("付款方式信息表ID")
+    @Positive
+    private Long payId;
+
+    @ApiModelProperty("发票抬头")
+    private String invoiceHeader;
+
+    @ApiModelProperty("发票税号")
+    private String invoiceCode;
 }
