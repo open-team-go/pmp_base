@@ -109,7 +109,7 @@
         a.user_address, a.graduation_time, a.graduation_school, a.school_major, a.industry, a.com_name,
         a.com_department, a.com_position, a.invoice_header, a.invoice_code, a.user_type, a.admin_id,
         a.course_id, a.graduation_status, a.cert_no, a.cert_en_name, a.cert_en_pasw, a.cert_cn_name, a.cert_cn_pasw,
-        a.remark, a.create_time,b.nickName salesAdminName,c.course_name,d.room_name,e.education_name,f.pay_name,
+        a.remark, a.create_time,b.nickName salesAdminName,b.admin_id salesAdminId,c.course_name,d.room_name,e.education_name,f.pay_name,
         a.examination_time,a.pay_total,a.pay_time,
         (SELECT b_1.nickName FROM pmp_admin b_1 WHERE d.admin_id=b_1.admin_id) educationAdminName
         FROM pmp_user a
