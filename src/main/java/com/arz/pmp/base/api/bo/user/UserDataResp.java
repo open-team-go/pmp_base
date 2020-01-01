@@ -28,28 +28,28 @@ public class UserDataResp {
     private String roomName;
 
     @ApiModelProperty("班级Id")
-    private String roomId;
+    private Long roomId;
 
     @ApiModelProperty("课程顾问名称")
     private String salesAdminName;
 
     @ApiModelProperty("课程顾问ID")
-    private String salesAdminId;
+    private Long salesAdminId;
 
     @ApiModelProperty("课程名称")
     private String courseName;
 
     @ApiModelProperty("课程Id")
-    private String courseId;
+    private Long courseId;
 
     @ApiModelProperty("学历")
     private String educationName;
 
     @ApiModelProperty("学历Id")
-    private String educationId;
+    private Long educationId;
 
     @ApiModelProperty("付款方式Id")
-    private String payId;
+    private Long payId;
 
     @ApiModelProperty("付款方式")
     private String payName;
