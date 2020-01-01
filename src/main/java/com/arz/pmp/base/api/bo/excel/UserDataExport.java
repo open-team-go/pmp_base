@@ -2,21 +2,18 @@ package com.arz.pmp.base.api.bo.excel;
 
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.alibaba.excel.metadata.BaseRowModel;
-import com.arz.pmp.base.entity.PmpAdminEntity;
-import com.arz.pmp.base.entity.PmpTeachingRoomEntity;
 import com.arz.pmp.base.framework.commons.utils.DateUtil;
-import com.arz.pmp.base.framework.commons.utils.NumberUtil;
-import lombok.Data;
 
-import java.util.Date;
+import lombok.Data;
 
 @Data
 public class UserDataExport extends BaseRowModel {
-    @ExcelProperty("班级信息")
-    private PmpTeachingRoomEntity roomInfo;
 
-    @ExcelProperty("课程顾问信息")
-    private PmpAdminEntity adminInfo;
+    @ExcelProperty("班级名称")
+    private String roomName;
+
+    @ExcelProperty("课程顾问名称")
+    private String salesAdminName;
 
     @ExcelProperty("学历")
     private String educationName;
@@ -27,8 +24,14 @@ public class UserDataExport extends BaseRowModel {
     @ExcelProperty("姓名")
     private String userName;
 
-    @ExcelProperty("性别（0、女，1、男）")
     private Boolean gender;
+
+    @ExcelProperty("性别（0、女，1、男）")
+    private String genderStr;
+
+    public String getGenderStr(){
+        return (gender!=null&& gender)?"男":"女";
+    }
 
     @ExcelProperty("民族")
     private String nationality;
@@ -100,14 +103,20 @@ public class UserDataExport extends BaseRowModel {
     @ExcelProperty("结业状态（0、未知，1、通过，2、未通过，3、缓考，4、缓读）")
     private Integer graduationStatus;
 
-    @ExcelProperty("证书号")
+    @ExcelProperty("PMI ID号")
     private String certNo;
 
-    @ExcelProperty("证书用户名")
-    private String certUserName;
+    @ExcelProperty("英文网站用户名")
+    private String certEnName;
 
-    @ExcelProperty("证书密码")
-    private String certPassword;
+    @ExcelProperty("英文网站密码")
+    private String certEnPasw;
+
+    @ExcelProperty("中文网站用户名")
+    private String certCnName;
+
+    @ExcelProperty("中文网站密码")
+    private String certCnPasw;
 
     @ExcelProperty("备注")
     private String remark;
