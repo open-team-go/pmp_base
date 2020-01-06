@@ -30,6 +30,9 @@ public class UserDataResp {
     @ApiModelProperty("班级Id")
     private Long roomId;
 
+    @ApiModelProperty("班级教务名")
+    private String educationAdminName;
+
     @ApiModelProperty("课程顾问名称")
     private String salesAdminName;
 
@@ -41,6 +44,21 @@ public class UserDataResp {
 
     @ApiModelProperty("课程Id")
     private Long courseId;
+
+    @ApiModelProperty("来源Id")
+    private Long resourceId;
+
+    @ApiModelProperty("来源名称")
+    private String resourceName;
+
+    @ApiModelProperty("推荐人")
+    private String recommendName;
+
+    @ApiModelProperty("咨询日期")
+    private Long consultationTime;
+
+    @ApiModelProperty("咨询城市")
+    private String consultationCity;
 
     @ApiModelProperty("学历")
     private String educationName;
@@ -110,6 +128,9 @@ public class UserDataResp {
 
     @ApiModelProperty("公司职位名称")
     private String comPosition;
+
+    @ApiModelProperty("是否含票")
+    private Boolean invoiceOn;
 
     @ApiModelProperty("发票抬头")
     private String invoiceHeader;

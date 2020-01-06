@@ -8,6 +8,7 @@ import com.arz.pmp.base.api.bo.user.UserSearchReq;
 import com.arz.pmp.base.api.service.user.UserService;
 import com.arz.pmp.base.entity.PmpUserEducationEntity;
 import com.arz.pmp.base.entity.PmpUserPayTypeEntity;
+import com.arz.pmp.base.entity.PmpUserResourceTypeEntity;
 import com.arz.pmp.base.framework.commons.RestRequest;
 import com.arz.pmp.base.framework.commons.response.RestResponse;
 import com.arz.pmp.base.framework.core.annotation.SysLog;
@@ -15,7 +16,6 @@ import com.arz.pmp.base.framework.core.enums.SysLogEnumClass;
 import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -116,6 +116,15 @@ public class UserRestController {
     public RestResponse<List<PmpUserPayTypeEntity>> getUserPayType(@RequestBody @Valid RestRequest data) {
 
         List<PmpUserPayTypeEntity> list = userService.getPayTypeList();
+
+        return RestResponse.success(list);
+    }
+
+    @ApiOperation(value = "学员来源类型 所有学员来源类型", notes = "获取所有学员来源类型")
+    @PostMapping("/resourceType")
+    public RestResponse<List<PmpUserResourceTypeEntity>> getUserResourceType(@RequestBody @Valid RestRequest data) {
+
+        List<PmpUserResourceTypeEntity> list = userService.getResourceTypeList();
 
         return RestResponse.success(list);
     }

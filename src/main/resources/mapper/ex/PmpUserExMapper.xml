@@ -20,20 +20,7 @@
             AND a.room_id = #{roomId,jdbcType=BIGINT}
         </if>
         <if test="keyWord != null and keyWord!='' ">
-            AND (a.user_name LIKE CONCAT('%',#{keyWord},'%') OR a.phone_no LIKE CONCAT('%',#{keyWord},'%')
-            OR a.fixed_telephone LIKE CONCAT('%',#{keyWord},'%') )
-        </if>
-        <if test="gender != null">
-            AND a.gender = #{gender,jdbcType=BIT}
-        </if>
-        <if test="email != null and email!='' ">
-            AND a.email LIKE CONCAT('%',#{email},'%')
-        </if>
-        <if test="wechatNo != null and wechatNo!='' ">
-            AND a.wechat_no LIKE CONCAT('%',#{wechatNo},'%')
-        </if>
-        <if test="qq != null and qq!='' ">
-            AND a.qq LIKE CONCAT('%',#{qq},'%')
+            AND a.user_name LIKE CONCAT('%',#{keyWord},'%')
         </if>
         <if test="identityNo != null and identityNo!='' ">
             AND a.identity_no LIKE CONCAT('%',#{identityNo},'%')
@@ -47,14 +34,29 @@
         <if test="courseId != null and courseId!=0 ">
             AND a.course_id = #{courseId,jdbcType=BIGINT}
         </if>
-        <if test="graduationStatus != null and graduationStatus!=0 ">
-            AND a.graduation_status = #{graduationStatus,jdbcType=INTEGER}
-        </if>
         <if test="startTime != null and startTime!=0 ">
             AND a.create_time>=#{startTime,jdbcType=BIGINT}
         </if>
         <if test="endTime != null and endTime!=0 ">
             AND #{endTime,jdbcType=BIGINT}>=a.create_time
+        </if>
+        <if test="invoiceOn != null and invoiceOn ">
+            AND a.invoice_header IS NOT NULL
+        </if>
+        <if test="invoiceOn != null and !invoiceOn ">
+            AND ISNULL(a.invoice_header)
+        </if>
+        <if test="certNo != null and certNo!='' ">
+            AND a.cert_no LIKE CONCAT('%',#{certNo},'%')
+        </if>
+        <if test="comName != null and comName!='' ">
+            AND a.com_name LIKE CONCAT('%',#{comName},'%')
+        </if>
+        <if test="comPosition != null and comPosition!='' ">
+            AND a.com_position LIKE CONCAT('%',#{comPosition},'%')
+        </if>
+        <if test="payTotal != null ">
+            AND a.pay_total LIKE CONCAT('%',#{payTotal},'%')
         </if>
         ORDER BY a.create_time DESC,a.admin_id,c.sort
     </sql>
@@ -71,8 +73,10 @@
 
     <select id="selectUserByName" resultType="Long">
         SELECT a.user_id FROM pmp_user a
-        WHERE  a.user_name=#{userName,jdbcType=VARCHAR}
-        AND a.identity_no=#{identityNo,jdbcType=VARCHAR} LIMIT 1;
+        WHERE a.user_name=#{userName,jdbcType=VARCHAR}
+        AND a.identity_no=#{identityNo,jdbcType=VARCHAR}
+        <if test="roomId !=null">AND a.room_id=#{roomId}</if>
+        LIMIT 1;
     </select>
 
     <select id="selectEducationList" resultType="com.arz.pmp.base.entity.PmpUserEducationEntity">
@@ -87,6 +91,13 @@
         SELECT a.pay_id,a.pay_name
         FROM pmp_user_pay_type a WHERE a.del_on=0
         ORDER BY a.sort,a.pay_id;
+    </select>
+
+    <select id="selectResourceTypeList" resultType="com.arz.pmp.base.entity.PmpUserResourceTypeEntity">
+
+        SELECT a.resource_id,a.resource_name
+        FROM pmp_user_resource_type a WHERE a.del_on=0
+        ORDER BY a.sort,a.resource_id;
     </select>
 
     <select id="selectExportUserList" resultType="com.arz.pmp.base.api.bo.user.UserDataResp">
@@ -107,11 +118,13 @@
         SELECT a.user_id, a.education_id, a.pay_id, a.room_id, a.user_name, a.gender, a.nationality, a.birthday,
         a.phone_no, a.fixed_telephone, a.email, a.backup_email, a.wechat_no, a.qq, a.identity_no, a.zip_code,
         a.user_address, a.graduation_time, a.graduation_school, a.school_major, a.industry, a.com_name,
-        a.com_department, a.com_position, a.invoice_header, a.invoice_code, a.user_type, a.admin_id,
+        a.com_department, a.com_position, a.invoice_header, a.invoice_code, a.user_type, a.admin_id,a.resource_id,a.recommend_name,
         a.course_id, a.graduation_status, a.cert_no, a.cert_en_name, a.cert_en_pasw, a.cert_cn_name, a.cert_cn_pasw,
-        a.remark, a.create_time,b.nickName salesAdminName,b.admin_id salesAdminId,c.course_name,d.room_name,e.education_name,f.pay_name,
-        a.examination_time,a.pay_total,a.pay_time,
-        (SELECT b_1.nickName FROM pmp_admin b_1 WHERE d.admin_id=b_1.admin_id) educationAdminName
+        a.remark, a.create_time,a.consultation_time,a.consultation_city,
+        b.nickName salesAdminName,b.admin_id salesAdminId,c.course_name,d.room_name,e.education_name,f.pay_name,
+        a.examination_time,a.pay_total,a.pay_time,a.invoice_on,
+        (SELECT b_1.nickName FROM pmp_admin b_1 WHERE d.admin_id=b_1.admin_id) educationAdminName,
+        (SELECT g.resource_name FROM pmp_user_resource_type g WHERE a.resource_id=g.resource_id) resourceName
         FROM pmp_user a
         LEFT JOIN pmp_admin b ON a.admin_id=b.admin_id
         LEFT JOIN pmp_course c ON a.course_id=c.course_id

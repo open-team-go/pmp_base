@@ -137,6 +137,13 @@
                enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false"
                selectByExampleQueryId="false">
             <generatedKey column="pay_id" sqlStatement="MySql" identity="true"/>
+        </table>
+
+        <table tableName="pmp_user_resource_type" domainObjectName="PmpUserResourceTypeEntity" schema="pmp_base"
+               enableCountByExample="false"
+               enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false"
+               selectByExampleQueryId="false">
+            <generatedKey column="resource_id" sqlStatement="MySql" identity="true"/>
         </table>-->
     </context>
 </generatorConfiguration>

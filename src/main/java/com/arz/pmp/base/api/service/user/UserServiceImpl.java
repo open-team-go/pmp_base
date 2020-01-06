@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.arz.pmp.base.api.bo.user.front.UserCheckReq;
 import com.arz.pmp.base.api.bo.user.front.UserRegistReq;
+import com.arz.pmp.base.entity.*;
 import com.arz.pmp.base.framework.commons.constants.Constants;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -20,9 +21,6 @@ import com.arz.pmp.base.api.bo.user.UserEditorReq;
 import com.arz.pmp.base.api.bo.user.UserSearchReq;
 import com.arz.pmp.base.api.service.admin.AdminService;
 import com.arz.pmp.base.api.service.redis.RedisService;
-import com.arz.pmp.base.entity.PmpUserEducationEntity;
-import com.arz.pmp.base.entity.PmpUserEntity;
-import com.arz.pmp.base.entity.PmpUserPayTypeEntity;
 import com.arz.pmp.base.framework.commons.RequestHeader;
 import com.arz.pmp.base.framework.commons.RestRequest;
 import com.arz.pmp.base.framework.commons.enums.CommonCodeEnum;
@@ -70,6 +68,8 @@ public class UserServiceImpl implements UserService {
         // 判斷是否是教务人员
         search.setEducationAdminId(
             adminService.getRoleAdminId(req.getHeader().getAuthentication(), SysPermEnumClass.RoleEnum.EDUCATION));
+        search.setSalesAdminId(
+            adminService.getRoleAdminId(req.getHeader().getAuthentication(), SysPermEnumClass.RoleEnum.SALES));
 
         PageInfo pageInfo = PageHelper.startPage(requestHeader.confirmCurrentPage(), requestHeader.confirmShowNum())
             .doSelectPage(() -> {
@@ -87,8 +87,7 @@ public class UserServiceImpl implements UserService {
         String phoneNo = data.getPhoneNo();
         String identityNo = data.getIdentityNo();
         if (StringUtils.isNotBlank(name)) {
-
-            Long id = pmpUserExMapper.selectUserByName(name, identityNo);
+            Long id = pmpUserExMapper.selectUserByName(name, identityNo, data.getRoomId());
             boolean flag = id == null || (!addOn && id.equals(userId));
             Assert.isTrue(flag, CommonCodeEnum.PARAM_ERROR_USERNAME_MULTI, "已存在同名同手机号学员信息");
         }
@@ -139,9 +138,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public List<PmpUserResourceTypeEntity> getResourceTypeList() {
+
+
+        return null;
+    }
+
+    @Override
     public List<UserDataExport> getExportUserList(UserSearchReq search, String authentication) {
         // 判斷是否是教务人员
         search.setEducationAdminId(adminService.getRoleAdminId(authentication, SysPermEnumClass.RoleEnum.EDUCATION));
+        search.setSalesAdminId(adminService.getRoleAdminId(authentication, SysPermEnumClass.RoleEnum.SALES));
         List<UserDataResp> list = pmpUserExMapper.selectExportUserList(search);
         List<UserDataExport> exportList = new ArrayList<>();
         mapperFacade.mapAsCollection(list, exportList, UserDataExport.class);
@@ -150,7 +157,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDataResp getUserDetailByKey(Long userId) {
-        return pmpUserExMapper.selectUserDetail(userId, null, null,null,null);
+        return pmpUserExMapper.selectUserDetail(userId, null, null, null, null);
     }
 
     @Override
@@ -158,35 +165,35 @@ public class UserServiceImpl implements UserService {
         UserImportResp result = new UserImportResp();
         // 数据入库
         List<PmpUserEntity> userList = new ArrayList<PmpUserEntity>();
-        mapperFacade.mapAsCollection(list,userList,PmpUserEntity.class);
-        int i=0;
-        int j=0;
+        mapperFacade.mapAsCollection(list, userList, PmpUserEntity.class);
+        int i = 0;
+        int j = 0;
         // 导入失败记录
         List<PmpUserEntity> errorList = null;
-        for(PmpUserEntity item : userList){
+        for (PmpUserEntity item : userList) {
 
             String userName = item.getUserName();
             String identityNo = item.getIdentityNo();
 
-
-            if(StringUtils.isBlank(userName) || StringUtils.isBlank(identityNo) || !identityNo.matches(Constants.REGEX_IDENTITY_NO)){
-                logger.info("用户数据导入不处理信息====user=={}",item);
-                if(errorList == null){
+            if (StringUtils.isBlank(userName) || StringUtils.isBlank(identityNo)
+                || !identityNo.matches(Constants.REGEX_IDENTITY_NO)) {
+                logger.info("用户数据导入不处理信息====user=={}", item);
+                if (errorList == null) {
                     errorList = new ArrayList<>();
                     result.setErrorList(errorList);
                 }
                 errorList.add(item);
                 continue;
             }
-            Long userId = pmpUserExMapper.selectUserByName(userName,identityNo);
+            Long userId = pmpUserExMapper.selectUserByName(userName, identityNo, item.getRoomId());
             Long curTime = DateUtil.getCurSecond();
-            if(userId != null){
+            if (userId != null) {
                 // 修改
                 item.setUserId(userId);
                 item.setUpdateTime(curTime);
                 pmpUserEntityMapper.updateByPrimaryKeySelective(item);
                 j++;
-            }else{
+            } else {
                 item.setCreateTime(curTime);
                 pmpUserEntityMapper.insertSelective(item);
                 i++;
@@ -201,27 +208,28 @@ public class UserServiceImpl implements UserService {
     @Override
     public Long insertUserRegister(UserRegistReq data) {
 
-        PmpUserEntity userEntity = mapperFacade.map(data,PmpUserEntity.class);
+        PmpUserEntity userEntity = mapperFacade.map(data, PmpUserEntity.class);
 
-        Long hasUserId = pmpUserExMapper.selectUserByName(data.getUserName(),data.getIdentityNo());
-        Assert.isTrue(hasUserId == null,CommonCodeEnum.PARAM_ERROR_USER_MULTI_ERROR);
+        Long hasUserId =
+            pmpUserExMapper.selectUserByName(data.getUserName(), data.getIdentityNo(), userEntity.getRoomId());
+        Assert.isTrue(hasUserId == null, CommonCodeEnum.PARAM_ERROR_USER_MULTI_ERROR);
         Long curTime = DateUtil.getCurSecond();
         userEntity.setCreateTime(curTime);
         pmpUserEntityMapper.insertSelective(userEntity);
-        logger.info("新注册学员====userId=={}",userEntity.getUserId());
+        logger.info("新注册学员====userId=={}", userEntity.getUserId());
         return userEntity.getUserId();
     }
 
     @Override
     public void updateUserRegister(UserRegistReq data) {
 
-        Long hasUserId = pmpUserExMapper.selectUserByName(data.getUserName(),data.getIdentityNo());
-        PmpUserEntity userEntity = mapperFacade.map(data,PmpUserEntity.class);
+        Long hasUserId = pmpUserExMapper.selectUserByName(data.getUserName(), data.getIdentityNo(), null);
+        PmpUserEntity userEntity = mapperFacade.map(data, PmpUserEntity.class);
         Long curTime = DateUtil.getCurSecond();
-        if(hasUserId == null){
+        if (hasUserId == null) {
             userEntity.setCreateTime(curTime);
             pmpUserEntityMapper.insertSelective(userEntity);
-        }else{
+        } else {
             userEntity.setUserId(hasUserId);
             userEntity.setUpdateTime(curTime);
             pmpUserEntityMapper.updateByPrimaryKeySelective(userEntity);
@@ -230,6 +238,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDataResp getFrontUser(UserCheckReq data) {
-        return pmpUserExMapper.selectUserDetail(null,null,null,data.getUserName(),data.getIdentityNo());
+        return pmpUserExMapper.selectUserDetail(null, null, null, data.getUserName(), data.getIdentityNo());
     }
 }

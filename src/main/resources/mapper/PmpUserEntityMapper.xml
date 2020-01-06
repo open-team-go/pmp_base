@@ -6,6 +6,8 @@
     <result column="education_id" jdbcType="BIGINT" property="educationId" />
     <result column="pay_id" jdbcType="BIGINT" property="payId" />
     <result column="room_id" jdbcType="BIGINT" property="roomId" />
+    <result column="resource_id" jdbcType="BIGINT" property="resourceId" />
+    <result column="recommend_name" jdbcType="VARCHAR" property="recommendName" />
     <result column="user_name" jdbcType="VARCHAR" property="userName" />
     <result column="gender" jdbcType="BIT" property="gender" />
     <result column="nationality" jdbcType="VARCHAR" property="nationality" />
@@ -52,6 +54,8 @@
     <result column="examination_time" jdbcType="BIGINT" property="examinationTime" />
     <result column="pay_total" jdbcType="DECIMAL" property="payTotal" />
     <result column="pay_time" jdbcType="BIGINT" property="payTime" />
+    <result column="consultation_time" jdbcType="BIGINT" property="consultationTime" />
+    <result column="consultation_city" jdbcType="VARCHAR" property="consultationCity" />
     <result column="create_time" jdbcType="BIGINT" property="createTime" />
     <result column="update_time" jdbcType="BIGINT" property="updateTime" />
     <result column="create_manager" jdbcType="BIGINT" property="createManager" />
@@ -59,14 +63,15 @@
     <result column="del_on" jdbcType="BIT" property="delOn" />
   </resultMap>
   <sql id="Base_Column_List">
-    user_id, education_id, pay_id, room_id, user_name, gender, nationality, birthday, 
-    phone_no, fixed_telephone, email, backup_email, wechat_no, qq, identity_no, zip_code, 
-    user_address, graduation_time, graduation_school, school_major, industry, com_name, 
-    com_department, com_position, invoice_header, invoice_code, user_type, admin_id, 
-    course_id, graduation_status, cert_no, cert_en_name, cert_en_pasw, cert_cn_name, 
+    user_id, education_id, pay_id, room_id, resource_id, recommend_name, user_name, gender, 
+    nationality, birthday, phone_no, fixed_telephone, email, backup_email, wechat_no, 
+    qq, identity_no, zip_code, user_address, graduation_time, graduation_school, school_major, 
+    industry, com_name, com_department, com_position, invoice_header, invoice_code, user_type, 
+    admin_id, course_id, graduation_status, cert_no, cert_en_name, cert_en_pasw, cert_cn_name, 
     cert_cn_pasw, cert_start_time, cert_end_time, remark, exam_name, institution, exam_place, 
     ease_out, ease_in, withdraw_on, audit_on, receive_type, re_examine_on, examination_time, 
-    pay_total, pay_time, create_time, update_time, create_manager, update_manager, del_on
+    pay_total, pay_time, consultation_time, consultation_city, create_time, update_time, 
+    create_manager, update_manager, del_on
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     select 
@@ -83,41 +88,43 @@
       SELECT LAST_INSERT_ID()
     </selectKey>
     insert into pmp_user (education_id, pay_id, room_id, 
-      user_name, gender, nationality, 
-      birthday, phone_no, fixed_telephone, 
-      email, backup_email, wechat_no, 
-      qq, identity_no, zip_code, 
-      user_address, graduation_time, graduation_school, 
-      school_major, industry, com_name, 
-      com_department, com_position, invoice_header, 
-      invoice_code, user_type, admin_id, 
-      course_id, graduation_status, cert_no, 
-      cert_en_name, cert_en_pasw, cert_cn_name, 
-      cert_cn_pasw, cert_start_time, cert_end_time, 
-      remark, exam_name, institution, 
-      exam_place, ease_out, ease_in, 
-      withdraw_on, audit_on, receive_type, 
-      re_examine_on, examination_time, pay_total, 
-      pay_time, create_time, update_time, 
+      resource_id, recommend_name, user_name, 
+      gender, nationality, birthday, 
+      phone_no, fixed_telephone, email, 
+      backup_email, wechat_no, qq, 
+      identity_no, zip_code, user_address, 
+      graduation_time, graduation_school, school_major, 
+      industry, com_name, com_department, 
+      com_position, invoice_header, invoice_code, 
+      user_type, admin_id, course_id, 
+      graduation_status, cert_no, cert_en_name, 
+      cert_en_pasw, cert_cn_name, cert_cn_pasw, 
+      cert_start_time, cert_end_time, remark, 
+      exam_name, institution, exam_place, 
+      ease_out, ease_in, withdraw_on, audit_on, 
+      receive_type, re_examine_on, examination_time, 
+      pay_total, pay_time, consultation_time, 
+      consultation_city, create_time, update_time, 
       create_manager, update_manager, del_on
       )
     values (#{educationId,jdbcType=BIGINT}, #{payId,jdbcType=BIGINT}, #{roomId,jdbcType=BIGINT}, 
-      #{userName,jdbcType=VARCHAR}, #{gender,jdbcType=BIT}, #{nationality,jdbcType=VARCHAR}, 
-      #{birthday,jdbcType=BIGINT}, #{phoneNo,jdbcType=VARCHAR}, #{fixedTelephone,jdbcType=VARCHAR}, 
-      #{email,jdbcType=VARCHAR}, #{backupEmail,jdbcType=VARCHAR}, #{wechatNo,jdbcType=VARCHAR}, 
-      #{qq,jdbcType=VARCHAR}, #{identityNo,jdbcType=VARCHAR}, #{zipCode,jdbcType=VARCHAR}, 
-      #{userAddress,jdbcType=VARCHAR}, #{graduationTime,jdbcType=BIGINT}, #{graduationSchool,jdbcType=VARCHAR}, 
-      #{schoolMajor,jdbcType=VARCHAR}, #{industry,jdbcType=VARCHAR}, #{comName,jdbcType=VARCHAR}, 
-      #{comDepartment,jdbcType=VARCHAR}, #{comPosition,jdbcType=VARCHAR}, #{invoiceHeader,jdbcType=VARCHAR}, 
-      #{invoiceCode,jdbcType=VARCHAR}, #{userType,jdbcType=INTEGER}, #{adminId,jdbcType=BIGINT}, 
-      #{courseId,jdbcType=BIGINT}, #{graduationStatus,jdbcType=INTEGER}, #{certNo,jdbcType=VARCHAR}, 
-      #{certEnName,jdbcType=VARCHAR}, #{certEnPasw,jdbcType=VARCHAR}, #{certCnName,jdbcType=VARCHAR}, 
-      #{certCnPasw,jdbcType=VARCHAR}, #{certStartTime,jdbcType=BIGINT}, #{certEndTime,jdbcType=BIGINT}, 
-      #{remark,jdbcType=VARCHAR}, #{examName,jdbcType=VARCHAR}, #{institution,jdbcType=VARCHAR}, 
-      #{examPlace,jdbcType=VARCHAR}, #{easeOut,jdbcType=BIT}, #{easeIn,jdbcType=BIT}, 
-      #{withdrawOn,jdbcType=BIT}, #{auditOn,jdbcType=BIT}, #{receiveType,jdbcType=INTEGER}, 
-      #{reExamineOn,jdbcType=BIT}, #{examinationTime,jdbcType=BIGINT}, #{payTotal,jdbcType=DECIMAL}, 
-      #{payTime,jdbcType=BIGINT}, #{createTime,jdbcType=BIGINT}, #{updateTime,jdbcType=BIGINT}, 
+      #{resourceId,jdbcType=BIGINT}, #{recommendName,jdbcType=VARCHAR}, #{userName,jdbcType=VARCHAR}, 
+      #{gender,jdbcType=BIT}, #{nationality,jdbcType=VARCHAR}, #{birthday,jdbcType=BIGINT}, 
+      #{phoneNo,jdbcType=VARCHAR}, #{fixedTelephone,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, 
+      #{backupEmail,jdbcType=VARCHAR}, #{wechatNo,jdbcType=VARCHAR}, #{qq,jdbcType=VARCHAR}, 
+      #{identityNo,jdbcType=VARCHAR}, #{zipCode,jdbcType=VARCHAR}, #{userAddress,jdbcType=VARCHAR}, 
+      #{graduationTime,jdbcType=BIGINT}, #{graduationSchool,jdbcType=VARCHAR}, #{schoolMajor,jdbcType=VARCHAR}, 
+      #{industry,jdbcType=VARCHAR}, #{comName,jdbcType=VARCHAR}, #{comDepartment,jdbcType=VARCHAR}, 
+      #{comPosition,jdbcType=VARCHAR}, #{invoiceHeader,jdbcType=VARCHAR}, #{invoiceCode,jdbcType=VARCHAR}, 
+      #{userType,jdbcType=INTEGER}, #{adminId,jdbcType=BIGINT}, #{courseId,jdbcType=BIGINT}, 
+      #{graduationStatus,jdbcType=INTEGER}, #{certNo,jdbcType=VARCHAR}, #{certEnName,jdbcType=VARCHAR}, 
+      #{certEnPasw,jdbcType=VARCHAR}, #{certCnName,jdbcType=VARCHAR}, #{certCnPasw,jdbcType=VARCHAR}, 
+      #{certStartTime,jdbcType=BIGINT}, #{certEndTime,jdbcType=BIGINT}, #{remark,jdbcType=VARCHAR}, 
+      #{examName,jdbcType=VARCHAR}, #{institution,jdbcType=VARCHAR}, #{examPlace,jdbcType=VARCHAR}, 
+      #{easeOut,jdbcType=BIT}, #{easeIn,jdbcType=BIT}, #{withdrawOn,jdbcType=BIT}, #{auditOn,jdbcType=BIT}, 
+      #{receiveType,jdbcType=INTEGER}, #{reExamineOn,jdbcType=BIT}, #{examinationTime,jdbcType=BIGINT}, 
+      #{payTotal,jdbcType=DECIMAL}, #{payTime,jdbcType=BIGINT}, #{consultationTime,jdbcType=BIGINT}, 
+      #{consultationCity,jdbcType=VARCHAR}, #{createTime,jdbcType=BIGINT}, #{updateTime,jdbcType=BIGINT}, 
       #{createManager,jdbcType=BIGINT}, #{updateManager,jdbcType=BIGINT}, #{delOn,jdbcType=BIT}
       )
   </insert>
@@ -135,6 +142,12 @@
       </if>
       <if test="roomId != null">
         room_id,
+      </if>
+      <if test="resourceId != null">
+        resource_id,
+      </if>
+      <if test="recommendName != null">
+        recommend_name,
       </if>
       <if test="userName != null">
         user_name,
@@ -274,6 +287,12 @@
       <if test="payTime != null">
         pay_time,
       </if>
+      <if test="consultationTime != null">
+        consultation_time,
+      </if>
+      <if test="consultationCity != null">
+        consultation_city,
+      </if>
       <if test="createTime != null">
         create_time,
       </if>
@@ -299,6 +318,12 @@
       </if>
       <if test="roomId != null">
         #{roomId,jdbcType=BIGINT},
+      </if>
+      <if test="resourceId != null">
+        #{resourceId,jdbcType=BIGINT},
+      </if>
+      <if test="recommendName != null">
+        #{recommendName,jdbcType=VARCHAR},
       </if>
       <if test="userName != null">
         #{userName,jdbcType=VARCHAR},
@@ -438,6 +463,12 @@
       <if test="payTime != null">
         #{payTime,jdbcType=BIGINT},
       </if>
+      <if test="consultationTime != null">
+        #{consultationTime,jdbcType=BIGINT},
+      </if>
+      <if test="consultationCity != null">
+        #{consultationCity,jdbcType=VARCHAR},
+      </if>
       <if test="createTime != null">
         #{createTime,jdbcType=BIGINT},
       </if>
@@ -466,6 +497,12 @@
       </if>
       <if test="roomId != null">
         room_id = #{roomId,jdbcType=BIGINT},
+      </if>
+      <if test="resourceId != null">
+        resource_id = #{resourceId,jdbcType=BIGINT},
+      </if>
+      <if test="recommendName != null">
+        recommend_name = #{recommendName,jdbcType=VARCHAR},
       </if>
       <if test="userName != null">
         user_name = #{userName,jdbcType=VARCHAR},
@@ -605,6 +642,12 @@
       <if test="payTime != null">
         pay_time = #{payTime,jdbcType=BIGINT},
       </if>
+      <if test="consultationTime != null">
+        consultation_time = #{consultationTime,jdbcType=BIGINT},
+      </if>
+      <if test="consultationCity != null">
+        consultation_city = #{consultationCity,jdbcType=VARCHAR},
+      </if>
       <if test="createTime != null">
         create_time = #{createTime,jdbcType=BIGINT},
       </if>
@@ -628,6 +671,8 @@
     set education_id = #{educationId,jdbcType=BIGINT},
       pay_id = #{payId,jdbcType=BIGINT},
       room_id = #{roomId,jdbcType=BIGINT},
+      resource_id = #{resourceId,jdbcType=BIGINT},
+      recommend_name = #{recommendName,jdbcType=VARCHAR},
       user_name = #{userName,jdbcType=VARCHAR},
       gender = #{gender,jdbcType=BIT},
       nationality = #{nationality,jdbcType=VARCHAR},
@@ -674,6 +719,8 @@
       examination_time = #{examinationTime,jdbcType=BIGINT},
       pay_total = #{payTotal,jdbcType=DECIMAL},
       pay_time = #{payTime,jdbcType=BIGINT},
+      consultation_time = #{consultationTime,jdbcType=BIGINT},
+      consultation_city = #{consultationCity,jdbcType=VARCHAR},
       create_time = #{createTime,jdbcType=BIGINT},
       update_time = #{updateTime,jdbcType=BIGINT},
       create_manager = #{createManager,jdbcType=BIGINT},

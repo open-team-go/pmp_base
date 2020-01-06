@@ -12,6 +12,7 @@ import com.arz.pmp.base.api.bo.user.front.UserCheckReq;
 import com.arz.pmp.base.api.bo.user.front.UserRegistReq;
 import com.arz.pmp.base.entity.PmpUserEducationEntity;
 import com.arz.pmp.base.entity.PmpUserPayTypeEntity;
+import com.arz.pmp.base.entity.PmpUserResourceTypeEntity;
 import com.arz.pmp.base.framework.commons.RestRequest;
 import com.github.pagehelper.PageInfo;
 
@@ -36,6 +37,8 @@ public interface UserService {
     List<PmpUserEducationEntity> getEducationList();
 
     List<PmpUserPayTypeEntity> getPayTypeList();
+
+    List<PmpUserResourceTypeEntity> getResourceTypeList();
 
     List<UserDataExport> getExportUserList(UserSearchReq search, String authentication);
 

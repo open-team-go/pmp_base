@@ -11,6 +11,10 @@ public class PmpUserEntity {
 
     private Long roomId;
 
+    private Long resourceId;
+
+    private String recommendName;
+
     private String userName;
 
     private Boolean gender;
@@ -103,6 +107,10 @@ public class PmpUserEntity {
 
     private Long payTime;
 
+    private Long consultationTime;
+
+    private String consultationCity;
+
     private Long createTime;
 
     private Long updateTime;
@@ -143,6 +151,22 @@ public class PmpUserEntity {
 
     public void setRoomId(Long roomId) {
         this.roomId = roomId;
+    }
+
+    public Long getResourceId() {
+        return resourceId;
+    }
+
+    public void setResourceId(Long resourceId) {
+        this.resourceId = resourceId;
+    }
+
+    public String getRecommendName() {
+        return recommendName;
+    }
+
+    public void setRecommendName(String recommendName) {
+        this.recommendName = recommendName == null ? null : recommendName.trim();
     }
 
     public String getUserName() {
@@ -511,6 +535,22 @@ public class PmpUserEntity {
 
     public void setPayTime(Long payTime) {
         this.payTime = payTime;
+    }
+
+    public Long getConsultationTime() {
+        return consultationTime;
+    }
+
+    public void setConsultationTime(Long consultationTime) {
+        this.consultationTime = consultationTime;
+    }
+
+    public String getConsultationCity() {
+        return consultationCity;
+    }
+
+    public void setConsultationCity(String consultationCity) {
+        this.consultationCity = consultationCity == null ? null : consultationCity.trim();
     }
 
     public Long getCreateTime() {
