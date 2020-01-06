@@ -4,10 +4,13 @@ import static com.arz.pmp.base.framework.core.enums.SysPermEnumClass.PermissionE
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import ma.glasnost.orika.MapperFacade;
 import org.apache.shiro.authz.annotation.Logical;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -32,12 +35,17 @@ public class ExportController {
     @Autowired
     private PermAopHandle permAopHandle;
 
+    @Autowired
+    private MapperFacade mapperFacade;
+
     @GetMapping("/{authentication}/user")
     public void exportUser(@PathVariable("authentication") String authentication) throws IOException {
         permAopHandle.assertPermissions(authentication,
             permAopHandle.getPerms(null, new SysPermEnumClass.PermissionEnum[] {USER_EXPORT}), Logical.AND, false);
         HttpServletResponse response = WebUtil.getResponse();
-        UserSearchReq search = new UserSearchReq();
+        HttpServletRequest request = WebUtil.getRequest();
+        Map<String,String> map = request.getTrailerFields();
+        UserSearchReq search = mapperFacade.map(map,UserSearchReq.class);
         List<UserDataExport> list = userService.getExportUserList(search, authentication);
         WebUtil.sendExcelResponse(response, "pmp_user", list, UserDataExport.class);
     }

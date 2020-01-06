@@ -8,6 +8,7 @@ import com.arz.pmp.base.api.bo.user.front.UserRegistReq;
 import com.arz.pmp.base.entity.*;
 import com.arz.pmp.base.framework.commons.constants.Constants;
 import org.apache.commons.lang3.StringUtils;
+import org.omg.CORBA.UserException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,10 +67,15 @@ public class UserServiceImpl implements UserService {
         UserSearchReq search = req.getBody();
 
         // 判斷是否是教务人员
-        search.setEducationAdminId(
-            adminService.getRoleAdminId(req.getHeader().getAuthentication(), SysPermEnumClass.RoleEnum.EDUCATION));
-        search.setSalesAdminId(
-            adminService.getRoleAdminId(req.getHeader().getAuthentication(), SysPermEnumClass.RoleEnum.SALES));
+        Long educationAdminId = adminService.getRoleAdminId(req.getHeader().getAuthentication(), SysPermEnumClass.RoleEnum.EDUCATION);
+        if(educationAdminId != null){
+            search.setEducationAdminId(educationAdminId);
+        }
+        Long salesAdminId = adminService.getRoleAdminId(req.getHeader().getAuthentication(), SysPermEnumClass.RoleEnum.SALES);
+        if(salesAdminId != null){
+            search.setSalesAdminId(salesAdminId);
+        }
+
 
         PageInfo pageInfo = PageHelper.startPage(requestHeader.confirmCurrentPage(), requestHeader.confirmShowNum())
             .doSelectPage(() -> {
@@ -140,15 +146,20 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<PmpUserResourceTypeEntity> getResourceTypeList() {
 
-
-        return null;
+        return pmpUserExMapper.selectResourceTypeList();
     }
 
     @Override
     public List<UserDataExport> getExportUserList(UserSearchReq search, String authentication) {
         // 判斷是否是教务人员
-        search.setEducationAdminId(adminService.getRoleAdminId(authentication, SysPermEnumClass.RoleEnum.EDUCATION));
-        search.setSalesAdminId(adminService.getRoleAdminId(authentication, SysPermEnumClass.RoleEnum.SALES));
+        Long educationAdminId = adminService.getRoleAdminId(authentication, SysPermEnumClass.RoleEnum.EDUCATION);
+        if(educationAdminId!=null){
+            search.setEducationAdminId(educationAdminId);
+        }
+        Long salesAdminId = adminService.getRoleAdminId(authentication, SysPermEnumClass.RoleEnum.SALES);
+        if(salesAdminId!=null){
+            search.setSalesAdminId(salesAdminId);
+        }
         List<UserDataResp> list = pmpUserExMapper.selectExportUserList(search);
         List<UserDataExport> exportList = new ArrayList<>();
         mapperFacade.mapAsCollection(list, exportList, UserDataExport.class);

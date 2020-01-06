@@ -61,12 +61,11 @@
         ORDER BY a.create_time DESC,a.admin_id,c.sort
     </sql>
     <select id="selectUserList" resultType="com.arz.pmp.base.api.bo.user.UserDataResp">
-        SELECT a.user_id, a.user_name, a.gender, a.nationality,
-        a.phone_no,a.user_type,a.graduation_status, a.cert_no, a.cert_en_name, a.cert_en_pasw, a.remark,
-        a.create_time,a.examination_time, a.cert_cn_name, a.cert_cn_pasw,
+        SELECT a.user_id, a.user_name, a.gender,a.phone_no,a.user_type,a.com_name,a.email,
+        a.consultation_time,a.consultation_city,a.pay_total,a.resource_id,
         b.nickName salesAdminName,c.course_name,d.room_name,
-        (SELECT b_1.nickName FROM pmp_admin b_1 WHERE d.admin_id=b_1.admin_id) educationAdminName
-
+        (SELECT b_1.nickName FROM pmp_admin b_1 WHERE d.admin_id=b_1.admin_id) educationAdminName,
+        (SELECT g.resource_name FROM pmp_user_resource_type g WHERE a.resource_id=g.resource_id) resourceName
         <include refid="Sql_export_select"></include>
 
     </select>

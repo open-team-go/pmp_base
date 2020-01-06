@@ -143,4 +143,19 @@ public class UserEditorReq {
 
     @ApiModelProperty("备注")
     private String remark;
+
+    @ApiModelProperty("是否含票")
+    private Boolean invoiceOn;
+
+    @ApiModelProperty("来源Id")
+    private Long resourceId;
+
+    @ApiModelProperty("推荐人")
+    private String recommendName;
+
+    @ApiModelProperty("咨询日期")
+    private Long consultationTime;
+
+    @ApiModelProperty("咨询城市")
+    private String consultationCity;
 }

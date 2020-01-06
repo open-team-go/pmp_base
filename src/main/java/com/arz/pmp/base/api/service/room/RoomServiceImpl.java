@@ -55,7 +55,10 @@ public class RoomServiceImpl implements RoomService {
 
         RequestHeader requestHeader = req.getHeader();
         RoomSearchReq search = req.getBody();
-        search.setAdminId(adminService.getRoleAdminId(req.getHeader().getAuthentication(), SysPermEnumClass.RoleEnum.EDUCATION));
+        Long adminId = adminService.getRoleAdminId(req.getHeader().getAuthentication(), SysPermEnumClass.RoleEnum.EDUCATION);
+        if(adminId!=null){
+            search.setAdminId(adminId);
+        }
         PageInfo pageInfo = PageHelper.startPage(requestHeader.confirmCurrentPage(), requestHeader.confirmShowNum())
                 .doSelectPage(() -> {
                     pmpRoomExMapper.selectRoomList(search);
