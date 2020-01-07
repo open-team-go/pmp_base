@@ -1,25 +1,15 @@
 package com.arz.pmp.base.api.bo.user.front;
 
-import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Pattern;
-
-@Api
+@ApiModel
 @Data
-public class UserPerfectReq {
+public class UserPerfectData {
 
     @ApiModelProperty("姓名")
-    @Pattern(regexp = "\\S{1,30}", message = "非空1-100位")
-    @NotBlank
     private String userName;
-
-    @ApiModelProperty("身份证号码")
-    @NotEmpty
-    private String identityNo;
 
     @ApiModelProperty("性别（0、女，1、男）")
     private Boolean gender;
@@ -44,6 +34,9 @@ public class UserPerfectReq {
 
     @ApiModelProperty("所学专业")
     private String schoolMajor;
+
+    @ApiModelProperty("身份证号码")
+    private String identityNo;
 
     @ApiModelProperty("从事行业")
     private String industry;
@@ -74,5 +67,4 @@ public class UserPerfectReq {
 
     @ApiModelProperty("备注")
     private String remark;
-
 }

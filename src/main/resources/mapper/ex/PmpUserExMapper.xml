@@ -67,10 +67,11 @@
 
     </select>
 
-    <select id="selectUserByName" resultType="Long">
+    <select id="selectUserByName" resultType="java.lang.Long">
         SELECT a.user_id FROM pmp_user a
         WHERE a.user_name=#{userName,jdbcType=VARCHAR}
         AND a.identity_no=#{identityNo,jdbcType=VARCHAR}
+        <if test="courseId !=null">AND a.course_id=#{courseId}</if>
         <if test="roomId !=null">AND a.room_id=#{roomId}</if>
         LIMIT 1;
     </select>
@@ -145,4 +146,21 @@
         </if>
     </select>
 
+    <select id="selectFrontUserData" resultType="com.arz.pmp.base.api.bo.user.front.UserPerfectData">
+        SELECT a.education_id, a.user_name, a.gender, a.nationality, a.birthday,
+        a.phone_no, a.fixed_telephone, a.email, a.backup_email, a.wechat_no, a.qq, a.identity_no, a.zip_code,
+        a.user_address, a.graduation_time, a.graduation_school, a.school_major, a.industry, a.com_name,
+        a.com_department, a.com_position,a.remark,e.education_name,a.examination_time,
+        e.education_name
+        FROM pmp_user a
+        LEFT JOIN pmp_user_education e ON a.education_id=e.education_id
+        WHERE a.del_on=0 AND a.user_name = #{userName} AND a.identity_no = #{identityNo}
+        ORDER BY a.user_id DESC LIMIT 1;
+    </select>
+
+    <select id="selectUserIds" resultType="java.lang.Long">
+        SELECT a.user_id
+        FROM pmp_user a
+        WHERE a.del_on=0 AND a.user_name = #{userName} AND a.identity_no = #{identityNo}
+    </select>
 </mapper>

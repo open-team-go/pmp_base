@@ -1,9 +1,12 @@
 package com.arz.pmp.base.api.service.user;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import com.arz.pmp.base.api.bo.user.front.UserCheckReq;
+import com.arz.pmp.base.api.bo.user.front.UserPerfectData;
+import com.arz.pmp.base.api.bo.user.front.UserPerfectReq;
 import com.arz.pmp.base.api.bo.user.front.UserRegistReq;
 import com.arz.pmp.base.entity.*;
 import com.arz.pmp.base.framework.commons.constants.Constants;
@@ -34,6 +37,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 
 import ma.glasnost.orika.MapperFacade;
+import org.springframework.util.CollectionUtils;
 
 /**
  * description 学员业务实现
@@ -93,7 +97,7 @@ public class UserServiceImpl implements UserService {
         String phoneNo = data.getPhoneNo();
         String identityNo = data.getIdentityNo();
         if (StringUtils.isNotBlank(name)) {
-            Long id = pmpUserExMapper.selectUserByName(name, identityNo, data.getRoomId());
+            Long id = pmpUserExMapper.selectUserByName(name, identityNo,data.getCourseId(), data.getRoomId());
             boolean flag = id == null || (!addOn && id.equals(userId));
             Assert.isTrue(flag, CommonCodeEnum.PARAM_ERROR_USERNAME_MULTI, "已存在同名同手机号学员信息");
         }
@@ -197,7 +201,7 @@ public class UserServiceImpl implements UserService {
                 errorList.add(item);
                 continue;
             }
-            Long userId = pmpUserExMapper.selectUserByName(userName, identityNo, item.getRoomId());
+            Long userId = pmpUserExMapper.selectUserByName(userName, identityNo,item.getCourseId(), item.getRoomId());
             Long curTime = DateUtil.getCurSecond();
             if (userId != null) {
                 // 修改
@@ -223,7 +227,7 @@ public class UserServiceImpl implements UserService {
         PmpUserEntity userEntity = mapperFacade.map(data, PmpUserEntity.class);
 
         Long hasUserId =
-            pmpUserExMapper.selectUserByName(data.getUserName(), data.getIdentityNo(), userEntity.getRoomId());
+            pmpUserExMapper.selectUserByName(data.getUserName(), data.getIdentityNo(), userEntity.getCourseId(),null);
         Assert.isTrue(hasUserId == null, CommonCodeEnum.PARAM_ERROR_USER_MULTI_ERROR);
         Long curTime = DateUtil.getCurSecond();
         userEntity.setCreateTime(curTime);
@@ -233,23 +237,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void updateUserRegister(UserRegistReq data) {
-
-        Long hasUserId = pmpUserExMapper.selectUserByName(data.getUserName(), data.getIdentityNo(), null);
+    public void updateUserRegister(UserPerfectReq data) {
+        List<Long> idList = pmpUserExMapper.selectUserIds(data.getUserName(), data.getIdentityNo());
+        Assert.isTrue(!CollectionUtils.isEmpty(idList),CommonCodeEnum.PARAM_ERROR_LOGIN_USERNAME);
         PmpUserEntity userEntity = mapperFacade.map(data, PmpUserEntity.class);
-        Long curTime = DateUtil.getCurSecond();
-        if (hasUserId == null) {
-            userEntity.setCreateTime(curTime);
-            pmpUserEntityMapper.insertSelective(userEntity);
-        } else {
-            userEntity.setUserId(hasUserId);
-            userEntity.setUpdateTime(curTime);
+        for(Long id : idList){
+            userEntity.setUserId(id);
             pmpUserEntityMapper.updateByPrimaryKeySelective(userEntity);
         }
     }
 
     @Override
-    public UserDataResp getFrontUser(UserCheckReq data) {
-        return pmpUserExMapper.selectUserDetail(null, null, null, data.getUserName(), data.getIdentityNo());
+    public UserPerfectData getFrontUser(UserCheckReq data) {
+        return pmpUserExMapper.selectFrontUserData( data.getUserName(), data.getIdentityNo());
     }
 }

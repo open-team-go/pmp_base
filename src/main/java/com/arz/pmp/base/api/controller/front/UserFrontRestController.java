@@ -2,6 +2,8 @@ package com.arz.pmp.base.api.controller.front;
 
 import com.arz.pmp.base.api.bo.user.UserDataResp;
 import com.arz.pmp.base.api.bo.user.front.UserCheckReq;
+import com.arz.pmp.base.api.bo.user.front.UserPerfectData;
+import com.arz.pmp.base.api.bo.user.front.UserPerfectReq;
 import com.arz.pmp.base.api.bo.user.front.UserRegistReq;
 import com.arz.pmp.base.api.service.user.UserService;
 import com.arz.pmp.base.framework.commons.RestRequest;
@@ -35,18 +37,18 @@ public class UserFrontRestController {
 
     @ApiOperation(value = "用户信息 用户完善用户信息",notes = "用户完善用户信息")
     @PostMapping("/perfect")
-    public RestResponse<String> updateUser(@RequestBody @Valid RestRequest<UserRegistReq> data){
+    public RestResponse<String> updateUser(@RequestBody @Valid RestRequest<UserPerfectReq> data){
 
-        userService.insertUserRegister(data.getBody());
+        userService.updateUserRegister(data.getBody());
 
         return RestResponse.success();
     }
 
     @ApiOperation(value = "用户信息 用户查看用户信息",notes = "用户查看用户信息")
     @PostMapping("/check")
-    public RestResponse<UserDataResp> getUserData(@RequestBody @Valid RestRequest<UserCheckReq> data){
+    public RestResponse<UserPerfectData> getUserData(@RequestBody @Valid RestRequest<UserCheckReq> data){
 
-        UserDataResp user = userService.getFrontUser(data.getBody());
+        UserPerfectData user = userService.getFrontUser(data.getBody());
 
         return RestResponse.success(user);
     }
