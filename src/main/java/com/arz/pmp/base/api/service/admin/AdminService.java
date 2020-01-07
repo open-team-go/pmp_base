@@ -29,7 +29,7 @@ public interface AdminService {
 
     void deleteAdmin(Long adminId, String authentication);
 
-    List<PmpAdminEntity> getAdminList(AdminSearchReq data);
+    List<PmpAdminEntity> getAdminList(AdminSearchReq data,String authentication);
 
     Long getRoleAdminId(String authentication, SysPermEnumClass.RoleEnum roleEnum);
 }

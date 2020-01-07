@@ -3,6 +3,8 @@ package com.arz.pmp.base.api.controller.back;
 import static com.arz.pmp.base.framework.core.enums.SysPermEnumClass.PermissionEnum.USER_EXPORT;
 
 import java.io.IOException;
+import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -10,7 +12,9 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.arz.pmp.base.framework.commons.utils.NumberUtil;
 import ma.glasnost.orika.MapperFacade;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.annotation.Logical;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -44,9 +48,39 @@ public class ExportController {
             permAopHandle.getPerms(null, new SysPermEnumClass.PermissionEnum[] {USER_EXPORT}), Logical.AND, false);
         HttpServletResponse response = WebUtil.getResponse();
         HttpServletRequest request = WebUtil.getRequest();
-        Map<String,String> map = request.getTrailerFields();
-        UserSearchReq search = mapperFacade.map(map,UserSearchReq.class);
+        UserSearchReq search = new UserSearchReq();
+        String keyword = request.getParameter("keyWord");
+        search.setKeyWord(keyword);
+        Long courseId = NumberUtil.typeChange(request.getParameter("courseId"),Long.class);
+        search.setCourseId(courseId);
+        Long educationAdminId = NumberUtil.typeChange(request.getParameter("educationAdminId"),Long.class);
+        search.setEducationAdminId(educationAdminId);
+        Long endTime = NumberUtil.typeChange(request.getParameter("endTime"),Long.class);
+        search.setEndTime(endTime);
+        Long placeId = NumberUtil.typeChange(request.getParameter("placeId"),Long.class);
+        search.setPlaceId(placeId);
+        Long roomId = NumberUtil.typeChange(request.getParameter("roomId"),Long.class);
+        search.setRoomId(roomId);
+        Long salesAdminId = NumberUtil.typeChange(request.getParameter("salesAdminId"),Long.class);
+        search.setSalesAdminId(salesAdminId);
+        Long startTime = NumberUtil.typeChange(request.getParameter("startTime"),Long.class);
+        search.setStartTime(startTime);
+        Integer userType = NumberUtil.typeChange(request.getParameter("userType"),Integer.class);
+        search.setUserType(userType);
+        String invoiceOn = request.getParameter("invoiceOn");
+        if(StringUtils.isNotBlank(invoiceOn)){
+            search.setInvoiceOn(Boolean.valueOf(invoiceOn));
+        }
+        String certNo = request.getParameter("invoiceOn");
+        search.setCertNo(certNo);
+        String comPosition = request.getParameter("comPosition");
+        search.setComPosition(comPosition);
+        String comName = request.getParameter("comName");
+        search.setComName(comName);
+        Double payTotal = NumberUtil.typeChange(request.getParameter("payTotal"),Double.class);
+        search.setPayTotal(payTotal);
         List<UserDataExport> list = userService.getExportUserList(search, authentication);
         WebUtil.sendExcelResponse(response, "pmp_user", list, UserDataExport.class);
     }
+
 }

@@ -189,7 +189,6 @@ public class NumberUtil {
             return false;
         }
         String value = number.toString();
-        System.out.println(value);
         if ("0".equals(value)) {
             return false;
         }

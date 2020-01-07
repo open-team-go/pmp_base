@@ -121,7 +121,7 @@ public class AdminRestController {
     @PostMapping("/search")
     public RestResponse<List<PmpAdminEntity>> getAdmins(@RequestBody @Valid RestRequest<AdminSearchReq> data) {
 
-        List<PmpAdminEntity> list = adminService.getAdminList(data.getBody());
+        List<PmpAdminEntity> list = adminService.getAdminList(data.getBody(),data.getHeader().getAuthentication());
 
         return RestResponse.success(list);
     }

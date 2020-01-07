@@ -59,6 +59,9 @@ public class RedisServiceImpl implements RedisService {
 
     @Override
     public PmpAdminEntity getOperatorByToken(String appToken) {
+        if(StringUtils.isBlank(appToken)){
+            return null;
+        }
         Object value = redisUtil.get(getOperatorKey(appToken));
         if (value == null) {
             return null;

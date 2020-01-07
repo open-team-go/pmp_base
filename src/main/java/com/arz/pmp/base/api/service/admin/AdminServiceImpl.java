@@ -1,5 +1,6 @@
 package com.arz.pmp.base.api.service.admin;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -150,8 +151,18 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public List<PmpAdminEntity> getAdminList(AdminSearchReq data) {
-
+    public List<PmpAdminEntity> getAdminList(AdminSearchReq data,String authentication) {
+        PmpAdminEntity adminEntity = redisService.getOperatorByToken(authentication);
+        if(adminEntity != null && adminEntity.getRoleId().equals(data.getRoleId())){
+            List<PmpAdminEntity> list = new ArrayList();
+            PmpAdminEntity admin = new PmpAdminEntity();
+            admin.setAdminId(adminEntity.getAdminId());
+            admin.setNickname(adminEntity.getNickname());
+            admin.setAvatar(adminEntity.getAvatar());
+            admin.setUserName(adminEntity.getUserName());
+            list.add(adminEntity);
+            return list;
+        }
         return pmpAdminExMapper.selectAdminList(data);
     }
 

@@ -43,11 +43,8 @@
         <if test="invoiceOn != null and invoiceOn ">
             AND a.invoice_header IS NOT NULL
         </if>
-        <if test="invoiceOn != null and !invoiceOn ">
-            AND ISNULL(a.invoice_header)
-        </if>
-        <if test="certNo != null and certNo!='' ">
-            AND a.cert_no LIKE CONCAT('%',#{certNo},'%')
+        <if test="invoiceOn != null ">
+            AND a.invoice_on=#{invoiceOn}
         </if>
         <if test="comName != null and comName!='' ">
             AND a.com_name LIKE CONCAT('%',#{comName},'%')

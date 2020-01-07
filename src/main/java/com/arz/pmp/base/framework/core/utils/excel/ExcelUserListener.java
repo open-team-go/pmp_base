@@ -38,8 +38,6 @@ public class ExcelUserListener extends AnalysisEventListener {
     public void invoke(Object obj, AnalysisContext context) {
 
         int rowNum = context.getCurrentRowNum();
-        System.out.println("当前行：" + rowNum);
-        System.out.println(obj);
         if (Util.isEmpty(obj) || !(obj instanceof List) || rowNum < 0) {
             return;
         }

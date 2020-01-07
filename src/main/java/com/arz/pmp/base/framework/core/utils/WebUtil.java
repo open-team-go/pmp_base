@@ -3,8 +3,10 @@ package com.arz.pmp.base.framework.core.utils;
 import com.alibaba.excel.metadata.BaseRowModel;
 import com.alibaba.fastjson.JSON;
 import com.arz.pmp.base.framework.commons.response.RestResponse;
+import com.arz.pmp.base.framework.commons.utils.DateUtil;
 import com.arz.pmp.base.framework.core.utils.excel.ExcelUtil;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.poi.ss.formula.functions.T;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -101,6 +103,15 @@ public class WebUtil {
         return reponse;
     }
 
+    private static String createFileName(String fileName){
+        if(StringUtils.isBlank(fileName)){
+            fileName = "pmp";
+        }
+        String date = DateFormatUtils.format(DateUtil.getCurDateTime(),DateUtil.DateStrFormat.f_2);
+
+        return fileName + "_" + date;
+    }
+
     /**
      * description EXCEL下载返回
      *
@@ -115,7 +126,7 @@ public class WebUtil {
         }
         response.setContentType("multipart/form-data");
         response.setCharacterEncoding("utf-8");
-        response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
+        response.setHeader("Content-disposition", "attachment;filename=" + createFileName(fileName) + ".xlsx");
 
         try {
             ServletOutputStream out = response.getOutputStream();

@@ -1,6 +1,7 @@
 package com.arz.pmp.base.api.bo.adminn;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Positive;
 
@@ -55,6 +56,7 @@ public class AdminEditorReq {
 
     @ApiModelProperty("角色ID")
     @Positive
+    @NotNull(message = "角色必填")
     private Long roleId;
 
 }
