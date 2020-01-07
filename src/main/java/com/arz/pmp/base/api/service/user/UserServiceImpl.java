@@ -186,8 +186,9 @@ public class UserServiceImpl implements UserService {
             String userName = item.getUserName();
             String identityNo = item.getIdentityNo();
 
-            if (StringUtils.isBlank(userName) || StringUtils.isBlank(identityNo)
-                || !identityNo.matches(Constants.REGEX_IDENTITY_NO)) {
+            if (StringUtils.isBlank(userName) ) {
+//                || StringUtils.isBlank(identityNo)
+//                        || !identityNo.matches(Constants.REGEX_IDENTITY_NO)
                 logger.info("用户数据导入不处理信息====user=={}", item);
                 if (errorList == null) {
                     errorList = new ArrayList<>();
