@@ -66,15 +66,15 @@ public class ExcelUserListener extends AnalysisEventListener {
                 try {
                     Object cellObj = null;
                     // 判断数据类型
-                    if (payRollProperty.format().equalsIgnoreCase(UserDataImport.dateFormat)) {
-                        //库中存10位
-                        if(StringUtils.isNotBlank(cellData)){
-                            cellObj = DateUtil.getDateSecond(DateUtil.strToDate(cellData, DateUtil.DateStrFormat.f_1));
-                        }
-                    } else {
+//                    if (payRollProperty.format().equalsIgnoreCase(UserDataImport.dateFormat)) {
+//                        //库中存10位
+//                        if(StringUtils.isNotBlank(cellData)){
+//                            cellObj = DateUtil.getDateSecond(DateUtil.strToDate(cellData, DateUtil.DateStrFormat.f_1));
+//                        }
+//                    } else {
 
                         cellObj = TypeUtil.convert(cellData, field, payRollProperty.format(), false);
-                    }
+//                    }
 
                     PropertyUtils.setProperty(userData, field.getName(), cellObj);
                 } catch (IllegalAccessException e) {

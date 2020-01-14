@@ -55,6 +55,8 @@ public class PmpUserEntity {
 
     private String comPosition;
 
+    private Boolean invoiceOn;
+
     private String invoiceHeader;
 
     private String invoiceCode;
@@ -327,6 +329,14 @@ public class PmpUserEntity {
 
     public void setComPosition(String comPosition) {
         this.comPosition = comPosition == null ? null : comPosition.trim();
+    }
+
+    public Boolean getInvoiceOn() {
+        return invoiceOn;
+    }
+
+    public void setInvoiceOn(Boolean invoiceOn) {
+        this.invoiceOn = invoiceOn;
     }
 
     public String getInvoiceHeader() {

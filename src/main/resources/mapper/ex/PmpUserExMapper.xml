@@ -57,6 +57,26 @@
         </if>
         ORDER BY a.create_time DESC,a.admin_id,c.sort
     </sql>
+    <select id="selectUserByName" resultType="com.arz.pmp.base.entity.PmpUserEntity">
+        SELECT a.user_id,a.phone_no,a.identity_no,a.course_id,a.room_id
+        FROM pmp_user a
+        WHERE a.user_name=#{userName,jdbcType=VARCHAR}
+        <choose>
+            <when test="identityNo !=null and identityNo!= ''">
+                AND a.identity_no=#{identityNo,jdbcType=VARCHAR}
+            </when>
+            <otherwise>
+                <if test="phoneNo !=null and phoneNo!= ''">
+                    AND a.phone_no=#{phoneNo,jdbcType=VARCHAR}
+                </if>
+            </otherwise>
+        </choose>
+
+        <!--<if test="courseId !=null">AND a.course_id=#{courseId}</if>
+        <if test="roomId !=null">AND a.room_id=#{roomId}</if>-->
+        LIMIT 1;
+    </select>
+
     <select id="selectUserList" resultType="com.arz.pmp.base.api.bo.user.UserDataResp">
         SELECT a.user_id, a.user_name, a.gender,a.phone_no,a.user_type,a.com_name,a.email,
         a.consultation_time,a.consultation_city,a.pay_total,a.resource_id,
@@ -67,33 +87,33 @@
 
     </select>
 
-    <select id="selectUserByName" resultType="java.lang.Long">
-        SELECT a.user_id FROM pmp_user a
-        WHERE a.user_name=#{userName,jdbcType=VARCHAR}
-        AND a.identity_no=#{identityNo,jdbcType=VARCHAR}
-        <if test="courseId !=null">AND a.course_id=#{courseId}</if>
-        <if test="roomId !=null">AND a.room_id=#{roomId}</if>
-        LIMIT 1;
-    </select>
-
     <select id="selectEducationList" resultType="com.arz.pmp.base.entity.PmpUserEducationEntity">
 
         SELECT a.education_id,a.education_name
-        FROM pmp_user_education a WHERE a.del_on=0
+        FROM pmp_user_education a
+        <where>
+            <if test="delOn !=null">a.del_on=#{delOn}</if>
+        </where>
         ORDER BY a.sort,a.education_id;
     </select>
 
     <select id="selectUserPayTypeList" resultType="com.arz.pmp.base.entity.PmpUserPayTypeEntity">
 
         SELECT a.pay_id,a.pay_name
-        FROM pmp_user_pay_type a WHERE a.del_on=0
+        FROM pmp_user_pay_type a
+        <where>
+            <if test="delOn !=null">a.del_on=#{delOn}</if>
+        </where>
         ORDER BY a.sort,a.pay_id;
     </select>
 
     <select id="selectResourceTypeList" resultType="com.arz.pmp.base.entity.PmpUserResourceTypeEntity">
 
         SELECT a.resource_id,a.resource_name
-        FROM pmp_user_resource_type a WHERE a.del_on=0
+        FROM pmp_user_resource_type a
+        <where>
+            <if test="delOn !=null">a.del_on=#{delOn}</if>
+        </where>
         ORDER BY a.sort,a.resource_id;
     </select>
 
@@ -104,9 +124,9 @@
         a.com_department, a.com_position, a.invoice_header, a.invoice_code, a.user_type, a.admin_id,
         a.course_id, a.graduation_status, a.cert_no, a.cert_en_name, a.cert_en_pasw, a.cert_cn_name, a.cert_cn_pasw,
         a.remark, a.create_time,b.nickName salesAdminName,c.course_name,d.room_name,e.education_name,f.pay_name,
-        a.examination_time,a.pay_total,a.pay_time,
-        (SELECT b_1.nickName FROM pmp_admin b_1 WHERE d.admin_id=b_1.admin_id) educationAdminName
-
+        a.examination_time,a.pay_total,a.pay_time,a.consultation_time,a.consultation_city,
+        (SELECT b_1.nickName FROM pmp_admin b_1 WHERE d.admin_id=b_1.admin_id) educationAdminName,
+        (SELECT g.resource_name FROM pmp_user_resource_type g WHERE a.resource_id=g.resource_id) resourceName
         <include refid="Sql_export_select"></include>
     </select>
 

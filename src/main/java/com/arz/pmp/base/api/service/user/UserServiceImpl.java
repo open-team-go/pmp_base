@@ -10,6 +10,9 @@ import com.arz.pmp.base.api.bo.user.front.UserPerfectReq;
 import com.arz.pmp.base.api.bo.user.front.UserRegistReq;
 import com.arz.pmp.base.entity.*;
 import com.arz.pmp.base.framework.commons.constants.Constants;
+import com.arz.pmp.base.mapper.PmpUserPayTypeEntityMapper;
+import com.arz.pmp.base.mapper.ex.PmpAdminExMapper;
+import com.arz.pmp.base.mapper.ex.PmpCourseExMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.omg.CORBA.UserException;
 import org.slf4j.Logger;
@@ -63,6 +66,10 @@ public class UserServiceImpl implements UserService {
     private RedisService redisService;
     @Autowired
     private AdminService adminService;
+    @Autowired
+    private PmpAdminExMapper pmpAdminExMapper;
+    @Autowired
+    private PmpCourseExMapper pmpCourseExMapper;
 
     @Override
     public PageInfo<List<UserDataResp>> getUserListPage(RestRequest<UserSearchReq> req) {
@@ -71,15 +78,16 @@ public class UserServiceImpl implements UserService {
         UserSearchReq search = req.getBody();
 
         // 判斷是否是教务人员
-        Long educationAdminId = adminService.getRoleAdminId(req.getHeader().getAuthentication(), SysPermEnumClass.RoleEnum.EDUCATION);
-        if(educationAdminId != null){
+        Long educationAdminId =
+            adminService.getRoleAdminId(req.getHeader().getAuthentication(), SysPermEnumClass.RoleEnum.EDUCATION);
+        if (educationAdminId != null) {
             search.setEducationAdminId(educationAdminId);
         }
-        Long salesAdminId = adminService.getRoleAdminId(req.getHeader().getAuthentication(), SysPermEnumClass.RoleEnum.SALES);
-        if(salesAdminId != null){
+        Long salesAdminId =
+            adminService.getRoleAdminId(req.getHeader().getAuthentication(), SysPermEnumClass.RoleEnum.SALES);
+        if (salesAdminId != null) {
             search.setSalesAdminId(salesAdminId);
         }
-
 
         PageInfo pageInfo = PageHelper.startPage(requestHeader.confirmCurrentPage(), requestHeader.confirmShowNum())
             .doSelectPage(() -> {
@@ -97,7 +105,7 @@ public class UserServiceImpl implements UserService {
         String phoneNo = data.getPhoneNo();
         String identityNo = data.getIdentityNo();
         if (StringUtils.isNotBlank(name)) {
-            Long id = pmpUserExMapper.selectUserByName(name, identityNo,data.getCourseId(), data.getRoomId());
+            Long id = validUserUnique(name, identityNo, phoneNo, data.getCourseId());
             boolean flag = id == null || (!addOn && id.equals(userId));
             Assert.isTrue(flag, CommonCodeEnum.PARAM_ERROR_USERNAME_MULTI, "已存在同名同手机号学员信息");
         }
@@ -139,35 +147,95 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<PmpUserEducationEntity> getEducationList() {
-        return pmpUserExMapper.selectEducationList();
+        return pmpUserExMapper.selectEducationList(false);
     }
 
     @Override
     public List<PmpUserPayTypeEntity> getPayTypeList() {
-        return pmpUserExMapper.selectUserPayTypeList();
+        return pmpUserExMapper.selectUserPayTypeList(false);
     }
 
     @Override
     public List<PmpUserResourceTypeEntity> getResourceTypeList() {
 
-        return pmpUserExMapper.selectResourceTypeList();
+        return pmpUserExMapper.selectResourceTypeList(false);
     }
 
     @Override
     public List<UserDataExport> getExportUserList(UserSearchReq search, String authentication) {
         // 判斷是否是教务人员
         Long educationAdminId = adminService.getRoleAdminId(authentication, SysPermEnumClass.RoleEnum.EDUCATION);
-        if(educationAdminId!=null){
+        if (educationAdminId != null) {
             search.setEducationAdminId(educationAdminId);
         }
         Long salesAdminId = adminService.getRoleAdminId(authentication, SysPermEnumClass.RoleEnum.SALES);
-        if(salesAdminId!=null){
+        if (salesAdminId != null) {
             search.setSalesAdminId(salesAdminId);
         }
         List<UserDataResp> list = pmpUserExMapper.selectExportUserList(search);
         List<UserDataExport> exportList = new ArrayList<>();
         mapperFacade.mapAsCollection(list, exportList, UserDataExport.class);
         return exportList;
+    }
+
+    private Long getPayIdByName(List<PmpUserPayTypeEntity> list, String name){
+        if(CollectionUtils.isEmpty(list) || StringUtils.isBlank(name)){
+            return null;
+        }
+        for(PmpUserPayTypeEntity item:list){
+            if(item.getPayName().equalsIgnoreCase(name)){
+                return item.getPayId();
+            }
+        }
+        return null;
+    }
+
+    private Long getResourceIdByName(List<PmpUserResourceTypeEntity> list, String name){
+        if(CollectionUtils.isEmpty(list) || StringUtils.isBlank(name)){
+            return null;
+        }
+        for(PmpUserResourceTypeEntity item:list){
+            if(item.getResourceName().equalsIgnoreCase(name)){
+                return item.getResourceId();
+            }
+        }
+        return null;
+    }
+
+    private Long getEducationIdByName(List<PmpUserEducationEntity> list, String name){
+        if(CollectionUtils.isEmpty(list) || StringUtils.isBlank(name)){
+            return null;
+        }
+        for(PmpUserEducationEntity item:list){
+            if(item.getEducationName().equalsIgnoreCase(name)){
+                return item.getEducationId();
+            }
+        }
+        return null;
+    }
+
+    private Long getAdminIdByName(List<PmpAdminEntity> list, String name){
+        if(CollectionUtils.isEmpty(list) || StringUtils.isBlank(name)){
+            return null;
+        }
+        for(PmpAdminEntity item:list){
+            if(item.getNickname().equalsIgnoreCase(name)){
+                return item.getAdminId();
+            }
+        }
+        return null;
+    }
+
+    private Long getCourseIdByName(List<PmpCourseEntity> list, String name){
+        if(CollectionUtils.isEmpty(list) || StringUtils.isBlank(name)){
+            return null;
+        }
+        for(PmpCourseEntity item:list){
+            if(item.getCourseName().equalsIgnoreCase(name)){
+                return item.getCourseId();
+            }
+        }
+        return null;
     }
 
     @Override
@@ -177,45 +245,63 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserImportResp insertUserBatch(List<UserDataImport> list) {
+
+
         UserImportResp result = new UserImportResp();
-        // 数据入库
-        List<PmpUserEntity> userList = new ArrayList<PmpUserEntity>();
-        mapperFacade.mapAsCollection(list, userList, PmpUserEntity.class);
+        if (CollectionUtils.isEmpty(list)) {
+            return result;
+        }
         int i = 0;
         int j = 0;
+        List<PmpUserPayTypeEntity> payTypeList = pmpUserExMapper.selectUserPayTypeList(null);
+        List<PmpUserResourceTypeEntity> resourceTypeList = pmpUserExMapper.selectResourceTypeList(null);
+        List<PmpUserEducationEntity> educationList = pmpUserExMapper.selectEducationList(null);
+        List<PmpAdminEntity> adminList = pmpAdminExMapper.selectAdminAll();
+        List<PmpCourseEntity> courseList = pmpCourseExMapper.selectCourseAll();
         // 导入失败记录
         List<PmpUserEntity> errorList = null;
-        for (PmpUserEntity item : userList) {
-
+        // 填充配置数据、数据校验
+        for (UserDataImport item : list) {
             String userName = item.getUserName();
-            String identityNo = item.getIdentityNo();
+            String identityNo = null;
             String phoneNo = item.getPhoneNo();
-
-            if (StringUtils.isBlank(userName) || StringUtils.isBlank(phoneNo) ) {
-//                || StringUtils.isBlank(identityNo)
-//                        || !identityNo.matches(Constants.REGEX_IDENTITY_NO)
+            if (StringUtils.isBlank(userName) || StringUtils.isBlank(phoneNo)) {
+                // || StringUtils.isBlank(identityNo)
+                // || !identityNo.matches(Constants.REGEX_IDENTITY_NO)
                 logger.info("用户数据导入不处理信息====user=={}", item);
                 if (errorList == null) {
                     errorList = new ArrayList<>();
                     result.setErrorList(errorList);
                 }
-                errorList.add(item);
+                errorList.add(mapperFacade.map(item,PmpUserEntity.class));
                 continue;
             }
-            Long userId = pmpUserExMapper.selectUserByName(userName, identityNo,item.getCourseId(), item.getRoomId());
+            // 获取支付方式ID
+            item.setPayId(getPayIdByName(payTypeList,item.getPayName()));
+            // 获取来源ID
+            item.setResourceId(getResourceIdByName(resourceTypeList,item.getResourceName()));
+            //  获取学历ID
+            item.setEducationId(getEducationIdByName(educationList,item.getEducationName()));
+            // 获取顾问ID
+            item.setAdminId(getAdminIdByName(adminList,item.getSalesAdminName()));
+            // 获取课程ID
+            item.setCourseId(getCourseIdByName(courseList,item.getCourseName()));
+
+            // 数据入库
+            PmpUserEntity user = mapperFacade.map(item,PmpUserEntity.class);
+            Long userId = validUserUnique(userName, identityNo, item.getPhoneNo(), user.getCourseId());
             Long curTime = DateUtil.getCurSecond();
             if (userId != null) {
                 // 修改
-                item.setUserId(userId);
-                item.setUpdateTime(curTime);
-                pmpUserEntityMapper.updateByPrimaryKeySelective(item);
+                user.setUserId(userId);
+                user.setUpdateTime(curTime);
+                pmpUserEntityMapper.updateByPrimaryKeySelective(user);
                 j++;
             } else {
-                item.setCreateTime(curTime);
-                pmpUserEntityMapper.insertSelective(item);
+                user.setCreateTime(curTime);
+                pmpUserEntityMapper.insertSelective(user);
                 i++;
             }
-
         }
         result.setAddCount(i);
         result.setUpdateCount(j);
@@ -227,8 +313,7 @@ public class UserServiceImpl implements UserService {
 
         PmpUserEntity userEntity = mapperFacade.map(data, PmpUserEntity.class);
 
-        Long hasUserId =
-            pmpUserExMapper.selectUserByName(data.getUserName(), data.getIdentityNo(), userEntity.getCourseId(),null);
+        Long hasUserId = validUserUnique(data.getUserName(), data.getIdentityNo(), data.getPhoneNo(),userEntity.getCourseId());
         Assert.isTrue(hasUserId == null, CommonCodeEnum.PARAM_ERROR_USER_MULTI_ERROR);
         Long curTime = DateUtil.getCurSecond();
         userEntity.setCreateTime(curTime);
@@ -240,9 +325,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public void updateUserRegister(UserPerfectReq data) {
         List<Long> idList = pmpUserExMapper.selectUserIds(data.getUserName(), data.getIdentityNo());
-        Assert.isTrue(!CollectionUtils.isEmpty(idList),CommonCodeEnum.PARAM_ERROR_LOGIN_USERNAME);
+        Assert.isTrue(!CollectionUtils.isEmpty(idList), CommonCodeEnum.PARAM_ERROR_LOGIN_USERNAME);
         PmpUserEntity userEntity = mapperFacade.map(data, PmpUserEntity.class);
-        for(Long id : idList){
+        for (Long id : idList) {
             userEntity.setUserId(id);
             pmpUserEntityMapper.updateByPrimaryKeySelective(userEntity);
         }
@@ -250,6 +335,26 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserPerfectData getFrontUser(UserCheckReq data) {
-        return pmpUserExMapper.selectFrontUserData( data.getUserName(), data.getIdentityNo());
+        return pmpUserExMapper.selectFrontUserData(data.getUserName(), data.getIdentityNo());
+    }
+
+    private Long validUserUnique(String userName,String identityNo,String phoneNo,Long courseId){
+
+        List<PmpUserEntity> list = pmpUserExMapper.selectUserByName(userName,identityNo,phoneNo);
+        if(CollectionUtils.isEmpty(list)){
+            return null;
+        }
+        for(PmpUserEntity item : list){
+            if(item.getCourseId() == null && courseId == null){
+                return item.getUserId();
+            }
+            if(item.getCourseId() == null || courseId == null){
+                continue;
+            }
+            if(item.getCourseId().equals(courseId)){
+                return item.getUserId();
+            }
+        }
+        return list.get(list.size()-1).getUserId();
     }
 }

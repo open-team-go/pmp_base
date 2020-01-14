@@ -10,5 +10,7 @@ public interface PmpCourseExMapper {
 
     List<PmpCourseEntity> getCourseList(CourseSearchReq search);
 
+    List<PmpCourseEntity> selectCourseAll();
+
     Long selectCourseByName(@Param("courseName") String courseName);
 }

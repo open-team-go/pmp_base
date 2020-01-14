@@ -107,6 +107,9 @@ public class LoginAuthInterceptor extends HandlerInterceptorAdapter {
     private boolean validSysToken(HttpServletRequest request) {
 
         JSON json = WebUtil.getRequestBodyJson(request);
+        if(json == null){
+            return true;
+        }
         RestRequest restRequest = json.toJavaObject(RestRequest.class);
         if (restRequest == null || restRequest.getHeader() == null) {
             return false;

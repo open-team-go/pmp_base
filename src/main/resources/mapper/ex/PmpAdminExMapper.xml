@@ -107,4 +107,13 @@
         ORDER BY a.create_time DESC
     </select>
 
+    <select id="selectAdminAll" resultType="com.arz.pmp.base.entity.PmpAdminEntity">
+        SELECT
+        a.admin_id,
+        a.user_name,
+        a.avatar,
+        a.nickName
+        FROM pmp_admin a
+    </select>
+
 </mapper>

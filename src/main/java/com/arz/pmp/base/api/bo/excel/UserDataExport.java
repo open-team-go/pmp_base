@@ -2,139 +2,228 @@ package com.arz.pmp.base.api.bo.excel;
 
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.alibaba.excel.metadata.BaseRowModel;
+import com.arz.pmp.base.api.aop.annotation.PayrollProperty;
 import com.arz.pmp.base.framework.commons.utils.DateUtil;
 
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 @Data
 public class UserDataExport extends BaseRowModel {
 
-    @ExcelProperty("班级名称")
-    private String roomName;
+    
+    @ExcelProperty("咨询日期")
+    private String consultationTimeStr;
 
-    @ExcelProperty("课程顾问名称")
+    private Long consultationTime;
+
+    public String getConsultationTimeStr() {
+        if (consultationTimeStr != null || consultationTime == null) {
+            return consultationTimeStr;
+        }
+        return DateUtil.getSecToStr(consultationTime, DateUtil.DateStrFormat.f_2);
+    }
+
+    public Long getConsultationTime() {
+        if (consultationTime != null) {
+            return consultationTime;
+        }
+        return DateUtil.getDateSecond(DateUtil.strToDate(consultationTimeStr, DateUtil.DateStrFormat.f_2));
+    }
+
+    
+    @ExcelProperty("咨询城市")
+    private String consultationCity;
+
+    
+    @ExcelProperty("顾问姓名")
     private String salesAdminName;
 
-    @ExcelProperty("学历")
-    private String educationName;
+    private Long adminId;
 
-    @ExcelProperty("付款方式")
-    private String payName;
+    
+    @ExcelProperty("来源")
+    private String resourceName;
 
+    private Long resourceId;
+
+    
     @ExcelProperty("姓名")
     private String userName;
 
-    private Boolean gender;
-
-    @ExcelProperty("性别（0、女，1、男）")
+    
+    @ExcelProperty("性别")
     private String genderStr;
 
-    public String getGenderStr(){
-        return (gender!=null&& gender)?"男":"女";
+    private Boolean gender;
+
+    public String getGenderStr() {
+        if (genderStr != null) {
+            return genderStr;
+        }
+        return gender != null && gender ? "男" : "女";
     }
 
-    @ExcelProperty("民族")
-    private String nationality;
+    public Boolean getGender() {
+        if (gender != null) {
+            return gender;
+        }
+        return "男".equals(genderStr) ? true : false;
+    }
 
-    private Long birthday;
-
-    @ExcelProperty("出生时间")
-    private String birthdayStr;
-
-    @ExcelProperty("联系电话")
+    
+    @ExcelProperty("手机号码")
     private String phoneNo;
 
-    @ExcelProperty("联系邮箱")
-    private String email;
-
-    @ExcelProperty("备用邮箱")
-    private String backupEmail;
-
-    @ExcelProperty("微信号码")
-    private String wechatNo;
-
-    @ExcelProperty("QQ号码")
-    private String qq;
-
-    @ExcelProperty("身份证号码")
-    private String identityNo;
-
-    @ExcelProperty("邮编")
-    private String zipCode;
-
+    
     @ExcelProperty("通讯地址")
     private String userAddress;
 
-    private Long graduationTime;
+    
+    @ExcelProperty("邮箱")
+    private String email;
 
+    
+    @ExcelProperty("学历")
+    private String educationName;
+
+    private Long educationId;
+
+    
+    @ExcelProperty("专业")
+    private String schoolMajor;
+
+    
     @ExcelProperty("毕业时间")
     private String graduationTimeStr;
 
-    @ExcelProperty("毕业学校")
+    
+    @ExcelProperty("毕业院校")
     private String graduationSchool;
 
-    @ExcelProperty("所学专业")
-    private String schoolMajor;
+    private Long graduationTime;
 
-    @ExcelProperty("从事行业")
-    private String industry;
+    public String getGraduationTimeStr() {
+        if (graduationTimeStr != null || graduationTime == null) {
+            return graduationTimeStr;
+        }
+        return DateUtil.getSecToStr(graduationTime, DateUtil.DateStrFormat.f_2);
+    }
 
-    @ExcelProperty("公司名称")
+    public Long getGraduationTime() {
+        if (graduationTime != null) {
+            return graduationTime;
+        }
+        return DateUtil.getDateSecond(DateUtil.strToDate(graduationTimeStr, DateUtil.DateStrFormat.f_2));
+    }
+
+    
+    @ExcelProperty("公司")
     private String comName;
 
-    @ExcelProperty("公司部门名称")
-    private String comDepartment;
-
-    @ExcelProperty("公司职位名称")
+    
+    @ExcelProperty("职位")
     private String comPosition;
 
-    @ExcelProperty("发票抬头")
-    private String invoiceHeader;
-
-    @ExcelProperty("发票税号")
-    private String invoiceCode;
-
-    @ExcelProperty("学员类型（1、内部学员，2、外部续证学员，3、联系中未报名）")
-    private Integer userType;
-
-    @ExcelProperty("课程名")
+    
+    @ExcelProperty("报名课程")
     private String courseName;
 
-    @ExcelProperty("结业状态（0、未知，1、通过，2、未通过，3、缓考，4、缓读）")
-    private Integer graduationStatus;
+    private Long courseId;
 
+    
     @ExcelProperty("PMI ID号")
     private String certNo;
 
-    @ExcelProperty("英文网站用户名")
+    
+    @ExcelProperty("PMI英文网站用户名")
     private String certEnName;
 
-    @ExcelProperty("英文网站密码")
+    
+    @ExcelProperty("PMI英文网站密码")
     private String certEnPasw;
 
-    @ExcelProperty("中文网站用户名")
+    
+    @ExcelProperty("PMI中文网站用户名")
     private String certCnName;
 
-    @ExcelProperty("中文网站密码")
+    
+    @ExcelProperty("PMI中文网站密码")
     private String certCnPasw;
 
+    
+    @ExcelProperty("付款金额")
+    private BigDecimal payTotal;
+
+    
+    @ExcelProperty("付款方式")
+    private String payName;
+
+    private Long payId;
+
+    
+    @ExcelProperty("是否含票")
+    private String invoiceOnStr;
+
+    private Boolean invoiceOn;
+
+    public String getInvoiceOnStr() {
+        if (invoiceOnStr != null) {
+            return invoiceOnStr;
+        }
+        return invoiceOn != null && invoiceOn ? "是" : "否";
+    }
+
+    public Boolean getInvoiceOn() {
+        if (invoiceOn != null) {
+            return invoiceOn;
+        }
+        return "是".equals(invoiceOnStr) ? true : false;
+    }
+
+    
+    @ExcelProperty("付款时间")
+    private String payTimeStr;
+
+    private Long payTime;
+
+    public String getPayTimeStr() {
+        if (payTimeStr != null || payTime == null) {
+            return payTimeStr;
+        }
+        return DateUtil.getSecToStr(payTime, DateUtil.DateStrFormat.f_2);
+    }
+
+    public Long getPayTime() {
+        if (payTime != null) {
+            return payTime;
+        }
+        return DateUtil.getDateSecond(DateUtil.strToDate(payTimeStr, DateUtil.DateStrFormat.f_2));
+    }
+
+    
+    @ExcelProperty("考试时间")
+    private String examinationTimeStr;
+
+    private Long examinationTime;
+
+    public String getExaminationTimeStr() {
+        if (examinationTimeStr != null || examinationTime == null) {
+            return examinationTimeStr;
+        }
+        return DateUtil.getSecToStr(examinationTime, DateUtil.DateStrFormat.f_1);
+    }
+
+    public Long getExaminationTime() {
+        if (examinationTime != null) {
+            return examinationTime;
+        }
+        return DateUtil.getDateSecond(DateUtil.strToDate(examinationTimeStr, DateUtil.DateStrFormat.f_1));
+    }
+
+    
     @ExcelProperty("备注")
     private String remark;
 
-    private Long createTime;
-
-    @ExcelProperty("创建时间")
-    private String createTimeStr;
-
-    public String getBirthdayStr() {
-        return DateUtil.getSecToStr(birthday, DateUtil.DateStrFormat.f_1);
-    }
-
-    public Object getGraduationTimeStr() {
-        return DateUtil.getSecToStr(graduationTime, DateUtil.DateStrFormat.f_1);
-    }
-
-    public Object getCreateTimeStr() {
-        return DateUtil.getSecToStr(createTime, DateUtil.DateStrFormat.f_1);
-    }
 }

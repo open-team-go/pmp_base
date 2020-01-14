@@ -6,6 +6,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.util.StringUtil;
 import org.apache.shiro.authz.Permission;
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.permission.WildcardPermission;
@@ -238,6 +240,9 @@ public class PermAopHandle {
         if (!CollectionUtils.isEmpty(stringPerms)) {
             perms = new LinkedHashSet<Permission>(stringPerms.size());
             for (PmpPermissionEntity item : stringPerms) {
+                if(StringUtils.isBlank(item.getPermValue())){
+                    continue;
+                }
                 Permission permission = new WildcardPermission(item.getPermValue());
                 perms.add(permission);
             }

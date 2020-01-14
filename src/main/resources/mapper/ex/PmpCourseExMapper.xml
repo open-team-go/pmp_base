@@ -30,5 +30,10 @@
         FROM pmp_course a
         WHERE a.del_on = 0 AND a.course_name = #{courseName,jdbcType=VARCHAR} LIMIT 1;
     </select>
+    <select id="selectCourseAll" resultType="com.arz.pmp.base.entity.PmpCourseEntity">
+        SELECT a.course_id,
+        a.course_name
+        FROM pmp_course a
+    </select>
 
 </mapper>

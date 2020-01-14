@@ -14,4 +14,6 @@ public interface PmpAdminExMapper {
     List<AdminLoginResp> selectAdminInfoList(AdminSearchReq search);
 
     List<PmpAdminEntity> selectAdminList(AdminSearchReq search);
+
+    List<PmpAdminEntity> selectAdminAll();
 }

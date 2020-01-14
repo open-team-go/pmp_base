@@ -12,14 +12,13 @@ public interface PmpUserExMapper {
 
     List<UserDataResp> selectUserList(UserSearchReq search);
 
-    Long selectUserByName(@Param("userName") String userName, @Param("identityNo") String identityNo,
-                          @Param("courseId") Long courseId,@Param("roomId") Long roomId);
+    List<PmpUserEntity> selectUserByName(@Param("userName") String userName, @Param("identityNo") String identityNo,@Param("phoneNo") String phoneNo);
 
-    List<PmpUserEducationEntity> selectEducationList();
+    List<PmpUserEducationEntity> selectEducationList(@Param("delOn") Boolean delOn);
 
-    List<PmpUserPayTypeEntity> selectUserPayTypeList();
+    List<PmpUserPayTypeEntity> selectUserPayTypeList(@Param("delOn") Boolean delOn);
 
-    List<PmpUserResourceTypeEntity> selectResourceTypeList();
+    List<PmpUserResourceTypeEntity> selectResourceTypeList(@Param("delOn") Boolean delOn);
 
     UserDataResp selectUserDetail(@Param("userId") Long userId, @Param("phoneNo") String phoneNo,
         @Param("keyWord") String keyWord, @Param("userName") String userName, @Param("identityNo") String identityNo);

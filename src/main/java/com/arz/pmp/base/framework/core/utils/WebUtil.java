@@ -180,6 +180,7 @@ public class WebUtil {
         BufferedReader streamReader = null;
         try {
             streamReader = new BufferedReader(new InputStreamReader(request.getInputStream(), "UTF-8"));
+//            streamReader = request.getReader();
             StringBuilder responseStrBuilder = new StringBuilder();
             String inputStr;
             while ((inputStr = streamReader.readLine()) != null) {

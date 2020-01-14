@@ -39,9 +39,6 @@ public class ExportController {
     @Autowired
     private PermAopHandle permAopHandle;
 
-    @Autowired
-    private MapperFacade mapperFacade;
-
     @GetMapping("/{authentication}/user")
     public void exportUser(@PathVariable("authentication") String authentication) throws IOException {
         permAopHandle.assertPermissions(authentication,
@@ -51,24 +48,24 @@ public class ExportController {
         UserSearchReq search = new UserSearchReq();
         String keyword = request.getParameter("keyWord");
         search.setKeyWord(keyword);
-        Long courseId = NumberUtil.typeChange(request.getParameter("courseId"),Long.class);
+        Long courseId = NumberUtil.typeChange(request.getParameter("courseId"), Long.class);
         search.setCourseId(courseId);
-        Long educationAdminId = NumberUtil.typeChange(request.getParameter("educationAdminId"),Long.class);
+        Long educationAdminId = NumberUtil.typeChange(request.getParameter("educationAdminId"), Long.class);
         search.setEducationAdminId(educationAdminId);
-        Long endTime = NumberUtil.typeChange(request.getParameter("endTime"),Long.class);
+        Long endTime = NumberUtil.typeChange(request.getParameter("endTime"), Long.class);
         search.setEndTime(endTime);
-        Long placeId = NumberUtil.typeChange(request.getParameter("placeId"),Long.class);
+        Long placeId = NumberUtil.typeChange(request.getParameter("placeId"), Long.class);
         search.setPlaceId(placeId);
-        Long roomId = NumberUtil.typeChange(request.getParameter("roomId"),Long.class);
+        Long roomId = NumberUtil.typeChange(request.getParameter("roomId"), Long.class);
         search.setRoomId(roomId);
-        Long salesAdminId = NumberUtil.typeChange(request.getParameter("salesAdminId"),Long.class);
+        Long salesAdminId = NumberUtil.typeChange(request.getParameter("salesAdminId"), Long.class);
         search.setSalesAdminId(salesAdminId);
-        Long startTime = NumberUtil.typeChange(request.getParameter("startTime"),Long.class);
+        Long startTime = NumberUtil.typeChange(request.getParameter("startTime"), Long.class);
         search.setStartTime(startTime);
-        Integer userType = NumberUtil.typeChange(request.getParameter("userType"),Integer.class);
+        Integer userType = NumberUtil.typeChange(request.getParameter("userType"), Integer.class);
         search.setUserType(userType);
         String invoiceOn = request.getParameter("invoiceOn");
-        if(StringUtils.isNotBlank(invoiceOn)){
+        if (StringUtils.isNotBlank(invoiceOn)) {
             search.setInvoiceOn(Boolean.valueOf(invoiceOn));
         }
         String certNo = request.getParameter("invoiceOn");
@@ -77,7 +74,7 @@ public class ExportController {
         search.setComPosition(comPosition);
         String comName = request.getParameter("comName");
         search.setComName(comName);
-        Double payTotal = NumberUtil.typeChange(request.getParameter("payTotal"),Double.class);
+        Double payTotal = NumberUtil.typeChange(request.getParameter("payTotal"), Double.class);
         search.setPayTotal(payTotal);
         List<UserDataExport> list = userService.getExportUserList(search, authentication);
         WebUtil.sendExcelResponse(response, "pmp_user", list, UserDataExport.class);

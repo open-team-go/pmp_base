@@ -63,7 +63,7 @@ public class BodyReaderHttpServletRequestWrapper extends HttpServletRequestWrapp
 
     @Override
     public BufferedReader getReader() throws IOException {
-        return new BufferedReader(new InputStreamReader(getInputStream(), "utf-8"));
+        return new BufferedReader(new InputStreamReader(getInputStream()));
     }
 
 }
