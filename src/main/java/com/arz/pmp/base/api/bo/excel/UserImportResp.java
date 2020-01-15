@@ -18,5 +18,5 @@ public class UserImportResp {
     private int updateCount;
 
     @ApiModelProperty("导入失败记录")
-    private List<PmpUserEntity> errorList;
+    private List<UserDataImport> errorList;
 }

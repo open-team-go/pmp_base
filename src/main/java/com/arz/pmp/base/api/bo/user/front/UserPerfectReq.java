@@ -1,5 +1,6 @@
 package com.arz.pmp.base.api.bo.user.front;
 
+import com.arz.pmp.base.framework.commons.constants.Constants;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -55,6 +56,7 @@ public class UserPerfectReq {
     private String comPosition;
 
     @ApiModelProperty("手机号码")
+    @Pattern(regexp = Constants.REGEX_PHONE_NO_STR, message = Constants.REGEX_PHONE_NO_MESSAGE)
     private String phoneNo;
 
     @ApiModelProperty("联系邮箱")

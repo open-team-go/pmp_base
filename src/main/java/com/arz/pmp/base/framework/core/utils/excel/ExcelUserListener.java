@@ -75,7 +75,9 @@ public class ExcelUserListener extends AnalysisEventListener {
 
                         cellObj = TypeUtil.convert(cellData, field, payRollProperty.format(), false);
 //                    }
-
+                    if(cellObj!= null && cellObj instanceof String){
+                        cellObj = (String)((String) cellObj).trim();
+                    }
                     PropertyUtils.setProperty(userData, field.getName(), cellObj);
                 } catch (IllegalAccessException e) {
                     // TODO Auto-generated catch block

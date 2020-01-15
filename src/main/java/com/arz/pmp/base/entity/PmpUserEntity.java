@@ -109,6 +109,8 @@ public class PmpUserEntity {
 
     private Long payTime;
 
+    private String payRemarks;
+
     private Long consultationTime;
 
     private String consultationCity;
@@ -545,6 +547,14 @@ public class PmpUserEntity {
 
     public void setPayTime(Long payTime) {
         this.payTime = payTime;
+    }
+
+    public String getPayRemarks() {
+        return payRemarks;
+    }
+
+    public void setPayRemarks(String payRemarks) {
+        this.payRemarks = payRemarks == null ? null : payRemarks.trim();
     }
 
     public Long getConsultationTime() {

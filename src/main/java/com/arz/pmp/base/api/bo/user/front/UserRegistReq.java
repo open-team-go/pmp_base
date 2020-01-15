@@ -53,6 +53,7 @@ public class UserRegistReq {
 
     @ApiModelProperty("联系电话")
     @NotEmpty
+    @Pattern(regexp = Constants.REGEX_PHONE_NO_STR, message = Constants.REGEX_PHONE_NO_MESSAGE)
     private String phoneNo;
 
     @ApiModelProperty("固定电话")

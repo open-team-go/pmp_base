@@ -57,6 +57,7 @@ public class UserEditorReq {
     private Long birthday;
 
     @ApiModelProperty("联系电话")
+    @Pattern(regexp = Constants.REGEX_PHONE_NO_STR, message = Constants.REGEX_PHONE_NO_MESSAGE)
     private String phoneNo;
 
     @ApiModelProperty("联系邮箱")
@@ -140,6 +141,9 @@ public class UserEditorReq {
 
     @ApiModelProperty("付款时间")
     private Long payTime;
+
+    @ApiModelProperty("付款备注")
+    private String payRemarks;
 
     @ApiModelProperty("备注")
     private String remark;

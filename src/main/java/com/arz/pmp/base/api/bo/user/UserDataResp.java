@@ -168,6 +168,9 @@ public class UserDataResp {
     @ApiModelProperty("付款时间")
     private Long payTime;
 
+    @ApiModelProperty("付款备注")
+    private String payRemarks;
+
     @ApiModelProperty("备注")
     private String remark;
 

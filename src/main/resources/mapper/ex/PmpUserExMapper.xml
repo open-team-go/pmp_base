@@ -139,7 +139,7 @@
         a.course_id, a.graduation_status, a.cert_no, a.cert_en_name, a.cert_en_pasw, a.cert_cn_name, a.cert_cn_pasw,
         a.remark, a.create_time,a.consultation_time,a.consultation_city,
         b.nickName salesAdminName,b.admin_id salesAdminId,c.course_name,d.room_name,e.education_name,f.pay_name,
-        a.examination_time,a.pay_total,a.pay_time,a.invoice_on,
+        a.examination_time,a.pay_total,a.pay_time,a.invoice_on,a.pay_remarks,
         (SELECT b_1.nickName FROM pmp_admin b_1 WHERE d.admin_id=b_1.admin_id) educationAdminName,
         (SELECT g.resource_name FROM pmp_user_resource_type g WHERE a.resource_id=g.resource_id) resourceName
         FROM pmp_user a

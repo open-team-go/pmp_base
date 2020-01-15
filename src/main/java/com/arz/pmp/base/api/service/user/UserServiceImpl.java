@@ -1,24 +1,15 @@
 package com.arz.pmp.base.api.service.user;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
-import com.arz.pmp.base.api.bo.user.front.UserCheckReq;
-import com.arz.pmp.base.api.bo.user.front.UserPerfectData;
-import com.arz.pmp.base.api.bo.user.front.UserPerfectReq;
-import com.arz.pmp.base.api.bo.user.front.UserRegistReq;
-import com.arz.pmp.base.entity.*;
 import com.arz.pmp.base.framework.commons.constants.Constants;
-import com.arz.pmp.base.mapper.PmpUserPayTypeEntityMapper;
-import com.arz.pmp.base.mapper.ex.PmpAdminExMapper;
-import com.arz.pmp.base.mapper.ex.PmpCourseExMapper;
 import org.apache.commons.lang3.StringUtils;
-import org.omg.CORBA.UserException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import com.arz.pmp.base.api.bo.excel.UserDataExport;
 import com.arz.pmp.base.api.bo.excel.UserDataImport;
@@ -26,8 +17,13 @@ import com.arz.pmp.base.api.bo.excel.UserImportResp;
 import com.arz.pmp.base.api.bo.user.UserDataResp;
 import com.arz.pmp.base.api.bo.user.UserEditorReq;
 import com.arz.pmp.base.api.bo.user.UserSearchReq;
+import com.arz.pmp.base.api.bo.user.front.UserCheckReq;
+import com.arz.pmp.base.api.bo.user.front.UserPerfectData;
+import com.arz.pmp.base.api.bo.user.front.UserPerfectReq;
+import com.arz.pmp.base.api.bo.user.front.UserRegistReq;
 import com.arz.pmp.base.api.service.admin.AdminService;
 import com.arz.pmp.base.api.service.redis.RedisService;
+import com.arz.pmp.base.entity.*;
 import com.arz.pmp.base.framework.commons.RequestHeader;
 import com.arz.pmp.base.framework.commons.RestRequest;
 import com.arz.pmp.base.framework.commons.enums.CommonCodeEnum;
@@ -35,12 +31,13 @@ import com.arz.pmp.base.framework.commons.utils.Assert;
 import com.arz.pmp.base.framework.commons.utils.DateUtil;
 import com.arz.pmp.base.framework.core.enums.SysPermEnumClass;
 import com.arz.pmp.base.mapper.PmpUserEntityMapper;
+import com.arz.pmp.base.mapper.ex.PmpAdminExMapper;
+import com.arz.pmp.base.mapper.ex.PmpCourseExMapper;
 import com.arz.pmp.base.mapper.ex.PmpUserExMapper;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 
 import ma.glasnost.orika.MapperFacade;
-import org.springframework.util.CollectionUtils;
 
 /**
  * description 学员业务实现
@@ -259,13 +256,13 @@ public class UserServiceImpl implements UserService {
         List<PmpAdminEntity> adminList = pmpAdminExMapper.selectAdminAll();
         List<PmpCourseEntity> courseList = pmpCourseExMapper.selectCourseAll();
         // 导入失败记录
-        List<PmpUserEntity> errorList = null;
+        List<UserDataImport> errorList = null;
         // 填充配置数据、数据校验
         for (UserDataImport item : list) {
             String userName = item.getUserName();
             String identityNo = null;
             String phoneNo = item.getPhoneNo();
-            if (StringUtils.isBlank(userName) || StringUtils.isBlank(phoneNo)) {
+            if (StringUtils.isBlank(userName) || StringUtils.isBlank(phoneNo) || !Constants.REGEX_PHONE_NO.matcher(phoneNo).matches()) {
                 // || StringUtils.isBlank(identityNo)
                 // || !identityNo.matches(Constants.REGEX_IDENTITY_NO)
                 logger.info("用户数据导入不处理信息====user=={}", item);
@@ -273,7 +270,7 @@ public class UserServiceImpl implements UserService {
                     errorList = new ArrayList<>();
                     result.setErrorList(errorList);
                 }
-                errorList.add(mapperFacade.map(item,PmpUserEntity.class));
+                errorList.add(item);
                 continue;
             }
             // 获取支付方式ID
@@ -291,17 +288,23 @@ public class UserServiceImpl implements UserService {
             PmpUserEntity user = mapperFacade.map(item,PmpUserEntity.class);
             Long userId = validUserUnique(userName, identityNo, item.getPhoneNo(), user.getCourseId());
             Long curTime = DateUtil.getCurSecond();
-            if (userId != null) {
-                // 修改
-                user.setUserId(userId);
-                user.setUpdateTime(curTime);
-                pmpUserEntityMapper.updateByPrimaryKeySelective(user);
-                j++;
-            } else {
-                user.setCreateTime(curTime);
-                pmpUserEntityMapper.insertSelective(user);
-                i++;
+            try {
+                if (userId != null) {
+                    // 修改
+                    user.setUserId(userId);
+                    user.setUpdateTime(curTime);
+                    pmpUserEntityMapper.updateByPrimaryKeySelective(user);
+                    j++;
+                } else {
+                    user.setCreateTime(curTime);
+                    pmpUserEntityMapper.insertSelective(user);
+                    i++;
+                }
+            }catch (Exception e){
+                logger.error("here is exception====",e);
+                errorList.add(item);
             }
+
         }
         result.setAddCount(i);
         result.setUpdateCount(j);
