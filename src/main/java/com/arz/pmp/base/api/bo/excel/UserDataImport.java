@@ -146,16 +146,16 @@ public class UserDataImport {
     private String certCnName;
 
     @PayrollProperty("PMI中文网站密码")
-    
     private String certCnPasw;
 
     @PayrollProperty("付款金额")
-    
     private BigDecimal payTotal;
 
     @PayrollProperty("付款方式")
-    
     private String payName;
+
+    @PayrollProperty("支付备注")
+    private String payRemarks;
 
     private Long payId;
 

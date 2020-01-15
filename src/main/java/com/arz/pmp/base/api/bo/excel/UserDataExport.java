@@ -1,13 +1,12 @@
 package com.arz.pmp.base.api.bo.excel;
 
+import java.math.BigDecimal;
+
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.alibaba.excel.metadata.BaseRowModel;
-import com.arz.pmp.base.api.aop.annotation.PayrollProperty;
 import com.arz.pmp.base.framework.commons.utils.DateUtil;
 
 import lombok.Data;
-
-import java.math.BigDecimal;
 
 @Data
 public class UserDataExport extends BaseRowModel {
@@ -162,6 +161,8 @@ public class UserDataExport extends BaseRowModel {
 
     private Long payId;
 
+    @ExcelProperty("支付备注")
+    private String payRemarks;
     
     @ExcelProperty("是否含票")
     private String invoiceOnStr;
