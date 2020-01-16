@@ -1,21 +1,17 @@
 package com.arz.pmp.base.framework.core.utils.excel;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.event.AnalysisEventListener;
 import com.alibaba.excel.util.TypeUtil;
-import com.alibaba.fastjson.JSONObject;
 import com.arz.pmp.base.api.aop.annotation.PayrollProperty;
 import com.arz.pmp.base.api.bo.excel.UserDataImport;
-import com.arz.pmp.base.framework.commons.utils.DateUtil;
 import com.arz.pmp.base.framework.commons.utils.Util;
 import org.apache.commons.beanutils.PropertyUtils;
-import org.apache.commons.lang3.StringUtils;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * description: java类作用描述
@@ -34,6 +30,7 @@ public class ExcelUserListener extends AnalysisEventListener {
      */
     private List<UserDataImport> datas = new ArrayList<UserDataImport>();
     private List<String> rowHeader = null;// 表头
+
     @Override
     public void invoke(Object obj, AnalysisContext context) {
 
@@ -41,7 +38,7 @@ public class ExcelUserListener extends AnalysisEventListener {
         if (Util.isEmpty(obj) || !(obj instanceof List) || rowNum < 0) {
             return;
         }
-        List<String> cellList = (List) obj;
+        List<String> cellList = (List)obj;
         // 判断是否表头
         if (rowNum == 0) {
             cellList.remove(null);
@@ -59,24 +56,26 @@ public class ExcelUserListener extends AnalysisEventListener {
             Field[] fields = UserDataImport.class.getDeclaredFields();
             for (Field field : fields) {
                 PayrollProperty payRollProperty = field.getDeclaredAnnotation(PayrollProperty.class);
-                if (headerName == null || payRollProperty == null
-                        || !headerName.equals(payRollProperty.value())) {
+                if (headerName == null || payRollProperty == null || !headerName.equals(payRollProperty.value())) {
                     continue;
                 }
                 try {
                     Object cellObj = null;
                     // 判断数据类型
-//                    if (payRollProperty.format().equalsIgnoreCase(UserDataImport.dateFormat)) {
-//                        //库中存10位
-//                        if(StringUtils.isNotBlank(cellData)){
-//                            cellObj = DateUtil.getDateSecond(DateUtil.strToDate(cellData, DateUtil.DateStrFormat.f_1));
-//                        }
-//                    } else {
+                    // if (payRollProperty.format().equalsIgnoreCase(UserDataImport.dateFormat)) {
+                    // //库中存10位
+                    // if(StringUtils.isNotBlank(cellData)){
+                    // cellObj = DateUtil.getDateSecond(DateUtil.strToDate(cellData, DateUtil.DateStrFormat.f_1));
+                    // }
+                    // } else {
 
-                        cellObj = TypeUtil.convert(cellData, field, payRollProperty.format(), false);
-//                    }
-                    if(cellObj!= null && cellObj instanceof String){
-                        cellObj = (String)((String) cellObj).trim();
+                    cellObj = TypeUtil.convert(cellData, field, payRollProperty.format(), false);
+                    // }
+                    if (cellObj == null) {
+                        break;
+                    }
+                    if (cellObj instanceof String) {
+                        cellObj = ((String)cellObj).trim();
                     }
                     PropertyUtils.setProperty(userData, field.getName(), cellObj);
                 } catch (IllegalAccessException e) {
@@ -86,6 +85,9 @@ public class ExcelUserListener extends AnalysisEventListener {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
                 } catch (NoSuchMethodException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                } catch (Exception e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
                 }

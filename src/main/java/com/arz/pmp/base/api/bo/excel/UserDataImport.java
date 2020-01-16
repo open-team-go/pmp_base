@@ -1,12 +1,10 @@
 package com.arz.pmp.base.api.bo.excel;
 
-import java.math.BigDecimal;
-
-import com.alibaba.excel.annotation.ExcelProperty;
 import com.arz.pmp.base.api.aop.annotation.PayrollProperty;
 import com.arz.pmp.base.framework.commons.utils.DateUtil;
-
 import lombok.Data;
+
+import java.math.BigDecimal;
 
 @Data
 public class UserDataImport {
@@ -30,27 +28,22 @@ public class UserDataImport {
     }
 
     @PayrollProperty("咨询城市")
-    
     private String consultationCity;
 
     @PayrollProperty("顾问姓名")
-    
     private String salesAdminName;
 
     private Long adminId;
 
     @PayrollProperty("来源")
-    
     private String resourceName;
 
     private Long resourceId;
 
     @PayrollProperty("姓名")
-    
     private String userName;
 
     @PayrollProperty("性别")
-    
     private String genderStr;
 
     private Boolean gender;
@@ -70,33 +63,26 @@ public class UserDataImport {
     }
 
     @PayrollProperty("手机号码")
-    
     private String phoneNo;
 
     @PayrollProperty("通讯地址")
-    
     private String userAddress;
 
     @PayrollProperty("邮箱")
-    
     private String email;
 
     @PayrollProperty("学历")
-    
     private String educationName;
 
     private Long educationId;
 
     @PayrollProperty("专业")
-    
     private String schoolMajor;
 
     @PayrollProperty("毕业时间")
-    
     private String graduationTimeStr;
 
     @PayrollProperty("毕业院校")
-    
     private String graduationSchool;
 
     private Long graduationTime;
@@ -116,33 +102,27 @@ public class UserDataImport {
     }
 
     @PayrollProperty("公司")
-    
     private String comName;
 
     @PayrollProperty("职位")
-    
     private String comPosition;
 
     @PayrollProperty("报名课程")
-    
     private String courseName;
 
     private Long courseId;
 
     @PayrollProperty("PMI ID号")
-    
+
     private String certNo;
 
     @PayrollProperty("PMI英文网站用户名")
-    
     private String certEnName;
 
     @PayrollProperty("PMI英文网站密码")
-    
     private String certEnPasw;
-
     @PayrollProperty("PMI中文网站用户名")
-    
+
     private String certCnName;
 
     @PayrollProperty("PMI中文网站密码")
@@ -160,7 +140,6 @@ public class UserDataImport {
     private Long payId;
 
     @PayrollProperty("是否含票")
-    
     private String invoiceOnStr;
 
     private Boolean invoiceOn;
@@ -180,7 +159,6 @@ public class UserDataImport {
     }
 
     @PayrollProperty("付款时间")
-    
     private String payTimeStr;
 
     private Long payTime;
@@ -200,7 +178,6 @@ public class UserDataImport {
     }
 
     @PayrollProperty("考试时间")
-    
     private String examinationTimeStr;
 
     private Long examinationTime;
@@ -220,6 +197,5 @@ public class UserDataImport {
     }
 
     @PayrollProperty("备注")
-    
     private String remark;
 }
