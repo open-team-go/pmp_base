@@ -61,7 +61,7 @@ public class UserDataExport extends BaseRowModel {
         if (genderStr != null) {
             return genderStr;
         }
-        return gender != null && gender ? "男" : "女";
+        return gender == null?null : gender ? "男" : "女";
     }
 
     public Boolean getGender() {
