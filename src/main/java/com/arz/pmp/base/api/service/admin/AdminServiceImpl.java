@@ -88,9 +88,9 @@ public class AdminServiceImpl implements AdminService {
         RequestHeader requestHeader = data.getHeader();
         AdminSearchReq search = data.getBody();
         PageInfo pageInfo = PageHelper.startPage(requestHeader.confirmCurrentPage(), requestHeader.confirmShowNum())
-                .doSelectPage(() -> {
-                    pmpAdminExMapper.selectAdminInfoList(search);
-                }).toPageInfo();
+            .doSelectPage(() -> {
+                pmpAdminExMapper.selectAdminInfoList(search);
+            }).toPageInfo();
         return pageInfo;
     }
 
@@ -151,9 +151,9 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public List<PmpAdminEntity> getAdminList(AdminSearchReq data,String authentication) {
+    public List<PmpAdminEntity> getAdminList(AdminSearchReq data, String authentication) {
         PmpAdminEntity adminEntity = redisService.getOperatorByToken(authentication);
-        if(adminEntity != null && adminEntity.getRoleId().equals(data.getRoleId())){
+        if (adminEntity != null && adminEntity.getRoleId().equals(data.getRoleId())) {
             List<PmpAdminEntity> list = new ArrayList();
             PmpAdminEntity admin = new PmpAdminEntity();
             admin.setAdminId(adminEntity.getAdminId());
@@ -174,10 +174,25 @@ public class AdminServiceImpl implements AdminService {
             return null;
         }
         PmpRoleEntity roleEntity = permissionService.getRoleById(adminEntity.getRoleId());
-        if(roleEntity != null && roleEnum.getCode().equalsIgnoreCase(roleEntity.getRoleCode())){
+        if (roleEntity != null && roleEnum.getCode().equalsIgnoreCase(roleEntity.getRoleCode())) {
             return adminEntity.getAdminId();
         }
         return null;
+    }
+
+    @Override
+    public void updatePassword(String newPassword, String authentication) {
+        Assert.isTrue(StringUtils.isNotBlank(newPassword), CommonCodeEnum.PARAM_ERROR);
+        Long adminId = redisService.getOperatorIdByToken(authentication);
+        PmpAdminEntity adminEntity = new PmpAdminEntity();
+        String salt = EncryptUtils.createSalt();
+        String encryptPaw = createSysUserPsw(newPassword, salt);
+        adminEntity.setSalt(salt);
+        adminEntity.setPassword(encryptPaw);
+        adminEntity.setUpdateManager(adminId);
+        adminEntity.setUpdateTime(DateUtil.getCurSecond());
+        adminEntity.setAdminId(adminId);
+        pmpAdminEntityMapper.updateByPrimaryKeySelective(adminEntity);
     }
 
     private String cacheRedisAdmin(AdminLoginResp resp) {
@@ -212,7 +227,7 @@ public class AdminServiceImpl implements AdminService {
         Assert.isTrue(user != null, CommonCodeEnum.PARAM_ERROR_LOGIN_USERNAME);
         // 验证密码
         Assert.isTrue(doCredentialsMatch(password, user.getSalt(), user.getPassword()),
-                CommonCodeEnum.PARAM_ERROR_LOGIN_PASSWORD);
+            CommonCodeEnum.PARAM_ERROR_LOGIN_PASSWORD);
         user.setPassword(null);
         user.setSalt(null);
         return user;

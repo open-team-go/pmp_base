@@ -32,4 +32,6 @@ public interface AdminService {
     List<PmpAdminEntity> getAdminList(AdminSearchReq data,String authentication);
 
     Long getRoleAdminId(String authentication, SysPermEnumClass.RoleEnum roleEnum);
+
+    void updatePassword(String newPassword,String authentication);
 }

@@ -121,9 +121,16 @@ public class AdminRestController {
     @PostMapping("/search")
     public RestResponse<List<PmpAdminEntity>> getAdmins(@RequestBody @Valid RestRequest<AdminSearchReq> data) {
 
-        List<PmpAdminEntity> list = adminService.getAdminList(data.getBody(),data.getHeader().getAuthentication());
+        List<PmpAdminEntity> list = adminService.getAdminList(data.getBody(), data.getHeader().getAuthentication());
 
         return RestResponse.success(list);
+    }
+
+    @ApiOperation(value = "管理员 修改密码", notes = "管理人员修改密码")
+    @PostMapping("/update/password")
+    public RestResponse updatePassword(@RequestBody RestRequest<CommonDataReq> data) {
+        adminService.updatePassword(data.getBody().getPassword(), data.getHeader().getAuthentication());
+        return RestResponse.success();
     }
 
 }

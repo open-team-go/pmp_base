@@ -68,4 +68,7 @@ public class UserSearchReq {
 
     @ApiModelProperty("付款金额")
     private Double payTotal;
+
+    @ApiModelProperty("结业状态（0、未知，1、通过，2、未通过，3、缓考，4、缓读）")
+    private Integer graduationStatus;
 }

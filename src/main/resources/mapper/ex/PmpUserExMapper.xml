@@ -40,9 +40,6 @@
         <if test="endTime != null and endTime!=0 ">
             AND #{endTime,jdbcType=BIGINT}>=a.create_time
         </if>
-        <if test="invoiceOn != null and invoiceOn ">
-            AND a.invoice_header IS NOT NULL
-        </if>
         <if test="invoiceOn != null ">
             AND a.invoice_on=#{invoiceOn}
         </if>
@@ -53,7 +50,10 @@
             AND a.com_position LIKE CONCAT('%',#{comPosition},'%')
         </if>
         <if test="payTotal != null ">
-            AND a.pay_total LIKE CONCAT('%',#{payTotal},'%')
+            AND a.pay_total = #{payTotal}
+        </if>
+        <if test="graduationStatus != null ">
+            AND a.graduation_status = #{graduationStatus}
         </if>
         ORDER BY a.create_time DESC,a.admin_id,c.sort
     </sql>
