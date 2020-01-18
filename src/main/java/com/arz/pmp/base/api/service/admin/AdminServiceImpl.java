@@ -101,6 +101,8 @@ public class AdminServiceImpl implements AdminService {
         Long adminId = data.getAdminId();
         boolean flag = user == null || (!addOn && user.getAdminId().equals(adminId));
         Assert.isTrue(flag, CommonCodeEnum.PARAM_ERROR_USERNAME_MULTI);
+        Assert.isTrue(((adminId !=null && adminId != Constants.ADMIN_DEFAULT_ID) || adminId==null)  && data.getRoleId()!=Constants.ADMIN_DEFAULT_ID,
+                CommonCodeEnum.PARAM_ERROR_ADMIN);
         PmpAdminEntity pmpAdminEntity = mapperFacade.map(data, PmpAdminEntity.class);
         long curTimeSec = DateUtil.getCurSecond();
         // 操作员信息
