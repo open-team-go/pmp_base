@@ -12,7 +12,7 @@ public interface PmpUserExMapper {
 
     List<UserDataResp> selectUserList(UserSearchReq search);
 
-    List<PmpUserEntity> selectUserByName(@Param("userName") String userName, @Param("identityNo") String identityNo,@Param("phoneNo") String phoneNo);
+    PmpUserEntity selectUserByName(@Param("userName") String userName, @Param("identityNo") String identityNo,@Param("phoneNo") String phoneNo);
 
     List<PmpUserEducationEntity> selectEducationList(@Param("delOn") Boolean delOn);
 
@@ -20,8 +20,7 @@ public interface PmpUserExMapper {
 
     List<PmpUserResourceTypeEntity> selectResourceTypeList(@Param("delOn") Boolean delOn);
 
-    UserDataResp selectUserDetail(@Param("userId") Long userId, @Param("phoneNo") String phoneNo,
-        @Param("keyWord") String keyWord, @Param("userName") String userName, @Param("identityNo") String identityNo);
+    UserDataResp selectUserDetail(@Param("userId") Long userId);
 
     List<UserDataResp> selectExportUserList(UserSearchReq search);
 

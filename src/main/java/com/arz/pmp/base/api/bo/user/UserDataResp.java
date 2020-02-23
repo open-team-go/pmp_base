@@ -21,6 +21,9 @@ import java.math.BigDecimal;
 @Data
 public class UserDataResp {
 
+    @ApiModelProperty("用户课程信息表ID")
+    private Long userRefCourseId;
+
     @ApiModelProperty("用户表ID")
     private Long userId;
 
