@@ -95,7 +95,7 @@ public class RoomServiceImpl implements RoomService {
             entity.setCreateTime(curTimeSec);
             entity.setCreateManager(operatorId);
             entity.setDelOn(false);
-            pmpTeachingRoomEntityMapper.insert(entity);
+            pmpTeachingRoomEntityMapper.insertSelective(entity);
             roomId = entity.getRoomId();
 
         } else {
