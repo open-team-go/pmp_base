@@ -46,7 +46,7 @@ public interface UserService {
 
     UserDataResp getUserDetailByKey(Long userId);
 
-    UserImportResp insertUserBatch(List<UserDataImport> list);
+    UserImportResp insertUserBatch(List<UserDataImport> list,Long managerId);
 
     Long insertUserRegister(UserRegistReq data);
 

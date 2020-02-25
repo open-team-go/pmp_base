@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.Value;
 
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Positive;
 import java.math.BigDecimal;
@@ -15,9 +16,9 @@ import java.math.BigDecimal;
  *
  * @author chen wei
  * @version 1.0
- * <p>
- * Copyright: Copyright (c) 2019
- * </p>
+ *          <p>
+ *          Copyright: Copyright (c) 2019
+ *          </p>
  * @date 2019/11/14 18:06
  */
 @ApiModel
@@ -26,6 +27,9 @@ public class UserEditorReq {
 
     @ApiModelProperty("用户表ID")
     private Long userId;
+
+    @ApiModelProperty("用户选课表ID")
+    private Long userRefCourseId;
 
     @ApiModelProperty("班级ID")
     @Positive
@@ -113,6 +117,8 @@ public class UserEditorReq {
     private Integer userType;
 
     @ApiModelProperty("课程ID")
+    @NotNull(message = "课程必选")
+    @Positive(message = "课程必选")
     private Long courseId;
 
     @ApiModelProperty("结业状态（0、未知，1、通过，2、未通过，3、缓考，4、缓读）")

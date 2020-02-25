@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.alibaba.excel.metadata.BaseRowModel;
+import com.arz.pmp.base.api.aop.annotation.PayrollProperty;
 import com.arz.pmp.base.framework.commons.utils.DateUtil;
 
 import lombok.Data;
@@ -11,7 +12,6 @@ import lombok.Data;
 @Data
 public class UserDataExport extends BaseRowModel {
 
-    
     @ExcelProperty("咨询日期")
     private String consultationTimeStr;
 
@@ -31,27 +31,22 @@ public class UserDataExport extends BaseRowModel {
         return DateUtil.getDateSecond(DateUtil.strToDate(consultationTimeStr, DateUtil.DateStrFormat.f_2));
     }
 
-    
     @ExcelProperty("咨询城市")
     private String consultationCity;
 
-    
     @ExcelProperty("顾问姓名")
     private String salesAdminName;
 
     private Long adminId;
 
-    
     @ExcelProperty("来源")
     private String resourceName;
 
     private Long resourceId;
 
-    
     @ExcelProperty("姓名")
     private String userName;
 
-    
     @ExcelProperty("性别")
     private String genderStr;
 
@@ -61,7 +56,7 @@ public class UserDataExport extends BaseRowModel {
         if (genderStr != null) {
             return genderStr;
         }
-        return gender == null?null : gender ? "男" : "女";
+        return gender == null ? null : gender ? "男" : "女";
     }
 
     public Boolean getGender() {
@@ -71,33 +66,26 @@ public class UserDataExport extends BaseRowModel {
         return "男".equals(genderStr) ? true : false;
     }
 
-    
     @ExcelProperty("手机号码")
     private String phoneNo;
 
-    
     @ExcelProperty("通讯地址")
     private String userAddress;
 
-    
     @ExcelProperty("邮箱")
     private String email;
 
-    
     @ExcelProperty("学历")
     private String educationName;
 
     private Long educationId;
 
-    
     @ExcelProperty("专业")
     private String schoolMajor;
 
-    
     @ExcelProperty("毕业时间")
     private String graduationTimeStr;
 
-    
     @ExcelProperty("毕业院校")
     private String graduationSchool;
 
@@ -117,45 +105,40 @@ public class UserDataExport extends BaseRowModel {
         return DateUtil.getDateSecond(DateUtil.strToDate(graduationTimeStr, DateUtil.DateStrFormat.f_2));
     }
 
-    
     @ExcelProperty("公司")
     private String comName;
 
-    
     @ExcelProperty("职位")
     private String comPosition;
 
-    
     @ExcelProperty("报名课程")
     private String courseName;
 
     private Long courseId;
 
-    
+    @ExcelProperty("班级名称")
+    private String roomName;
+
+    private Long roomId;
+
     @ExcelProperty("PMI ID号")
     private String certNo;
 
-    
     @ExcelProperty("PMI英文网站用户名")
     private String certEnName;
 
-    
     @ExcelProperty("PMI英文网站密码")
     private String certEnPasw;
 
-    
     @ExcelProperty("PMI中文网站用户名")
     private String certCnName;
 
-    
     @ExcelProperty("PMI中文网站密码")
     private String certCnPasw;
 
-    
     @ExcelProperty("付款金额")
     private BigDecimal payTotal;
 
-    
     @ExcelProperty("付款方式")
     private String payName;
 
@@ -163,7 +146,7 @@ public class UserDataExport extends BaseRowModel {
 
     @ExcelProperty("支付备注")
     private String payRemarks;
-    
+
     @ExcelProperty("是否含票")
     private String invoiceOnStr;
 
@@ -183,7 +166,6 @@ public class UserDataExport extends BaseRowModel {
         return "是".equals(invoiceOnStr) ? true : false;
     }
 
-    
     @ExcelProperty("付款时间")
     private String payTimeStr;
 
@@ -203,7 +185,6 @@ public class UserDataExport extends BaseRowModel {
         return DateUtil.getDateSecond(DateUtil.strToDate(payTimeStr, DateUtil.DateStrFormat.f_2));
     }
 
-    
     @ExcelProperty("考试时间")
     private String examinationTimeStr;
 
@@ -223,7 +204,6 @@ public class UserDataExport extends BaseRowModel {
         return DateUtil.getDateSecond(DateUtil.strToDate(examinationTimeStr, DateUtil.DateStrFormat.f_1));
     }
 
-    
     @ExcelProperty("备注")
     private String remark;
 

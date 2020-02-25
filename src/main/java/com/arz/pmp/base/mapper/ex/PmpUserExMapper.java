@@ -20,7 +20,7 @@ public interface PmpUserExMapper {
 
     List<PmpUserResourceTypeEntity> selectResourceTypeList(@Param("delOn") Boolean delOn);
 
-    UserDataResp selectUserDetail(@Param("userId") Long userId);
+    UserDataResp selectUserDetail(UserSearchReq search);
 
     List<UserDataResp> selectExportUserList(UserSearchReq search);
 
@@ -28,4 +28,5 @@ public interface PmpUserExMapper {
 
     List<Long> selectUserIds(@Param("userName") String userName, @Param("identityNo") String identityNo);
 
+    Long selectUserRefCourseId(@Param("userId") Long userId, @Param("courseId") Long courseId);
 }

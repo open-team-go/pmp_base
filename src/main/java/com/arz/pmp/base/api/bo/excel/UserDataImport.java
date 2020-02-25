@@ -112,6 +112,11 @@ public class UserDataImport {
 
     private Long courseId;
 
+    @PayrollProperty("班级名称")
+    private String roomName;
+
+    private Long roomId;
+
     @PayrollProperty("PMI ID号")
 
     private String certNo;

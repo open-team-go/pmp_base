@@ -21,7 +21,7 @@ import java.math.BigDecimal;
 @Data
 public class UserDataResp {
 
-    @ApiModelProperty("用户课程信息表ID")
+    @ApiModelProperty("用户选课表ID")
     private Long userRefCourseId;
 
     @ApiModelProperty("用户表ID")
@@ -40,7 +40,7 @@ public class UserDataResp {
     private String salesAdminName;
 
     @ApiModelProperty("课程顾问ID")
-    private Long salesAdminId;
+    private Long adminId;
 
     @ApiModelProperty("课程名称")
     private String courseName;

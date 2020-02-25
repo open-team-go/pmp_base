@@ -3,8 +3,8 @@
 <mapper namespace="com.arz.pmp.base.mapper.ex.PmpUserExMapper">
 
     <sql id="Sql_export_select">
-        FROM pmp_user a
-        LEFT JOIN pmp_user_ref_course urc ON a.user_id=urc.user_id
+        FROM pmp_user_ref_course urc
+        LEFT JOIN pmp_user a ON a.user_id=urc.user_id
         LEFT JOIN pmp_admin b ON urc.admin_id=b.admin_id
         LEFT JOIN pmp_course c ON urc.course_id=c.course_id
         LEFT JOIN pmp_teaching_room d ON urc.room_id=d.room_id
@@ -59,7 +59,7 @@
         <if test="userRefCourseId != null">
             AND urc.id = #{userRefCourseId,jdbcType=BIGINT}
         </if>
-        ORDER BY urc.create_time DESC,a.admin_id,c.sort
+        ORDER BY urc.create_time DESC,urc.admin_id,c.sort
     </sql>
     <select id="selectUserByName" resultType="com.arz.pmp.base.entity.PmpUserEntity">
         SELECT a.user_id,a.phone_no,a.identity_no
@@ -83,7 +83,7 @@
 
     <select id="selectUserList" resultType="com.arz.pmp.base.api.bo.user.UserDataResp">
         SELECT a.user_id, a.user_name, a.gender,a.phone_no,a.user_type,a.com_name,a.email,
-        a.consultation_time,a.consultation_city,urc.pay_total,a.resource_id,
+        urc.consultation_time,urc.consultation_city,urc.pay_total,a.resource_id,
         b.nickName salesAdminName,c.course_name,d.room_name,urc.id userRefCourseId,
         (SELECT b_1.nickName FROM pmp_admin b_1 WHERE d.admin_id=b_1.admin_id) educationAdminName,
         (SELECT g.resource_name FROM pmp_user_resource_type g WHERE a.resource_id=g.resource_id) resourceName
@@ -126,7 +126,8 @@
         a.phone_no, a.fixed_telephone, a.email, a.backup_email, a.wechat_no, a.qq, a.identity_no, a.zip_code,
         a.user_address, a.graduation_time, a.graduation_school, a.school_major, a.industry, a.com_name,
         a.com_department, a.com_position, urc.invoice_header, urc.invoice_code, a.user_type, urc.admin_id,
-        urc.course_id, urc.graduation_status, urc.cert_no, urc.cert_en_name, urc.cert_en_pasw, urc.cert_cn_name, urc.cert_cn_pasw,
+        urc.course_id, urc.graduation_status, urc.cert_no, urc.cert_en_name, urc.cert_en_pasw, urc.cert_cn_name,
+        urc.cert_cn_pasw,
         urc.remark, urc.create_time,b.nickName salesAdminName,c.course_name,d.room_name,e.education_name,f.pay_name,
         urc.examination_time,urc.pay_total,urc.pay_time,urc.consultation_time,urc.consultation_city,urc.pay_remarks,
         (SELECT b_1.nickName FROM pmp_admin b_1 WHERE d.admin_id=b_1.admin_id) educationAdminName,
@@ -139,20 +140,15 @@
         SELECT a.user_id, a.education_id, urc.pay_id, urc.room_id, a.user_name, a.gender, a.nationality, a.birthday,
         a.phone_no, a.fixed_telephone, a.email, a.backup_email, a.wechat_no, a.qq, a.identity_no, a.zip_code,
         a.user_address, a.graduation_time, a.graduation_school, a.school_major, a.industry, a.com_name,
-        a.com_department, a.com_position, urc.invoice_header, urc.invoice_code, a.user_type, urc.admin_id,a.resource_id,a.recommend_name,
-        urc.course_id, urc.graduation_status, urc.cert_no, urc.cert_en_name, urc.cert_en_pasw, urc.cert_cn_name, urc.cert_cn_pasw,
+        a.com_department, a.com_position, urc.invoice_header, urc.invoice_code, a.user_type,
+        urc.admin_id,a.resource_id,a.recommend_name,
+        urc.course_id, urc.graduation_status, urc.cert_no, urc.cert_en_name, urc.cert_en_pasw, urc.cert_cn_name,
+        urc.cert_cn_pasw,
         urc.remark, urc.create_time,urc.consultation_time,urc.consultation_city,
-        b.nickName salesAdminName,b.admin_id salesAdminId,c.course_name,d.room_name,e.education_name,f.pay_name,
+        b.nickName salesAdminName,b.admin_id,c.course_name,d.room_name,e.education_name,f.pay_name,
         urc.examination_time,urc.pay_total,urc.pay_time,urc.invoice_on,urc.pay_remarks,urc.id userRefCourseId,
         (SELECT b_1.nickName FROM pmp_admin b_1 WHERE d.admin_id=b_1.admin_id) educationAdminName,
         (SELECT g.resource_name FROM pmp_user_resource_type g WHERE a.resource_id=g.resource_id) resourceName
-        FROM pmp_user a
-        LEFT JOIN pmp_user_ref_course urc ON a.user_id=urc.user_id
-        LEFT JOIN pmp_admin b ON a.admin_id=b.admin_id
-        LEFT JOIN pmp_course c ON a.course_id=c.course_id
-        LEFT JOIN pmp_teaching_room d ON a.room_id=d.room_id
-        LEFT JOIN pmp_user_education e ON a.education_id=e.education_id
-        LEFT JOIN pmp_user_pay_type f ON a.pay_id=f.pay_id
         <include refid="Sql_export_select"></include>
     </select>
 
@@ -172,5 +168,12 @@
         SELECT a.user_id
         FROM pmp_user a
         WHERE a.del_on=0 AND a.user_name = #{userName} AND a.identity_no = #{identityNo}
+    </select>
+
+    <select id="selectUserRefCourseId" resultType="java.lang.Long">
+        SELECT urc.id
+        FROM pmp_user_ref_course urc
+        WHERE urc.user_id=#{userId} AND urc.course_id=#{courseId} AND urc.del_on=0
+        LIMIT 1;
     </select>
 </mapper>

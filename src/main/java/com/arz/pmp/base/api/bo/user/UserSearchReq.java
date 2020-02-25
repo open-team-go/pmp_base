@@ -18,6 +18,9 @@ import lombok.Data;
 @Data
 public class UserSearchReq {
 
+    @ApiModelProperty("学员选课记录ID")
+    private Long userRefCourseId;
+
     @ApiModelProperty("关键字")
     private String keyWord;
 
