@@ -3,7 +3,10 @@ package com.arz.pmp.base.api.service.user;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.arz.pmp.base.api.bo.room.RoomSearchReq;
 import com.arz.pmp.base.framework.commons.constants.Constants;
+import com.arz.pmp.base.mapper.PmpTeachingRoomEntityMapper;
+import com.arz.pmp.base.mapper.ex.PmpRoomExMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,6 +70,8 @@ public class UserServiceImpl implements UserService {
     private PmpAdminExMapper pmpAdminExMapper;
     @Autowired
     private PmpCourseExMapper pmpCourseExMapper;
+    @Autowired
+    private PmpRoomExMapper pmpRoomExMapper;
 
     @Override
     public PageInfo<List<UserDataResp>> getUserListPage(RestRequest<UserSearchReq> req) {
@@ -235,6 +240,18 @@ public class UserServiceImpl implements UserService {
         return null;
     }
 
+    private Long getRoomIdByName(List<PmpTeachingRoomEntity> list, String name){
+        if(CollectionUtils.isEmpty(list) || StringUtils.isBlank(name)){
+            return null;
+        }
+        for(PmpTeachingRoomEntity item:list){
+            if(item.getRoomName().equalsIgnoreCase(name)){
+                return item.getRoomId();
+            }
+        }
+        return null;
+    }
+
     @Override
     public UserDataResp getUserDetailByKey(Long userId) {
         return pmpUserExMapper.selectUserDetail(userId, null, null, null, null);
@@ -255,6 +272,7 @@ public class UserServiceImpl implements UserService {
         List<PmpUserEducationEntity> educationList = pmpUserExMapper.selectEducationList(null);
         List<PmpAdminEntity> adminList = pmpAdminExMapper.selectAdminAll();
         List<PmpCourseEntity> courseList = pmpCourseExMapper.selectCourseAll();
+        List<PmpTeachingRoomEntity> roomList = pmpRoomExMapper.selectRoomSimpleList(new RoomSearchReq());
         // 导入失败记录
         List<UserDataImport> errorList = null;
         // 填充配置数据、数据校验
@@ -283,6 +301,8 @@ public class UserServiceImpl implements UserService {
             item.setAdminId(getAdminIdByName(adminList,item.getSalesAdminName()));
             // 获取课程ID
             item.setCourseId(getCourseIdByName(courseList,item.getCourseName()));
+            // 获取班級ID
+            item.setRoomId(getRoomIdByName(roomList,item.getRoomName()));
 
             // 数据入库
             PmpUserEntity user = mapperFacade.map(item,PmpUserEntity.class);

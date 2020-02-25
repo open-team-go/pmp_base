@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.alibaba.excel.metadata.BaseRowModel;
+import com.arz.pmp.base.api.aop.annotation.PayrollProperty;
 import com.arz.pmp.base.framework.commons.utils.DateUtil;
 
 import lombok.Data;
@@ -131,7 +132,11 @@ public class UserDataExport extends BaseRowModel {
 
     private Long courseId;
 
-    
+    @ExcelProperty("班级名称")
+    private String roomName;
+
+    private Long roomId;
+
     @ExcelProperty("PMI ID号")
     private String certNo;
 
