@@ -48,7 +48,7 @@ public class UserEditorReq {
     private Long payId;
 
     @ApiModelProperty("姓名")
-    @Pattern(regexp = "\\S{1,30}", message = "非空1-100位")
+    @Pattern(regexp = "\\S{1,30}", message = "姓名非空1-30位")
     private String userName;
 
     @ApiModelProperty("性别（0、女，1、男）")
@@ -77,7 +77,7 @@ public class UserEditorReq {
     private String qq;
 
     @ApiModelProperty("身份证号码")
-    @Pattern(regexp = Constants.REGEX_IDENTITY_NO)
+    @Pattern(regexp = Constants.REGEX_IDENTITY_NO,message = "身份证号格式不正确")
     private String identityNo;
 
     @ApiModelProperty("邮编")

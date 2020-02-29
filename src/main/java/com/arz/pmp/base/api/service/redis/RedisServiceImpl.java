@@ -2,6 +2,7 @@ package com.arz.pmp.base.api.service.redis;
 
 import com.arz.pmp.base.entity.PmpAdminEntity;
 import com.arz.pmp.base.framework.commons.utils.DateUtil;
+import com.arz.pmp.base.framework.commons.utils.NumberUtil;
 import com.arz.pmp.base.framework.redis.RedisKeys;
 import com.arz.pmp.base.framework.redis.RedisUtil;
 import com.arz.pmp.base.framework.redis.TimeConstants;
@@ -59,10 +60,11 @@ public class RedisServiceImpl implements RedisService {
 
     @Override
     public PmpAdminEntity getOperatorByToken(String appToken) {
-        if(StringUtils.isBlank(appToken)){
+        if (StringUtils.isBlank(appToken)) {
             return null;
         }
-        Object value = redisUtil.get(getOperatorKey(appToken));
+        String key = getOperatorKey(appToken);
+        Object value = redisUtil.get(key);
         if (value == null) {
             return null;
         }
@@ -116,6 +118,53 @@ public class RedisServiceImpl implements RedisService {
 
         String key = RedisKeys.SYS_OPERATOR_ROLE_PERMISSION + roleId;
         redisUtil.del(key);
+    }
+
+    @Override
+    public void setFrontUser(String token, Long userId) {
+        if (StringUtils.isBlank(token) || userId == null) {
+            return;
+        }
+
+        redisUtil.set(getFrontUserKey(token), userId, getOperatorExpire());
+    }
+
+    @Override
+    public void delFrontUser(String token) {
+
+        String key = getFrontUserKey(token);
+        redisUtil.del(key);
+    }
+
+    @Override
+    public Long geFrontUserByToken(String token) {
+        if (StringUtils.isBlank(token)) {
+            return null;
+        }
+        Object value = redisUtil.get(getFrontUserKey(token));
+        if (value == null) {
+            return null;
+        }
+        Long userId = NumberUtil.typeChange(value.toString(), Long.class);
+        // 延长有效期
+        extendFrontUser(token, userId);
+        return userId;
+    }
+
+    private String getFrontUserKey(String token) {
+
+        return RedisKeys.FRONT_USER_TOKEN_PRE + token;
+    }
+
+    private void extendFrontUser(String token, Long userId) {
+
+        long time = redisUtil.getExpire(getFrontUserKey(token));
+        // 是否到达延长时间
+        if (time > TimeConstants.TWO_HOUR_SECONDS) {
+            return;
+        }
+        // 延长失效时间
+        setFrontUser(token, userId);
     }
 
     private void delAllPatternKey(String pattern) {

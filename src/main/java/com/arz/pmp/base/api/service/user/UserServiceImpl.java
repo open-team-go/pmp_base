@@ -2,7 +2,9 @@ package com.arz.pmp.base.api.service.user;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
+import com.arz.pmp.base.mapper.PmpUserCourseApplyEntityMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,10 +19,7 @@ import com.arz.pmp.base.api.bo.room.RoomSearchReq;
 import com.arz.pmp.base.api.bo.user.UserDataResp;
 import com.arz.pmp.base.api.bo.user.UserEditorReq;
 import com.arz.pmp.base.api.bo.user.UserSearchReq;
-import com.arz.pmp.base.api.bo.user.front.UserCheckReq;
-import com.arz.pmp.base.api.bo.user.front.UserPerfectData;
-import com.arz.pmp.base.api.bo.user.front.UserPerfectReq;
-import com.arz.pmp.base.api.bo.user.front.UserRegistReq;
+import com.arz.pmp.base.api.bo.user.front.*;
 import com.arz.pmp.base.api.service.admin.AdminService;
 import com.arz.pmp.base.api.service.redis.RedisService;
 import com.arz.pmp.base.entity.*;
@@ -74,6 +73,8 @@ public class UserServiceImpl implements UserService {
     private PmpUserRefCourseEntityMapper pmpUserRefCourseEntityMapper;
     @Autowired
     private PmpRoomExMapper pmpRoomExMapper;
+    @Autowired
+    private PmpUserCourseApplyEntityMapper pmpUserCourseApplyEntityMapper;
 
     @Override
     public PageInfo<List<UserDataResp>> getUserListPage(RestRequest<UserSearchReq> req) {
@@ -370,6 +371,7 @@ public class UserServiceImpl implements UserService {
             } else {
                 // 更新选课信息
                 userRefCourseEntity.setUpdateTime(curTime);
+                userRefCourseEntity.setId(userRefCourseId);
                 userRefCourseEntity.setUpdateManager(managerId);
                 pmpUserRefCourseEntityMapper.updateByPrimaryKeySelective(userRefCourseEntity);
             }
@@ -395,19 +397,98 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void updateUserRegister(UserPerfectReq data) {
-        List<Long> idList = pmpUserExMapper.selectUserIds(data.getUserName(), data.getIdentityNo());
-        Assert.isTrue(!CollectionUtils.isEmpty(idList), CommonCodeEnum.PARAM_ERROR_LOGIN_USERNAME);
+    public void updateUserRegister(UserPerfectReq data, String authentication) {
+        Long userId = redisService.geFrontUserByToken(authentication);
+        Long hasUserId = validUserUnique(data.getUserName(), data.getIdentityNo(), data.getPhoneNo());
+        Assert.isTrue(hasUserId == null || userId.equals(hasUserId), CommonCodeEnum.PARAM_ERROR_USER_MULTI_ERROR);
+
         PmpUserEntity userEntity = mapperFacade.map(data, PmpUserEntity.class);
-        for (Long id : idList) {
-            userEntity.setUserId(id);
-            pmpUserEntityMapper.updateByPrimaryKeySelective(userEntity);
-        }
+        userEntity.setUserId(userId);
+        pmpUserEntityMapper.updateByPrimaryKeySelective(userEntity);
     }
 
     @Override
-    public UserPerfectData getFrontUser(UserCheckReq data) {
-        return pmpUserExMapper.selectFrontUserData(data.getUserName(), data.getIdentityNo());
+    public UserPerfectData getFrontUser(String authentication) {
+
+        Long userId = redisService.geFrontUserByToken(authentication);
+
+        return pmpUserExMapper.selectFrontUserData(userId);
+    }
+
+    @Override
+    public String goLogin(UserCheckReq data) {
+
+        // 验证登录信息
+        PmpUserEntity user = validUser(data.getUserName(), data.getIdentityNo());
+        // 登录信息缓存
+        String authentication = cacheRedisFrontUser(user.getUserId());
+        return authentication;
+    }
+
+    @Override
+    public void logOut(String authentication) {
+        redisService.delFrontUser(authentication);
+    }
+
+    @Override
+    public List<CourseListData> getUserCourseList(String authentication) {
+        Long userId = redisService.geFrontUserByToken(authentication);
+        UserSearchReq searchReq = new UserSearchReq();
+        searchReq.setUserId(userId);
+        return pmpUserExMapper.selectUserCourseList(searchReq);
+    }
+
+    @Override
+    public PmpUserCourseApplyEntity getUserCourseApply(Long userRefCourseId, String authentication) {
+        Long userId = redisService.geFrontUserByToken(authentication);
+
+        PmpUserCourseApplyEntity entity = pmpUserExMapper.selectUserCourseApply(userRefCourseId);
+        if (entity == null) {
+            return null;
+        }
+        Assert.isTrue(entity.getUserId().equals(userId), CommonCodeEnum.PARAM_ERROR);
+        return entity;
+    }
+
+    @Override
+    public void updateUserCourseApply(CourseApplyData data, String authentication) {
+        PmpUserCourseApplyEntity entity = getUserCourseApply(data.getUserRefCourseId(), authentication);
+        if (entity == null) {
+            entity = new PmpUserCourseApplyEntity();
+            // 新增
+            entity.setHtmlContent(data.getHtmlContent());
+            Long userId = redisService.geFrontUserByToken(authentication);
+            entity.setUserId(userId);
+            entity.setUserRefCourseId(data.getUserRefCourseId());
+            pmpUserCourseApplyEntityMapper.insertSelective(entity);
+        } else {
+            Long id = entity.getId();
+            entity.setHtmlContent(data.getHtmlContent());
+            entity = new PmpUserCourseApplyEntity();
+            entity.setId(id);
+            pmpUserCourseApplyEntityMapper.updateByPrimaryKeySelective(entity);
+        }
+    }
+
+    public PmpUserEntity validUser(String userName, String password) {
+        PmpUserEntity user = pmpUserExMapper.selectUserByName(userName, password, null);
+
+        Assert.isTrue(user != null, CommonCodeEnum.PARAM_ERROR_LOGIN_USERNAME);
+        // 验证密码
+        Assert.isTrue(password.equals(user.getIdentityNo()), CommonCodeEnum.PARAM_ERROR_LOGIN_PASSWORD);
+        return user;
+    }
+
+    private String cacheRedisFrontUser(Long userId) {
+
+        String token = createAuthToken();
+        redisService.setFrontUser(token, userId);
+        return token;
+    }
+
+    private String createAuthToken() {
+
+        return UUID.randomUUID().toString();
     }
 
     private Long validUserUnique(String userName, String identityNo, String phoneNo) {

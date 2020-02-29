@@ -2,6 +2,7 @@ package com.arz.pmp.base.mapper.ex;
 
 import com.arz.pmp.base.api.bo.user.UserDataResp;
 import com.arz.pmp.base.api.bo.user.UserSearchReq;
+import com.arz.pmp.base.api.bo.user.front.CourseListData;
 import com.arz.pmp.base.api.bo.user.front.UserPerfectData;
 import com.arz.pmp.base.entity.*;
 import org.apache.ibatis.annotations.Param;
@@ -12,7 +13,8 @@ public interface PmpUserExMapper {
 
     List<UserDataResp> selectUserList(UserSearchReq search);
 
-    PmpUserEntity selectUserByName(@Param("userName") String userName, @Param("identityNo") String identityNo,@Param("phoneNo") String phoneNo);
+    PmpUserEntity selectUserByName(@Param("userName") String userName, @Param("identityNo") String identityNo,
+        @Param("phoneNo") String phoneNo);
 
     List<PmpUserEducationEntity> selectEducationList(@Param("delOn") Boolean delOn);
 
@@ -24,9 +26,13 @@ public interface PmpUserExMapper {
 
     List<UserDataResp> selectExportUserList(UserSearchReq search);
 
-    UserPerfectData selectFrontUserData(@Param("userName") String userName, @Param("identityNo") String identityNo);
+    UserPerfectData selectFrontUserData(@Param("userId") Long userId);
 
     List<Long> selectUserIds(@Param("userName") String userName, @Param("identityNo") String identityNo);
 
     Long selectUserRefCourseId(@Param("userId") Long userId, @Param("courseId") Long courseId);
+
+    List<CourseListData> selectUserCourseList(UserSearchReq search);
+
+    PmpUserCourseApplyEntity selectUserCourseApply(@Param("userRefCourseId") Long userRefCourseId);
 }

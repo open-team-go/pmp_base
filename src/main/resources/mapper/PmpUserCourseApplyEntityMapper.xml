@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.arz.pmp.base.mapper.PmpUserCourseApplyEntityMapper">
+  <resultMap id="BaseResultMap" type="com.arz.pmp.base.entity.PmpUserCourseApplyEntity">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="user_ref_course_id" jdbcType="BIGINT" property="userRefCourseId" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.arz.pmp.base.entity.PmpUserCourseApplyEntity">
+    <result column="html_content" jdbcType="LONGVARCHAR" property="htmlContent" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, user_ref_course_id, user_id
+  </sql>
+  <sql id="Blob_Column_List">
+    html_content
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="ResultMapWithBLOBs">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from pmp_user_course_apply
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from pmp_user_course_apply
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.arz.pmp.base.entity.PmpUserCourseApplyEntity">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into pmp_user_course_apply (user_ref_course_id, user_id, html_content
+      )
+    values (#{userRefCourseId,jdbcType=BIGINT}, #{userId,jdbcType=BIGINT}, #{htmlContent,jdbcType=LONGVARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.arz.pmp.base.entity.PmpUserCourseApplyEntity">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into pmp_user_course_apply
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="userRefCourseId != null">
+        user_ref_course_id,
+      </if>
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="htmlContent != null">
+        html_content,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="userRefCourseId != null">
+        #{userRefCourseId,jdbcType=BIGINT},
+      </if>
+      <if test="userId != null">
+        #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="htmlContent != null">
+        #{htmlContent,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.arz.pmp.base.entity.PmpUserCourseApplyEntity">
+    update pmp_user_course_apply
+    <set>
+      <if test="userRefCourseId != null">
+        user_ref_course_id = #{userRefCourseId,jdbcType=BIGINT},
+      </if>
+      <if test="userId != null">
+        user_id = #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="htmlContent != null">
+        html_content = #{htmlContent,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.arz.pmp.base.entity.PmpUserCourseApplyEntity">
+    update pmp_user_course_apply
+    set user_ref_course_id = #{userRefCourseId,jdbcType=BIGINT},
+      user_id = #{userId,jdbcType=BIGINT},
+      html_content = #{htmlContent,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.arz.pmp.base.entity.PmpUserCourseApplyEntity">
+    update pmp_user_course_apply
+    set user_ref_course_id = #{userRefCourseId,jdbcType=BIGINT},
+      user_id = #{userId,jdbcType=BIGINT}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

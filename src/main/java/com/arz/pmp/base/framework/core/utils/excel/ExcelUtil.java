@@ -4,6 +4,7 @@ import com.alibaba.excel.ExcelReader;
 import com.alibaba.excel.ExcelWriter;
 import com.alibaba.excel.metadata.BaseRowModel;
 import com.alibaba.excel.metadata.Sheet;
+import com.alibaba.excel.metadata.TableStyle;
 import com.alibaba.excel.support.ExcelTypeEnum;
 import com.arz.pmp.base.api.bo.excel.UserDataExport;
 import com.arz.pmp.base.api.bo.excel.UserDataImport;
@@ -66,6 +67,7 @@ public class ExcelUtil {
     public static void writeExcelResponse(String fileName, ServletOutputStream out, List<? extends BaseRowModel> list,
         Class cla) {
         ExcelWriter writer = new ExcelWriter(out, ExcelTypeEnum.XLSX, true);
+        // 内容的策略
         Sheet sheet1 = new Sheet(1, 0, cla);
         sheet1.setSheetName(fileName);
         writer.write(list, sheet1);

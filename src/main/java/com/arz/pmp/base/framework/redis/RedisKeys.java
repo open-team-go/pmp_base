@@ -21,6 +21,8 @@ public interface RedisKeys {
     // 后台
     /** 管理端缓存 */
     String SYS_CONF = CACHE_CONF + SYS;
+    /** 用户端缓存 */
+    String FRONT_CONF = CACHE_CONF + FRONT;
 
     /** 管理端token前缀 */
     String SYS_OPERATION_TOKEN_PRE = SYS_CONF + "token" + DEFAULT_SEPARATOR;
@@ -29,4 +31,6 @@ public interface RedisKeys {
     /** 管理员权限 */
     String SYS_OPERATOR_ROLE_PERMISSION = SYS_OPERATOR_ROLE + "perm" + DEFAULT_SEPARATOR;
 
+    /** 用户端token前缀 */
+    String FRONT_USER_TOKEN_PRE = FRONT_CONF + "token" + DEFAULT_SEPARATOR;
 }

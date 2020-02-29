@@ -59,6 +59,9 @@
         <if test="userRefCourseId != null">
             AND urc.id = #{userRefCourseId,jdbcType=BIGINT}
         </if>
+        <if test="userId != null">
+            AND a.user_id = #{userId,jdbcType=BIGINT}
+        </if>
         ORDER BY urc.create_time DESC,urc.admin_id,c.sort
     </sql>
     <select id="selectUserByName" resultType="com.arz.pmp.base.entity.PmpUserEntity">
@@ -156,12 +159,11 @@
         SELECT a.education_id, a.user_name, a.gender, a.nationality, a.birthday,
         a.phone_no, a.fixed_telephone, a.email, a.backup_email, a.wechat_no, a.qq, a.identity_no, a.zip_code,
         a.user_address, a.graduation_time, a.graduation_school, a.school_major, a.industry, a.com_name,
-        a.com_department, a.com_position,a.remark,e.education_name,a.examination_time,
+        a.com_department, a.com_position,e.education_name,
         e.education_name
         FROM pmp_user a
         LEFT JOIN pmp_user_education e ON a.education_id=e.education_id
-        WHERE a.del_on=0 AND a.user_name = #{userName} AND a.identity_no = #{identityNo}
-        ORDER BY a.user_id DESC LIMIT 1;
+        WHERE a.del_on=0 AND a.user_id = #{userId}
     </select>
 
     <select id="selectUserIds" resultType="java.lang.Long">
@@ -175,5 +177,19 @@
         FROM pmp_user_ref_course urc
         WHERE urc.user_id=#{userId} AND urc.course_id=#{courseId} AND urc.del_on=0
         LIMIT 1;
+    </select>
+
+
+    <select id="selectUserCourseList" resultType="com.arz.pmp.base.api.bo.user.front.CourseListData">
+        SELECT a.user_id, a.user_name, a.gender,a.phone_no,a.user_type,a.com_name,a.email,
+        urc.consultation_time,urc.consultation_city,urc.pay_total,a.resource_id,
+        b.nickName salesAdminName,c.course_name,c.apply_url,d.room_name,urc.id userRefCourseId,
+        (SELECT b_1.nickName FROM pmp_admin b_1 WHERE d.admin_id=b_1.admin_id) educationAdminName,
+        (SELECT g.resource_name FROM pmp_user_resource_type g WHERE a.resource_id=g.resource_id) resourceName
+        <include refid="Sql_export_select"></include>
+    </select>
+
+    <select id="selectUserCourseApply" resultType="com.arz.pmp.base.entity.PmpUserCourseApplyEntity">
+        SELECT * FROM pmp_user_course_apply a WHERE a.user_ref_course_id=#{userRefCourseId}
     </select>
 </mapper>
