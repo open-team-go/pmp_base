@@ -38,6 +38,23 @@ public class DateUtil {
         }
     }
 
+    public static Date strToDate(String dateStr, String df1, String df2) {
+        if (Strings.isNullOrEmpty(dateStr)) {
+            return null;
+        }
+        try {
+            return DateUtils.parseDate(dateStr, df1);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        try {
+            return DateUtils.parseDate(dateStr, df2);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     /**
      * Date转化为dateFormat时间格式的字符串
      *
@@ -113,7 +130,7 @@ public class DateUtil {
         // try {
         // Date date = DateUtils.parseDate(str, DateStrFormat.f_2);
         // Long d = date.getTime() / 1000;
-         System.out.println(d);
+        System.out.println(d);
         // } catch (ParseException e) {
         // e.printStackTrace();
         // }

@@ -23,8 +23,8 @@ public class UserDataImport {
     public void setConsultationTimeStr(String consultationTimeStr) {
         this.consultationTimeStr = consultationTimeStr;
         if (consultationTimeStr != null || consultationTime == null) {
-            this.consultationTime =
-                DateUtil.getDateSecond(DateUtil.strToDate(consultationTimeStr, DateUtil.DateStrFormat.f_2));
+            this.consultationTime = DateUtil.getDateSecond(
+                DateUtil.strToDate(consultationTimeStr, DateUtil.DateStrFormat.f_2, DateUtil.DateStrFormat.f_1));
         }
     }
 
@@ -32,7 +32,8 @@ public class UserDataImport {
         if (consultationTime != null) {
             return consultationTime;
         }
-        return DateUtil.getDateSecond(DateUtil.strToDate(consultationTimeStr, DateUtil.DateStrFormat.f_2));
+        return DateUtil.getDateSecond(
+            DateUtil.strToDate(consultationTimeStr, DateUtil.DateStrFormat.f_2, DateUtil.DateStrFormat.f_1));
     }
 
     @PayrollProperty("咨询城市")
@@ -105,8 +106,8 @@ public class UserDataImport {
     public void setGraduationTimeStr(String graduationTimeStr) {
         this.graduationTimeStr = graduationTimeStr;
         if (graduationTimeStr != null || graduationTime == null) {
-            this.graduationTime =
-                DateUtil.getDateSecond(DateUtil.strToDate(graduationTimeStr, DateUtil.DateStrFormat.f_2));
+            this.graduationTime = DateUtil.getDateSecond(
+                DateUtil.strToDate(graduationTimeStr, DateUtil.DateStrFormat.f_2, DateUtil.DateStrFormat.f_1));
         }
     }
 
@@ -114,7 +115,8 @@ public class UserDataImport {
         if (graduationTime != null) {
             return graduationTime;
         }
-        return DateUtil.getDateSecond(DateUtil.strToDate(graduationTimeStr, DateUtil.DateStrFormat.f_2));
+        return DateUtil.getDateSecond(
+            DateUtil.strToDate(graduationTimeStr, DateUtil.DateStrFormat.f_2, DateUtil.DateStrFormat.f_1));
     }
 
     @PayrollProperty("公司")
@@ -194,7 +196,8 @@ public class UserDataImport {
     public void setPayTimeStr(String payTimeStr) {
         this.payTimeStr = payTimeStr;
         if (payTimeStr != null || payTime == null) {
-            this.payTime = DateUtil.getDateSecond(DateUtil.strToDate(payTimeStr, DateUtil.DateStrFormat.f_2));
+            this.payTime = DateUtil
+                .getDateSecond(DateUtil.strToDate(payTimeStr, DateUtil.DateStrFormat.f_2, DateUtil.DateStrFormat.f_1));
         }
     }
 
@@ -202,7 +205,8 @@ public class UserDataImport {
         if (payTime != null) {
             return payTime;
         }
-        return DateUtil.getDateSecond(DateUtil.strToDate(payTimeStr, DateUtil.DateStrFormat.f_2));
+        return DateUtil
+            .getDateSecond(DateUtil.strToDate(payTimeStr, DateUtil.DateStrFormat.f_2, DateUtil.DateStrFormat.f_1));
     }
 
     @PayrollProperty("考试时间")
@@ -220,8 +224,8 @@ public class UserDataImport {
     public void setExaminationTimeStr(String examinationTimeStr) {
         this.examinationTimeStr = examinationTimeStr;
         if (examinationTimeStr != null || examinationTime == null) {
-            this.examinationTime =
-                DateUtil.getDateSecond(DateUtil.strToDate(examinationTimeStr, DateUtil.DateStrFormat.f_2));
+            this.examinationTime = DateUtil.getDateSecond(
+                DateUtil.strToDate(examinationTimeStr, DateUtil.DateStrFormat.f_2, DateUtil.DateStrFormat.f_1));
         }
     }
 
@@ -229,7 +233,8 @@ public class UserDataImport {
         if (examinationTime != null) {
             return examinationTime;
         }
-        return DateUtil.getDateSecond(DateUtil.strToDate(examinationTimeStr, DateUtil.DateStrFormat.f_2));
+        return DateUtil.getDateSecond(
+            DateUtil.strToDate(examinationTimeStr, DateUtil.DateStrFormat.f_2, DateUtil.DateStrFormat.f_1));
     }
 
     @PayrollProperty("备注")
