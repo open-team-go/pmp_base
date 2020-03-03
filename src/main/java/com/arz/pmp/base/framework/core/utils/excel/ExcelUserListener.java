@@ -5,6 +5,8 @@ import com.alibaba.excel.event.AnalysisEventListener;
 import com.alibaba.excel.util.TypeUtil;
 import com.arz.pmp.base.api.aop.annotation.PayrollProperty;
 import com.arz.pmp.base.api.bo.excel.UserDataImport;
+import com.arz.pmp.base.framework.commons.enums.CommonCodeEnum;
+import com.arz.pmp.base.framework.commons.utils.Assert;
 import com.arz.pmp.base.framework.commons.utils.Util;
 import org.apache.commons.beanutils.PropertyUtils;
 
@@ -30,47 +32,48 @@ public class ExcelUserListener extends AnalysisEventListener {
      */
     private List<UserDataImport> datas = new ArrayList<UserDataImport>();
     private List<String> rowHeader = null;// 表头
+    private int headerNum = 29;
 
     @Override
     public void invoke(Object obj, AnalysisContext context) {
 
         int rowNum = context.getCurrentRowNum();
         if (Util.isEmpty(obj) || !(obj instanceof List) || rowNum < 0) {
-            return;
+            Assert.isTrue(true, CommonCodeEnum.PARAM_ERROR, "列数错误，请参照导出文档列名");
         }
         List<String> cellList = (List)obj;
         // 判断是否表头
         if (rowNum == 0) {
             cellList.remove(null);
+            Assert.isTrue(cellList.size() == headerNum, CommonCodeEnum.PARAM_ERROR, "列数错误，请参照导出文档列名");
             rowHeader = cellList;
             return;
         }
         // 表数据
         // 循环处理每一行数据
         UserDataImport userData = new UserDataImport();
+        boolean flag = false;
         for (int i = 0; i < rowHeader.size(); i++) {
             // 先查表头,根据表头查询字段意义
             String headerName = rowHeader.get(i);
             // 实际对应数据
             String cellData = cellList.get(i);
             Field[] fields = UserDataImport.class.getDeclaredFields();
+            boolean headerFlag = false;
             for (Field field : fields) {
                 PayrollProperty payRollProperty = field.getDeclaredAnnotation(PayrollProperty.class);
-                if (headerName == null || payRollProperty == null || !headerName.equals(payRollProperty.value())) {
+                if (payRollProperty == null) {
                     continue;
                 }
+                if (headerName == null || !headerName.equals(payRollProperty.value())) {
+                    continue;
+                }
+                flag = true;
+                headerFlag = true;
                 try {
                     Object cellObj = null;
-                    // 判断数据类型
-                    // if (payRollProperty.format().equalsIgnoreCase(UserDataImport.dateFormat)) {
-                    // //库中存10位
-                    // if(StringUtils.isNotBlank(cellData)){
-                    // cellObj = DateUtil.getDateSecond(DateUtil.strToDate(cellData, DateUtil.DateStrFormat.f_1));
-                    // }
-                    // } else {
 
                     cellObj = TypeUtil.convert(cellData, field, payRollProperty.format(), false);
-                    // }
                     if (cellObj == null) {
                         break;
                     }
@@ -92,12 +95,15 @@ public class ExcelUserListener extends AnalysisEventListener {
                     e.printStackTrace();
                 }
             }
-
+            Assert.isTrue(headerFlag, CommonCodeEnum.PARAM_ERROR, "列名：" + headerName + "不正确，请参照导出文档列名");
         }
         // 数据存储到list，供批量处理，或后续自己业务逻辑处理。
-        datas.add(userData);
+        if (flag) {
+            datas.add(userData);
+        }
         // 根据自己业务做处理
         doSomething(userData);
+
     }
 
     private void doSomething(Object object) {
@@ -106,7 +112,7 @@ public class ExcelUserListener extends AnalysisEventListener {
 
     @Override
     public void doAfterAllAnalysed(AnalysisContext context) {
-        // datas.clear();//解析结束销毁不用的资源
+//        datas.clear();// 解析结束销毁不用的资源
     }
 
     public List<UserDataImport> getDatas() {
