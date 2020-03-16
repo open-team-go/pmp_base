@@ -440,8 +440,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public PmpUserCourseApplyEntity getUserCourseApply(Long userRefCourseId, String authentication) {
+        if (userRefCourseId == null) {
+            return null;
+        }
         Long userId = redisService.geFrontUserByToken(authentication);
-
+        // 校验选课
+        PmpUserRefCourseEntity userCourse = pmpUserRefCourseEntityMapper.selectByPrimaryKey(userRefCourseId);
+        Assert.isTrue(userCourse != null, CommonCodeEnum.PARAM_ERROR);
+        Assert.isTrue(userCourse.getUserId().equals(userId), CommonCodeEnum.PARAM_ERROR);
         PmpUserCourseApplyEntity entity = pmpUserExMapper.selectUserCourseApply(userRefCourseId);
         if (entity == null) {
             return null;

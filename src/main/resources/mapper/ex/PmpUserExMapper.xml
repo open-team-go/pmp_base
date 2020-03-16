@@ -159,7 +159,7 @@
         SELECT a.education_id, a.user_name, a.gender, a.nationality, a.birthday,
         a.phone_no, a.fixed_telephone, a.email, a.backup_email, a.wechat_no, a.qq, a.identity_no, a.zip_code,
         a.user_address, a.graduation_time, a.graduation_school, a.school_major, a.industry, a.com_name,
-        a.com_department, a.com_position,e.education_name,
+        a.com_department, a.com_position,
         e.education_name
         FROM pmp_user a
         LEFT JOIN pmp_user_education e ON a.education_id=e.education_id
