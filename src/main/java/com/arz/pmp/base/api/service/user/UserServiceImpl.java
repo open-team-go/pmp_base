@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import com.arz.pmp.base.mapper.PmpUserCourseApplyEntityMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +29,7 @@ import com.arz.pmp.base.framework.commons.enums.CommonCodeEnum;
 import com.arz.pmp.base.framework.commons.utils.Assert;
 import com.arz.pmp.base.framework.commons.utils.DateUtil;
 import com.arz.pmp.base.framework.core.enums.SysPermEnumClass;
+import com.arz.pmp.base.mapper.PmpUserCourseApplyEntityMapper;
 import com.arz.pmp.base.mapper.PmpUserEntityMapper;
 import com.arz.pmp.base.mapper.PmpUserRefCourseEntityMapper;
 import com.arz.pmp.base.mapper.ex.PmpAdminExMapper;
@@ -382,7 +382,6 @@ public class UserServiceImpl implements UserService {
         return result;
     }
 
-    @Override
     public Long insertUserRegister(UserRegistReq data) {
 
         PmpUserEntity userEntity = mapperFacade.map(data, PmpUserEntity.class);
@@ -419,7 +418,7 @@ public class UserServiceImpl implements UserService {
     public String goLogin(UserCheckReq data) {
 
         // 验证登录信息
-        PmpUserEntity user = validUser(data.getUserName(), data.getIdentityNo());
+        PmpUserEntity user = validUser(data.getLoginName(), data.getLoginPassword());
         // 登录信息缓存
         String authentication = cacheRedisFrontUser(user.getUserId());
         return authentication;
@@ -474,6 +473,23 @@ public class UserServiceImpl implements UserService {
             entity.setId(id);
             pmpUserCourseApplyEntityMapper.updateByPrimaryKeySelective(entity);
         }
+    }
+
+    @Override
+    public void goRegister(UserCheckReq data) {
+        // 检验用户名唯一
+
+    }
+    /**
+     * description
+     * @param loginName
+     * @param loginPassword
+     * @author chen wei
+     * @date 2020/3/19
+     */
+    private void valid(String loginName, String loginPassword) {
+
+
     }
 
     public PmpUserEntity validUser(String userName, String password) {

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import com.arz.pmp.base.framework.core.enums.SysPermEnumClass;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,6 +24,7 @@ import com.arz.pmp.base.framework.commons.utils.Assert;
 import com.arz.pmp.base.framework.commons.utils.DateUtil;
 import com.arz.pmp.base.framework.commons.utils.EncryptUtils;
 import com.arz.pmp.base.framework.commons.utils.NumberUtil;
+import com.arz.pmp.base.framework.core.enums.SysPermEnumClass;
 import com.arz.pmp.base.mapper.PmpAdminEntityMapper;
 import com.arz.pmp.base.mapper.ex.PmpAdminExMapper;
 import com.github.pagehelper.PageHelper;
@@ -101,8 +101,8 @@ public class AdminServiceImpl implements AdminService {
         Long adminId = data.getAdminId();
         boolean flag = user == null || (!addOn && user.getAdminId().equals(adminId));
         Assert.isTrue(flag, CommonCodeEnum.PARAM_ERROR_USERNAME_MULTI);
-        Assert.isTrue(((adminId !=null && adminId != Constants.ADMIN_DEFAULT_ID) || adminId==null)  && data.getRoleId()!=Constants.ADMIN_DEFAULT_ID,
-                CommonCodeEnum.PARAM_ERROR_ADMIN);
+        Assert.isTrue(((adminId != null && adminId != Constants.ADMIN_DEFAULT_ID) || adminId == null)
+            && data.getRoleId() != Constants.ADMIN_DEFAULT_ID, CommonCodeEnum.PARAM_ERROR_ADMIN);
         PmpAdminEntity pmpAdminEntity = mapperFacade.map(data, PmpAdminEntity.class);
         long curTimeSec = DateUtil.getCurSecond();
         // 操作员信息
@@ -116,7 +116,7 @@ public class AdminServiceImpl implements AdminService {
         // 加密处理
         if (StringUtils.isNotBlank(password)) {
             String salt = EncryptUtils.createSalt();
-            String encryptPaw = createSysUserPsw(password, salt);
+            String encryptPaw = EncryptUtils.createSysUserPsw(password, salt);
             pmpAdminEntity.setSalt(salt);
             pmpAdminEntity.setPassword(encryptPaw);
         }
@@ -188,7 +188,7 @@ public class AdminServiceImpl implements AdminService {
         Long adminId = redisService.getOperatorIdByToken(authentication);
         PmpAdminEntity adminEntity = new PmpAdminEntity();
         String salt = EncryptUtils.createSalt();
-        String encryptPaw = createSysUserPsw(newPassword, salt);
+        String encryptPaw = EncryptUtils.createSysUserPsw(newPassword, salt);
         adminEntity.setSalt(salt);
         adminEntity.setPassword(encryptPaw);
         adminEntity.setUpdateManager(adminId);
@@ -228,54 +228,11 @@ public class AdminServiceImpl implements AdminService {
 
         Assert.isTrue(user != null, CommonCodeEnum.PARAM_ERROR_LOGIN_USERNAME);
         // 验证密码
-        Assert.isTrue(doCredentialsMatch(password, user.getSalt(), user.getPassword()),
+        Assert.isTrue(EncryptUtils.doCredentialsMatch(password, user.getSalt(), user.getPassword()),
             CommonCodeEnum.PARAM_ERROR_LOGIN_PASSWORD);
         user.setPassword(null);
         user.setSalt(null);
         return user;
-    }
-
-    private boolean doCredentialsMatch(String password, String salt, String targetPsw) {
-
-        if (StringUtils.isBlank(password) || StringUtils.isBlank(targetPsw)) {
-            return false;
-        }
-        if (StringUtils.isBlank(salt)) {
-
-            password = createSysUserPsw(password);
-        } else {
-
-            password = createSysUserPsw(password, salt);
-        }
-
-        return password.equals(targetPsw);
-    }
-
-    /**
-     * description 获取hash散列值
-     *
-     * @param password
-     * @return java.lang.String
-     * @author chen wei
-     * @date 2019/7/11
-     */
-    private String createSysUserPsw(String password) {
-
-        return EncryptUtils.md5(password);
-    }
-
-    /**
-     * description 加盐获取hash散列值
-     *
-     * @param password
-     * @param salt
-     * @return java.lang.String
-     * @author chen wei
-     * @date 2019/7/11
-     */
-    private String createSysUserPsw(String password, String salt) {
-
-        return EncryptUtils.md5Salt(password, salt);
     }
 
 }

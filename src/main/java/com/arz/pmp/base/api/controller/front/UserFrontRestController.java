@@ -1,16 +1,12 @@
 package com.arz.pmp.base.api.controller.front;
 
-import com.arz.pmp.base.api.bo.CommonDataReq;
-import com.arz.pmp.base.api.bo.user.UserDataResp;
 import com.arz.pmp.base.api.bo.user.front.*;
 import com.arz.pmp.base.api.service.user.UserService;
 import com.arz.pmp.base.entity.PmpUserCourseApplyEntity;
-import com.arz.pmp.base.entity.PmpUserRefCourseEntity;
 import com.arz.pmp.base.framework.commons.RestRequest;
 import com.arz.pmp.base.framework.commons.enums.CommonCodeEnum;
 import com.arz.pmp.base.framework.commons.response.RestResponse;
 import com.arz.pmp.base.framework.commons.utils.Assert;
-import com.arz.pmp.base.mapper.ex.PmpUserExMapper;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,6 +25,14 @@ public class UserFrontRestController {
 
     @Resource
     private UserService userService;
+
+    @ApiOperation(value = "用户注册 用户注册", notes = "用户注册")
+    @PostMapping("/login")
+    public RestResponse<String> goRegister(@RequestBody @Valid RestRequest<UserCheckReq> data) {
+
+        userService.goRegister(data.getBody());
+        return RestResponse.success();
+    }
 
     @ApiOperation(value = "用户登录 用户登录", notes = "用户登录")
     @PostMapping("/login")

@@ -33,13 +33,16 @@
     <result column="create_manager" jdbcType="BIGINT" property="createManager" />
     <result column="update_manager" jdbcType="BIGINT" property="updateManager" />
     <result column="del_on" jdbcType="BIT" property="delOn" />
+    <result column="login_name" jdbcType="VARCHAR" property="loginName" />
+    <result column="login_password" jdbcType="VARCHAR" property="loginPassword" />
+    <result column="login_salt" jdbcType="VARCHAR" property="loginSalt" />
   </resultMap>
   <sql id="Base_Column_List">
     user_id, education_id, resource_id, recommend_name, user_name, gender, nationality, 
     birthday, phone_no, fixed_telephone, email, backup_email, wechat_no, qq, identity_no, 
     zip_code, user_address, graduation_time, graduation_school, school_major, industry, 
     com_name, com_department, com_position, user_type, institution, create_time, update_time, 
-    create_manager, update_manager, del_on
+    create_manager, update_manager, del_on, login_name, login_password, login_salt
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     select 
@@ -64,7 +67,8 @@
       school_major, industry, com_name, 
       com_department, com_position, user_type, 
       institution, create_time, update_time, 
-      create_manager, update_manager, del_on
+      create_manager, update_manager, del_on, 
+      login_name, login_password, login_salt
       )
     values (#{educationId,jdbcType=BIGINT}, #{resourceId,jdbcType=BIGINT}, #{recommendName,jdbcType=VARCHAR}, 
       #{userName,jdbcType=VARCHAR}, #{gender,jdbcType=BIT}, #{nationality,jdbcType=VARCHAR}, 
@@ -75,7 +79,8 @@
       #{schoolMajor,jdbcType=VARCHAR}, #{industry,jdbcType=VARCHAR}, #{comName,jdbcType=VARCHAR}, 
       #{comDepartment,jdbcType=VARCHAR}, #{comPosition,jdbcType=VARCHAR}, #{userType,jdbcType=INTEGER}, 
       #{institution,jdbcType=VARCHAR}, #{createTime,jdbcType=BIGINT}, #{updateTime,jdbcType=BIGINT}, 
-      #{createManager,jdbcType=BIGINT}, #{updateManager,jdbcType=BIGINT}, #{delOn,jdbcType=BIT}
+      #{createManager,jdbcType=BIGINT}, #{updateManager,jdbcType=BIGINT}, #{delOn,jdbcType=BIT}, 
+      #{loginName,jdbcType=VARCHAR}, #{loginPassword,jdbcType=VARCHAR}, #{loginSalt,jdbcType=VARCHAR}
       )
   </insert>
   <insert id="insertSelective" parameterType="com.arz.pmp.base.entity.PmpUserEntity">
@@ -174,6 +179,15 @@
       <if test="delOn != null">
         del_on,
       </if>
+      <if test="loginName != null">
+        login_name,
+      </if>
+      <if test="loginPassword != null">
+        login_password,
+      </if>
+      <if test="loginSalt != null">
+        login_salt,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="educationId != null">
@@ -265,6 +279,15 @@
       </if>
       <if test="delOn != null">
         #{delOn,jdbcType=BIT},
+      </if>
+      <if test="loginName != null">
+        #{loginName,jdbcType=VARCHAR},
+      </if>
+      <if test="loginPassword != null">
+        #{loginPassword,jdbcType=VARCHAR},
+      </if>
+      <if test="loginSalt != null">
+        #{loginSalt,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -361,6 +384,15 @@
       <if test="delOn != null">
         del_on = #{delOn,jdbcType=BIT},
       </if>
+      <if test="loginName != null">
+        login_name = #{loginName,jdbcType=VARCHAR},
+      </if>
+      <if test="loginPassword != null">
+        login_password = #{loginPassword,jdbcType=VARCHAR},
+      </if>
+      <if test="loginSalt != null">
+        login_salt = #{loginSalt,jdbcType=VARCHAR},
+      </if>
     </set>
     where user_id = #{userId,jdbcType=BIGINT}
   </update>
@@ -395,7 +427,10 @@
       update_time = #{updateTime,jdbcType=BIGINT},
       create_manager = #{createManager,jdbcType=BIGINT},
       update_manager = #{updateManager,jdbcType=BIGINT},
-      del_on = #{delOn,jdbcType=BIT}
+      del_on = #{delOn,jdbcType=BIT},
+      login_name = #{loginName,jdbcType=VARCHAR},
+      login_password = #{loginPassword,jdbcType=VARCHAR},
+      login_salt = #{loginSalt,jdbcType=VARCHAR}
     where user_id = #{userId,jdbcType=BIGINT}
   </update>
 </mapper>

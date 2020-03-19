@@ -1,5 +1,6 @@
 package com.arz.pmp.base.framework.commons.utils;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.crypto.SecureRandomNumberGenerator;
 import org.apache.shiro.crypto.hash.Md5Hash;
 
@@ -61,6 +62,49 @@ public class EncryptUtils {
         Md5Hash hash;
         hash = new Md5Hash(password, null, HASH_ITERATIONS_DEFAULT);
         return hash.toHex();
+    }
+
+    public static boolean doCredentialsMatch(String password, String salt, String targetPsw) {
+
+        if (StringUtils.isBlank(password) || StringUtils.isBlank(targetPsw)) {
+            return false;
+        }
+        if (StringUtils.isBlank(salt)) {
+
+            password = createSysUserPsw(password);
+        } else {
+
+            password = createSysUserPsw(password, salt);
+        }
+
+        return password.equals(targetPsw);
+    }
+
+    /**
+     * description 获取hash散列值
+     *
+     * @param password
+     * @return java.lang.String
+     * @author chen wei
+     * @date 2019/7/11
+     */
+    public static String createSysUserPsw(String password) {
+
+        return EncryptUtils.md5(password);
+    }
+
+    /**
+     * description 加盐获取hash散列值
+     *
+     * @param password
+     * @param salt
+     * @return java.lang.String
+     * @author chen wei
+     * @date 2019/7/11
+     */
+    public static String createSysUserPsw(String password, String salt) {
+
+        return EncryptUtils.md5Salt(password, salt);
     }
 
 }

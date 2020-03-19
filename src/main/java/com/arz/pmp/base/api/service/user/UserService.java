@@ -1,7 +1,5 @@
 package com.arz.pmp.base.api.service.user;
 
-import java.util.List;
-
 import com.arz.pmp.base.api.bo.excel.UserDataExport;
 import com.arz.pmp.base.api.bo.excel.UserDataImport;
 import com.arz.pmp.base.api.bo.excel.UserImportResp;
@@ -15,6 +13,8 @@ import com.arz.pmp.base.entity.PmpUserPayTypeEntity;
 import com.arz.pmp.base.entity.PmpUserResourceTypeEntity;
 import com.arz.pmp.base.framework.commons.RestRequest;
 import com.github.pagehelper.PageInfo;
+
+import java.util.List;
 
 /**
  * description 学员业务
@@ -46,8 +46,6 @@ public interface UserService {
 
     UserImportResp insertUserBatch(List<UserDataImport> list, Long managerId);
 
-    Long insertUserRegister(UserRegistReq data);
-
     void updateUserRegister(UserPerfectReq data, String authentication);
 
     UserPerfectData getFrontUser(String authentication);
@@ -62,4 +60,5 @@ public interface UserService {
 
     void updateUserCourseApply(CourseApplyData data, String authentication);
 
+    void goRegister(UserCheckReq data);
 }
