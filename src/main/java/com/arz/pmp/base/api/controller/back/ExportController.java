@@ -3,17 +3,12 @@ package com.arz.pmp.base.api.controller.back;
 import static com.arz.pmp.base.framework.core.enums.SysPermEnumClass.PermissionEnum.USER_EXPORT;
 
 import java.io.IOException;
-import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.arz.pmp.base.framework.commons.utils.NumberUtil;
-import ma.glasnost.orika.MapperFacade;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.annotation.Logical;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +21,7 @@ import com.arz.pmp.base.api.aop.PermAopHandle;
 import com.arz.pmp.base.api.bo.excel.UserDataExport;
 import com.arz.pmp.base.api.bo.user.UserSearchReq;
 import com.arz.pmp.base.api.service.user.UserService;
+import com.arz.pmp.base.framework.commons.utils.NumberUtil;
 import com.arz.pmp.base.framework.core.enums.SysPermEnumClass;
 import com.arz.pmp.base.framework.core.utils.WebUtil;
 

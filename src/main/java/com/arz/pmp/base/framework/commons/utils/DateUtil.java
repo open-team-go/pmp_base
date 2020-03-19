@@ -1,8 +1,11 @@
 package com.arz.pmp.base.framework.commons.utils;
 
 import com.google.common.base.Strings;
+import org.apache.commons.lang3.time.DateFormatUtils;
+import org.apache.commons.lang3.time.DateUtils;
 
 import java.security.PublicKey;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -27,11 +30,27 @@ public class DateUtil {
         if (Strings.isNullOrEmpty(dateStr)) {
             return null;
         }
-
-        SimpleDateFormat df = new SimpleDateFormat(dateFormat);
         try {
-            return df.parse(dateStr);
-        } catch (Exception ex) {
+            return DateUtils.parseDate(dateStr, dateFormat);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static Date strToDate(String dateStr, String df1, String df2) {
+        if (Strings.isNullOrEmpty(dateStr)) {
+            return null;
+        }
+        try {
+            return DateUtils.parseDate(dateStr, df1);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        try {
+            return DateUtils.parseDate(dateStr, df2);
+        } catch (ParseException e) {
+            e.printStackTrace();
             return null;
         }
     }
@@ -49,31 +68,7 @@ public class DateUtil {
         if (date == null) {
             return null;
         }
-        SimpleDateFormat df = new SimpleDateFormat(dateFormat);
-        return df.format(date);
-    }
-
-    /**
-     * 返回指定格式的当前日期时间字符串
-     *
-     * @param format
-     * @return
-     */
-    public static String getDateTimeStr(String format) {
-        String returnStr = null;
-        SimpleDateFormat f = new SimpleDateFormat(format);
-        Date date = new Date();
-        returnStr = f.format(date);
-        return returnStr;
-    }
-
-    /**
-     * 获取当前时间戮
-     *
-     * @return
-     */
-    public static long getCurLongDate() {
-        return System.currentTimeMillis();
+        return DateFormatUtils.format(date, dateFormat);
     }
 
     /**
@@ -84,7 +79,6 @@ public class DateUtil {
      * @return java.util.Date
      */
     public static Date getCurDateTime() {
-
         return new Date();
     }
 
@@ -99,6 +93,7 @@ public class DateUtil {
 
         return getCurDateTime().getTime() / 1000;
     }
+
     /**
      * description 获取当前时间秒
      *
@@ -107,7 +102,7 @@ public class DateUtil {
      * @return java.util.Date
      */
     public static Long getDateSecond(Date d) {
-        if(d == null){
+        if (d == null) {
             return null;
         }
         return d.getTime() / 1000;
@@ -126,5 +121,18 @@ public class DateUtil {
         }
 
         return dateToStr(new Date(second * 1000), format);
+    }
+
+    public static void main(String[] args) {
+        String str = "2020-1-20";
+
+        Long d = DateUtil.getDateSecond(DateUtil.strToDate(str, DateUtil.DateStrFormat.f_2));
+        // try {
+        // Date date = DateUtils.parseDate(str, DateStrFormat.f_2);
+        // Long d = date.getTime() / 1000;
+        System.out.println(d);
+        // } catch (ParseException e) {
+        // e.printStackTrace();
+        // }
     }
 }

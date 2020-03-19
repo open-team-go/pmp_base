@@ -7,6 +7,7 @@ import com.arz.pmp.base.framework.commons.RestRequest;
 import com.arz.pmp.base.framework.commons.constants.Constants;
 import com.arz.pmp.base.framework.commons.enums.CommonCodeEnum;
 import com.arz.pmp.base.framework.commons.response.RestResponse;
+import com.arz.pmp.base.framework.commons.utils.NumberUtil;
 import com.arz.pmp.base.framework.core.utils.WebUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -50,13 +51,17 @@ public class LoginAuthInterceptor extends HandlerInterceptorAdapter {
             return true;
         }
         // 管理端校验
-        if (isManagerPath(request) && !validSysToken(request)) {
+        if (isManagerPath(request) && !validSysToken(request, true)) {
             // 请求rest未登录
             sendRestResponse(request, response, RestResponse.error(CommonCodeEnum.PERMISSION_ERROR_LOGIN));
             return false;
         }
         // 用户端校验
-
+        if (isFrontUserPath(request) && !validSysToken(request, false)) {
+            // 请求rest未登录
+            sendRestResponse(request, response, RestResponse.error(CommonCodeEnum.PERMISSION_ERROR_LOGIN));
+            return false;
+        }
         return true;
     }
 
@@ -82,6 +87,7 @@ public class LoginAuthInterceptor extends HandlerInterceptorAdapter {
         boolean flag = validFrontHeader(req, res);
         return flag;
     }
+
     /**
      * description 验证前台请求头中参数
      * 
@@ -104,10 +110,10 @@ public class LoginAuthInterceptor extends HandlerInterceptorAdapter {
      * @date 2019/8/12
      * @return boolean
      */
-    private boolean validSysToken(HttpServletRequest request) {
+    private boolean validSysToken(HttpServletRequest request, boolean managerFlag) {
 
         JSON json = WebUtil.getRequestBodyJson(request);
-        if(json == null){
+        if (json == null) {
             return true;
         }
         RestRequest restRequest = json.toJavaObject(RestRequest.class);
@@ -119,8 +125,14 @@ public class LoginAuthInterceptor extends HandlerInterceptorAdapter {
             return false;
         }
         // 验证登录缓存
-        PmpAdminEntity userInfo = redisService.getOperatorByToken(token);
-        return userInfo != null;
+        if (managerFlag) {
+            PmpAdminEntity userInfo = redisService.getOperatorByToken(token);
+            return userInfo != null;
+        } else {
+            Long userId = redisService.geFrontUserByToken(token);
+            return NumberUtil.isPositive(userId);
+        }
+
     }
 
     /**
@@ -151,6 +163,21 @@ public class LoginAuthInterceptor extends HandlerInterceptorAdapter {
         String path = request.getServletPath();
 
         return Constants.REGEX_INTERCEPTOR_AUTH_MANAGER.matcher(path).matches();
+    }
+
+    /**
+     * description 需要auth验证的管理后台请求
+     * 
+     * @param request
+     * @author chen wei
+     * @date 2019/8/12
+     * @return boolean
+     */
+    private boolean isFrontUserPath(HttpServletRequest request) {
+
+        String path = request.getServletPath();
+
+        return Constants.REGEX_INTERCEPTOR_AUTH_FRONT.matcher(path).matches();
     }
 
 }

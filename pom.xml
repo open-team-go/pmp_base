@@ -121,6 +121,7 @@
             <artifactId>easyexcel</artifactId>
             <!--<version>1.1.2-beta5</version>-->
             <version>1.1.1</version>
+            <!--<version>2.1.6</version>-->
         </dependency>
 
         <!-- 分页插件 -->

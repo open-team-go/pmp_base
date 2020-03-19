@@ -24,7 +24,7 @@ public final class Constants {
      * 拦截器登录拦截跳过地址
      */
     private static final String REGEX_INTERCEPTOR_AUTH_OFF_STR =
-        "(/)|(/configuration/.*)|(/.*swagger.*)|(/.*/api-docs.*)|(/webjars/.*)|(.*\\.html.*)|(.*\\.js.*)|(/favicon.ico)|(/back/admin/login.*)";
+        "(/)|(/configuration/.*)|(/.*swagger.*)|(/.*/api-docs.*)|(/webjars/.*)|(.*\\.html.*)|(.*\\.js.*)|(/favicon.ico)|(/back/admin/login.*)|(/front/user/login.*)";
 
     public static final Pattern REGEX_INTERCEPTOR_AUTH_OFF = Pattern.compile(REGEX_INTERCEPTOR_AUTH_OFF_STR);
     /**

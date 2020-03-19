@@ -50,4 +50,13 @@ public interface RedisService {
     void cleanAllCache();
 
     void delRolePerms(Long roleId);
+
+    // 前台用户
+
+    void setFrontUser(String token, Long userId);
+
+    void delFrontUser(String token);
+
+    Long geFrontUserByToken(String token);
+
 }

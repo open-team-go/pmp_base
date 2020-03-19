@@ -18,6 +18,9 @@ import lombok.Data;
 @Data
 public class UserSearchReq {
 
+    @ApiModelProperty("学员选课记录ID")
+    private Long userRefCourseId;
+
     @ApiModelProperty("关键字")
     private String keyWord;
 
@@ -71,4 +74,6 @@ public class UserSearchReq {
 
     @ApiModelProperty("结业状态（0、未知，1、通过，2、未通过，3、缓考，4、缓读）")
     private Integer graduationStatus;
+
+    private Long userId;
 }

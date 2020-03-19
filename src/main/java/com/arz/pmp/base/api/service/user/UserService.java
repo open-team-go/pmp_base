@@ -8,10 +8,8 @@ import com.arz.pmp.base.api.bo.excel.UserImportResp;
 import com.arz.pmp.base.api.bo.user.UserDataResp;
 import com.arz.pmp.base.api.bo.user.UserEditorReq;
 import com.arz.pmp.base.api.bo.user.UserSearchReq;
-import com.arz.pmp.base.api.bo.user.front.UserCheckReq;
-import com.arz.pmp.base.api.bo.user.front.UserPerfectData;
-import com.arz.pmp.base.api.bo.user.front.UserPerfectReq;
-import com.arz.pmp.base.api.bo.user.front.UserRegistReq;
+import com.arz.pmp.base.api.bo.user.front.*;
+import com.arz.pmp.base.entity.PmpUserCourseApplyEntity;
 import com.arz.pmp.base.entity.PmpUserEducationEntity;
 import com.arz.pmp.base.entity.PmpUserPayTypeEntity;
 import com.arz.pmp.base.entity.PmpUserResourceTypeEntity;
@@ -46,11 +44,22 @@ public interface UserService {
 
     UserDataResp getUserDetailByKey(Long userId);
 
-    UserImportResp insertUserBatch(List<UserDataImport> list);
+    UserImportResp insertUserBatch(List<UserDataImport> list, Long managerId);
 
     Long insertUserRegister(UserRegistReq data);
 
-    void updateUserRegister(UserPerfectReq data);
+    void updateUserRegister(UserPerfectReq data, String authentication);
 
-    UserPerfectData getFrontUser(UserCheckReq data);
+    UserPerfectData getFrontUser(String authentication);
+
+    String goLogin(UserCheckReq data);
+
+    void logOut(String authentication);
+
+    List<CourseListData> getUserCourseList(String authentication);
+
+    PmpUserCourseApplyEntity getUserCourseApply(Long userRefCourseId, String authentication);
+
+    void updateUserCourseApply(CourseApplyData data, String authentication);
+
 }

@@ -13,7 +13,8 @@
         a.create_time,
         a.update_time,
         a.create_manager,
-        a.update_manager
+        a.update_manager,
+        a.apply_url
         FROM pmp_course a
         WHERE a.del_on = 0
         <if test="keyWord!=null and keyWord!='' ">

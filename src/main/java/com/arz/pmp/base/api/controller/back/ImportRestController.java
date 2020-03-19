@@ -6,6 +6,7 @@ import com.arz.pmp.base.api.bo.adminn.AdminLoginResp;
 import com.arz.pmp.base.api.bo.excel.UserDataImport;
 import com.arz.pmp.base.api.bo.excel.UserImportResp;
 import com.arz.pmp.base.api.service.excel.ExcelService;
+import com.arz.pmp.base.api.service.redis.RedisService;
 import com.arz.pmp.base.api.service.user.UserService;
 import com.arz.pmp.base.entity.PmpUserEntity;
 import com.arz.pmp.base.framework.commons.response.RestResponse;
@@ -35,6 +36,8 @@ public class ImportRestController {
     private ExcelService excelService;
     @Resource
     private UserService userService;
+    @Resource
+    private RedisService redisService;
 
     @Autowired
     private PermAopHandle permAopHandle;
@@ -47,7 +50,8 @@ public class ImportRestController {
             permAopHandle.getPerms(null, new SysPermEnumClass.PermissionEnum[] {USER_IMPORT}), Logical.AND, false);
         // 获取文件中数据
         List<UserDataImport> list = excelService.importUser(file);
-        UserImportResp result = userService.insertUserBatch(list);
+        Long managerId = redisService.getOperatorIdByToken(authentication);
+        UserImportResp result = userService.insertUserBatch(list,managerId);
         return RestResponse.success(result);
     }
 }

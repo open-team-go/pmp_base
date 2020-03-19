@@ -12,27 +12,18 @@ import lombok.Data;
  *
  * @author chen wei
  * @version 1.0
- * <p>
- * Copyright: Copyright (c) 2019
- * </p>
+ *          <p>
+ *          Copyright: Copyright (c) 2019
+ *          </p>
  * @date 2019/11/14 18:06
  */
 @ApiModel
 @Data
 public class UserRegistReq {
 
-    @ApiModelProperty("课程顾问ID")
-    @Positive
-    private Long adminId;
-
     @ApiModelProperty("学历Id")
     @Positive
     private Long educationId;
-
-    @ApiModelProperty("课程ID")
-    @NotNull
-    @Positive
-    private Long courseId;
 
     @ApiModelProperty("姓名")
     @Pattern(regexp = "\\S{1,30}", message = "非空1-100位")
@@ -73,7 +64,7 @@ public class UserRegistReq {
 
     @ApiModelProperty("身份证号码")
     @NotEmpty
-    @Pattern(regexp = Constants.REGEX_IDENTITY_NO,message = Constants.REGEX_IDENTITY_NO_MESSAGE)
+    @Pattern(regexp = Constants.REGEX_IDENTITY_NO, message = Constants.REGEX_IDENTITY_NO_MESSAGE)
     private String identityNo;
 
     @ApiModelProperty("邮编")
@@ -103,14 +94,4 @@ public class UserRegistReq {
 
     @ApiModelProperty("公司职位名称")
     private String comPosition;
-
-    @ApiModelProperty("付款方式信息表ID")
-    @Positive
-    private Long payId;
-
-    @ApiModelProperty("发票抬头")
-    private String invoiceHeader;
-
-    @ApiModelProperty("发票税号")
-    private String invoiceCode;
 }

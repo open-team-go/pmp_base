@@ -1,6 +1,7 @@
 package com.arz.pmp.base.framework.core.config;
 
 import com.arz.pmp.base.framework.commons.enums.CommonCodeEnum;
+import com.arz.pmp.base.framework.commons.exception.BaseException;
 import com.arz.pmp.base.framework.commons.exception.BusinessException;
 import com.arz.pmp.base.framework.commons.exception.ParamException;
 import com.arz.pmp.base.framework.commons.exception.SystemException;
@@ -35,15 +36,6 @@ import java.util.List;
 public class ExceptionAdviceConfig {
 
     private static final Logger logger = LoggerFactory.getLogger(ExceptionAdviceConfig.class);
-
-    @ExceptionHandler(value = Exception.class)
-    public RestResponse<String> expHandle(Exception e) {
-
-        String message = e.getMessage();
-        // 打印堆栈信息
-        logger.error("HERE IS EXCEPTION===={}", e);
-        return RestResponse.error(CommonCodeEnum.SYSTEM_ERROR.getCode(), message);
-    }
 
     /**
      * description 系统自定义业务异常
@@ -194,4 +186,16 @@ public class ExceptionAdviceConfig {
         return RestResponse.error(CommonCodeEnum.PARAM_ERROR.getCode(), message);
     }
 
+    @ExceptionHandler(value = Exception.class)
+    public RestResponse<String> expHandle(Exception e) {
+
+        String message = e.getMessage();
+        // 打印堆栈信息
+        logger.error("HERE IS EXCEPTION===={}", e);
+        if (e instanceof BaseException) {
+            BaseException ex = (BaseException)e;
+            return RestResponse.error(ex.getCode(), ex.getMsg());
+        }
+        return RestResponse.error(CommonCodeEnum.SYSTEM_ERROR.getCode(), message);
+    }
 }

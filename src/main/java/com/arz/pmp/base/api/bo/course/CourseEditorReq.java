@@ -40,4 +40,7 @@ public class CourseEditorReq {
     @ApiModelProperty("是否启用")
     @NotNull
     private Boolean useOn;
+
+    @ApiModelProperty("课程报名地址")
+    private String applyUrl;
 }
