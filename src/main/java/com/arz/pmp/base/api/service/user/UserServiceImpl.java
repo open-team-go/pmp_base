@@ -28,10 +28,12 @@ import com.arz.pmp.base.framework.commons.constants.Constants;
 import com.arz.pmp.base.framework.commons.enums.CommonCodeEnum;
 import com.arz.pmp.base.framework.commons.utils.Assert;
 import com.arz.pmp.base.framework.commons.utils.DateUtil;
+import com.arz.pmp.base.framework.commons.utils.EncryptUtils;
 import com.arz.pmp.base.framework.core.enums.SysPermEnumClass;
 import com.arz.pmp.base.mapper.PmpUserCourseApplyEntityMapper;
 import com.arz.pmp.base.mapper.PmpUserEntityMapper;
 import com.arz.pmp.base.mapper.PmpUserRefCourseEntityMapper;
+import com.arz.pmp.base.mapper.PmpUserTouristsEntityMapper;
 import com.arz.pmp.base.mapper.ex.PmpAdminExMapper;
 import com.arz.pmp.base.mapper.ex.PmpCourseExMapper;
 import com.arz.pmp.base.mapper.ex.PmpRoomExMapper;
@@ -75,6 +77,8 @@ public class UserServiceImpl implements UserService {
     private PmpRoomExMapper pmpRoomExMapper;
     @Autowired
     private PmpUserCourseApplyEntityMapper pmpUserCourseApplyEntityMapper;
+    @Autowired
+    private PmpUserTouristsEntityMapper pmpUserTouristsEntityMapper;
 
     @Override
     public PageInfo<List<UserDataResp>> getUserListPage(RestRequest<UserSearchReq> req) {
@@ -476,20 +480,36 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void goRegister(UserCheckReq data) {
+    public void insertUserTourists(UserCheckReq data) {
         // 检验用户名唯一
-
+        validLoginName(data.getLoginName());
+        // 密码加密处理
+        String salt = EncryptUtils.createSalt();
+        String encryptPassword = EncryptUtils.createSysUserPsw(data.getLoginPassword(), salt);
+        // 新增游客信息
+        PmpUserTouristsEntity touristsEntity = new PmpUserTouristsEntity();
+        touristsEntity.setDelOn(false);
+        touristsEntity.setCreateTime(DateUtil.getCurSecond());
+        touristsEntity.setLoginName(data.getLoginName());
+        touristsEntity.setLoginPassword(encryptPassword);
+        touristsEntity.setLoginSalt(salt);
+        touristsEntity.setPerfectOn(false);
+        pmpUserTouristsEntityMapper.insert(touristsEntity);
     }
+
     /**
      * description
-     * @param loginName
-     * @param loginPassword
+     * 
      * @author chen wei
      * @date 2020/3/19
      */
-    private void valid(String loginName, String loginPassword) {
-
-
+    private void validLoginName(String loginName) {
+        // 游客表
+        PmpUserTouristsEntity touristsEntity = pmpUserExMapper.selectUserTouristsByLoginName(loginName);
+        Assert.isTrue(touristsEntity == null, CommonCodeEnum.PARAM_ERROR_USERNAME_MULTI);
+        // 用户表
+        PmpUserEntity userEntity = pmpUserExMapper.selectUserByLoginName(loginName);
+        Assert.isTrue(userEntity == null, CommonCodeEnum.PARAM_ERROR_USERNAME_MULTI);
     }
 
     public PmpUserEntity validUser(String userName, String password) {

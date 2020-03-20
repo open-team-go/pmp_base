@@ -60,5 +60,5 @@ public interface UserService {
 
     void updateUserCourseApply(CourseApplyData data, String authentication);
 
-    void goRegister(UserCheckReq data);
+    void insertUserTourists(UserCheckReq data);
 }

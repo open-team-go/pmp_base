@@ -27,10 +27,10 @@ public class UserFrontRestController {
     private UserService userService;
 
     @ApiOperation(value = "用户注册 用户注册", notes = "用户注册")
-    @PostMapping("/login")
-    public RestResponse<String> goRegister(@RequestBody @Valid RestRequest<UserCheckReq> data) {
+    @PostMapping("/register")
+    public RestResponse goRegister(@RequestBody @Valid RestRequest<UserCheckReq> data) {
 
-        userService.goRegister(data.getBody());
+        userService.insertUserTourists(data.getBody());
         return RestResponse.success();
     }
 

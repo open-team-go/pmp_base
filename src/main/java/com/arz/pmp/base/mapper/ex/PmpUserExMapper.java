@@ -35,4 +35,8 @@ public interface PmpUserExMapper {
     List<CourseListData> selectUserCourseList(UserSearchReq search);
 
     PmpUserCourseApplyEntity selectUserCourseApply(@Param("userRefCourseId") Long userRefCourseId);
+
+    PmpUserTouristsEntity selectUserTouristsByLoginName(@Param("loginName") String loginName);
+
+    PmpUserEntity selectUserByLoginName(@Param("loginName") String loginName);
 }

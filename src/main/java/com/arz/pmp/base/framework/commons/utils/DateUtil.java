@@ -4,10 +4,7 @@ import com.google.common.base.Strings;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.commons.lang3.time.DateUtils;
 
-import java.security.PublicKey;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -91,7 +88,7 @@ public class DateUtil {
      */
     public static long getCurSecond() {
 
-        return getCurDateTime().getTime() / 1000;
+        return System.currentTimeMillis() / 1000;
     }
 
     /**
