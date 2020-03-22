@@ -14,6 +14,7 @@ import com.arz.pmp.base.entity.PmpUserResourceTypeEntity;
 import com.arz.pmp.base.framework.commons.RestRequest;
 import com.github.pagehelper.PageInfo;
 
+import javax.xml.crypto.Data;
 import java.util.List;
 
 /**
@@ -61,4 +62,8 @@ public interface UserService {
     void updateUserCourseApply(CourseApplyData data, String authentication);
 
     void insertUserTourists(UserCheckReq data);
+
+    void updateUserLoginPassword(UserPasswordData data, String authentication);
+
+    void insertUserCourse(Long courseId, String authentication);
 }

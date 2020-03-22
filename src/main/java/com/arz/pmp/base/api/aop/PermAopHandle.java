@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 
+import com.arz.pmp.base.api.aop.annotation.RequireUserPermissions;
+import com.arz.pmp.base.api.bo.user.front.UserCacheData;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.util.StringUtil;
@@ -84,6 +86,21 @@ public class PermAopHandle {
         }
         String token = getHeaderToken(getRestRequest(jp));
         assertPermissions(token, getPerms(null, requiresPermissions.value()), requiresPermissions.logical(), false);
+    }
+
+    /**
+     * description 前台学员权限注解RequireUserPermissions
+     */
+    @Before(value = "@annotation(requireUserPermissions)")
+    private void prePerms(JoinPoint jp, RequireUserPermissions requireUserPermissions) {
+        String token = getHeaderToken(getRestRequest(jp));
+        assertUserPermissions(token, getPerms(null, requireUserPermissions.value()), requireUserPermissions.logical());
+    }
+
+    private void assertUserPermissions(String token, String[] perms, Logical logical) {
+        // 当前判定存在userId即可
+        UserCacheData loginInfo = redisService.geFrontUserByToken(token);
+        Assert.isTrue(loginInfo != null && loginInfo.getUserId() != null, CommonCodeEnum.PERMISSION_ERROR);
     }
 
     public String[] getPerms(SysPermEnumClass.RoleEnum[] roles, SysPermEnumClass.PermissionEnum[] permissions) {
@@ -240,7 +257,7 @@ public class PermAopHandle {
         if (!CollectionUtils.isEmpty(stringPerms)) {
             perms = new LinkedHashSet<Permission>(stringPerms.size());
             for (PmpPermissionEntity item : stringPerms) {
-                if(StringUtils.isBlank(item.getPermValue())){
+                if (StringUtils.isBlank(item.getPermValue())) {
                     continue;
                 }
                 Permission permission = new WildcardPermission(item.getPermValue());

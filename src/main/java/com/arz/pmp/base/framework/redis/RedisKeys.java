@@ -31,6 +31,9 @@ public interface RedisKeys {
     /** 管理员权限 */
     String SYS_OPERATOR_ROLE_PERMISSION = SYS_OPERATOR_ROLE + "perm" + DEFAULT_SEPARATOR;
 
+    // 前端用户
     /** 用户端token前缀 */
     String FRONT_USER_TOKEN_PRE = FRONT_CONF + "token" + DEFAULT_SEPARATOR;
+    /** 用户端单点登录校验TOKEN */
+    String FRONT_USER_LOGIN_UNIQUE_PRE = FRONT_CONF + "user" + DEFAULT_SEPARATOR;
 }

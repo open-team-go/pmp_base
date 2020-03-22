@@ -4,7 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import com.arz.pmp.base.framework.commons.utils.Util;
+import com.arz.pmp.base.mapper.*;
 import org.apache.commons.lang3.StringUtils;
+import org.aspectj.weaver.ast.Or;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,10 +33,6 @@ import com.arz.pmp.base.framework.commons.utils.Assert;
 import com.arz.pmp.base.framework.commons.utils.DateUtil;
 import com.arz.pmp.base.framework.commons.utils.EncryptUtils;
 import com.arz.pmp.base.framework.core.enums.SysPermEnumClass;
-import com.arz.pmp.base.mapper.PmpUserCourseApplyEntityMapper;
-import com.arz.pmp.base.mapper.PmpUserEntityMapper;
-import com.arz.pmp.base.mapper.PmpUserRefCourseEntityMapper;
-import com.arz.pmp.base.mapper.PmpUserTouristsEntityMapper;
 import com.arz.pmp.base.mapper.ex.PmpAdminExMapper;
 import com.arz.pmp.base.mapper.ex.PmpCourseExMapper;
 import com.arz.pmp.base.mapper.ex.PmpRoomExMapper;
@@ -71,6 +70,8 @@ public class UserServiceImpl implements UserService {
     private PmpAdminExMapper pmpAdminExMapper;
     @Autowired
     private PmpCourseExMapper pmpCourseExMapper;
+    @Autowired
+    private PmpCourseEntityMapper pmpCourseEntityMapper;
     @Autowired
     private PmpUserRefCourseEntityMapper pmpUserRefCourseEntityMapper;
     @Autowired
@@ -128,23 +129,18 @@ public class UserServiceImpl implements UserService {
         // 新增
         if (addOn) {
             Assert.isTrue(StringUtils.isNotBlank(name), CommonCodeEnum.PARAM_ERROR);
-            entity.setCreateTime(curTimeSec);
-            entity.setCreateManager(operatorId);
-            entity.setDelOn(false);
-            pmpUserEntityMapper.insertSelective(entity);
+            insertUserEntity(entity, operatorId);
             userId = entity.getUserId();
+            // 设置学员登录默认信息
+            updateUserDefaultLoginInfo(userId, operatorId);
             // 新增选课信息
             PmpUserRefCourseEntity userRefCourseEntity = mapperFacade.map(data, PmpUserRefCourseEntity.class);
             userRefCourseEntity.setUserId(userId);
-            userRefCourseEntity.setCreateManager(operatorId);
-            userRefCourseEntity.setCreateTime(curTimeSec);
-            pmpUserRefCourseEntityMapper.insertSelective(userRefCourseEntity);
+            insertUserRefCourseEntity(userRefCourseEntity, operatorId);
             return userRefCourseEntity.getId();
         } else {
             Assert.isTrue(userId != null && userRefCourseId != null, CommonCodeEnum.PARAM_ERROR);
-            entity.setUpdateTime(curTimeSec);
-            entity.setUpdateManager(operatorId);
-            pmpUserEntityMapper.updateByPrimaryKeySelective(entity);
+            updateUserEntity(entity, operatorId);
             // 更新选课信息
             Long targetId = pmpUserExMapper.selectUserRefCourseId(userId, courseId);
             Assert.isTrue(targetId == null || targetId.equals(userRefCourseId),
@@ -160,17 +156,40 @@ public class UserServiceImpl implements UserService {
 
     }
 
+    /** 后台构建新学员时默认登录信息 */
+    private void updateUserDefaultLoginInfo(Long userId, Long operatorId) {
+        PmpUserEntity userEntity = new PmpUserEntity();
+        userEntity.setUserId(userId);
+        userEntity.setLoginName(getUserDefaultLoginName(userId));
+        String loginSale = EncryptUtils.createSalt();
+        userEntity.setLoginSalt(loginSale);
+        String loginPassword = EncryptUtils.createSysUserPsw(Constants.ADMIN_DEFAULT_PASSWORD, loginSale);
+        userEntity.setLoginPassword(loginPassword);
+        updateUserEntity(userEntity, operatorId);
+    }
+
+    private static final String USER_DEFAULT_LOGIN_NAME_PRE = "user_";
+
+    private String getUserDefaultLoginName(Long userId) {
+        return USER_DEFAULT_LOGIN_NAME_PRE + userId;
+    }
+
     @Override
     public void deleteUser(Long userId, String authentication) {
+        PmpUserEntity userEntity = pmpUserEntityMapper.selectByPrimaryKey(userId);
+        if (userEntity == null || userEntity.getDelOn()) {
+            return;
+        }
         PmpUserEntity entity = new PmpUserEntity();
-        long curTimeSec = DateUtil.getCurSecond();
         // 操作员信息
         Long operatorId = redisService.getOperatorIdByToken(authentication);
         entity.setUserId(userId);
-        entity.setUpdateTime(curTimeSec);
-        entity.setUpdateManager(operatorId);
         entity.setDelOn(true);
-        pmpUserEntityMapper.updateByPrimaryKeySelective(entity);
+        updateUserEntity(entity, operatorId);
+        // 更新对应游客信息
+        pmpUserExMapper.updateTouristsDelByUser(userId);
+        // 清空登录信息
+        cleanFrontUserCache(userEntity.getLoginName());
     }
 
     @Override
@@ -343,16 +362,14 @@ public class UserServiceImpl implements UserService {
                 if (userId != null) {
                     // 修改
                     user.setUserId(userId);
-                    user.setUpdateTime(curTime);
-                    user.setUpdateManager(managerId);
-                    pmpUserEntityMapper.updateByPrimaryKeySelective(user);
+                    updateUserEntity(user, managerId);
                     j++;
                 } else {
-                    user.setCreateTime(curTime);
-                    user.setCreateManager(managerId);
-                    pmpUserEntityMapper.insertSelective(user);
+                    insertUserEntity(user, managerId);
                     i++;
                     userId = user.getUserId();
+                    // 设置学员登录默认信息
+                    updateUserDefaultLoginInfo(userId, managerId);
                 }
             } catch (Exception e) {
                 logger.error("here is exception====", e);
@@ -369,9 +386,7 @@ public class UserServiceImpl implements UserService {
             if (userRefCourseId == null) {
                 // 新增选课
                 userRefCourseEntity.setUserId(userId);
-                userRefCourseEntity.setCreateTime(curTime);
-                userRefCourseEntity.setCreateManager(managerId);
-                pmpUserRefCourseEntityMapper.insertSelective(userRefCourseEntity);
+                insertUserRefCourseEntity(userRefCourseEntity, managerId);
             } else {
                 // 更新选课信息
                 userRefCourseEntity.setUpdateTime(curTime);
@@ -386,45 +401,120 @@ public class UserServiceImpl implements UserService {
         return result;
     }
 
-    public Long insertUserRegister(UserRegistReq data) {
+    @Override
+    public void updateUserRegister(UserPerfectReq data, String authentication) {
+        UserCacheData userInfo = getFrontUserCache(authentication);
+        Long userId = userInfo.getUserId();
+        Long oldUserId = null;
+        // 更新用户表基本信息
+        if (userId != null) {
+            PmpUserEntity oldUser = pmpUserEntityMapper.selectByPrimaryKey(userId);
+            if (oldUser == null || oldUser.getDelOn()) {
+                oldUserId = null;
+            }
+            // 不允许前台修改手机号
+            if (StringUtils.isNoneBlank(oldUser.getPhoneNo()) && data.getPhoneNo().equals(oldUser.getPhoneNo())) {
+                Assert.isTrue(true, CommonCodeEnum.PARAM_ERROR_USER_EDITOR);
+            }
+            // 不允许前台修改身份证号
+            if (StringUtils.isNoneBlank(oldUser.getIdentityNo())
+                && data.getIdentityNo().equals(oldUser.getIdentityNo())) {
+                Assert.isTrue(true, CommonCodeEnum.PARAM_ERROR_USER_EDITOR);
+            }
+            // 不允许前台修改身份证号
+            if (StringUtils.isNoneBlank(oldUser.getUserName()) && data.getUserName().equals(oldUser.getUserName())) {
+                Assert.isTrue(true, CommonCodeEnum.PARAM_ERROR_USER_EDITOR);
+            }
 
+        } else {
+            // 完善用户信息：同步游客数据到用户表
+            oldUserId = validUserUnique(data.getUserName(), null, data.getPhoneNo());
+        }
         PmpUserEntity userEntity = mapperFacade.map(data, PmpUserEntity.class);
+        // 添加新的学员信息
+        boolean perfectFlag = false;
+        Long touristsId = null;
+        if (oldUserId == null) {
+            PmpUserTouristsEntity touristsEntity =
+                pmpUserExMapper.selectUserTouristsByLoginName(userInfo.getLoginName());
+            touristsId = touristsEntity.getId();
+            userEntity.setLoginName(touristsEntity.getLoginName());
+            userEntity.setLoginSalt(touristsEntity.getLoginSalt());
+            userEntity.setLoginPassword(touristsEntity.getLoginPassword());
+            insertUserEntity(userEntity, null);
+            perfectFlag = true;
+        } else {
+            // 更新学员信息
+            userEntity.setUserId(oldUserId);
+            if (!userInfo.isPerfectOn()) {
+                PmpUserTouristsEntity touristsEntity =
+                    pmpUserExMapper.selectUserTouristsByLoginName(userInfo.getLoginName());
+                touristsId = touristsEntity.getId();
+                userEntity.setLoginName(touristsEntity.getLoginName());
+                userEntity.setLoginSalt(touristsEntity.getLoginSalt());
+                userEntity.setLoginPassword(touristsEntity.getLoginPassword());
+                perfectFlag = true;
+            }
+            updateUserEntity(userEntity, null);
+        }
+        // 更新游客、学员绑定关系
+        if (perfectFlag) {
+            PmpUserTouristsEntity touristsEntity = new PmpUserTouristsEntity();
+            touristsEntity.setId(touristsId);
+            // 更新游客信息
+            touristsEntity.setPerfectOn(true);
+            touristsEntity.setUserId(userEntity.getUserId());
+            updateUserTouristsEntity(touristsEntity, null);
+            // 更新缓存信息
+            userInfo.setPerfectOn(true);
+            userInfo.setUserId(oldUserId);
+            cacheRedisFrontUser(userInfo);
+        }
+    }
 
-        Long hasUserId = validUserUnique(data.getUserName(), data.getIdentityNo(), data.getPhoneNo());
-        Assert.isTrue(hasUserId == null, CommonCodeEnum.PARAM_ERROR_USER_MULTI_ERROR);
-        Long curTime = DateUtil.getCurSecond();
-        userEntity.setCreateTime(curTime);
+    /**
+     * 学员添加
+     */
+    private Long insertUserEntity(PmpUserEntity userEntity, Long operatorId) {
+        userEntity.setCreateManager(operatorId);
+        userEntity.setCreateTime(DateUtil.getCurSecond());
+        userEntity.setDelOn(false);
         pmpUserEntityMapper.insertSelective(userEntity);
-        logger.info("新注册学员====userId=={}", userEntity.getUserId());
         return userEntity.getUserId();
     }
 
-    @Override
-    public void updateUserRegister(UserPerfectReq data, String authentication) {
-        Long userId = redisService.geFrontUserByToken(authentication);
-        Long hasUserId = validUserUnique(data.getUserName(), data.getIdentityNo(), data.getPhoneNo());
-        Assert.isTrue(hasUserId == null || userId.equals(hasUserId), CommonCodeEnum.PARAM_ERROR_USER_MULTI_ERROR);
-
-        PmpUserEntity userEntity = mapperFacade.map(data, PmpUserEntity.class);
-        userEntity.setUserId(userId);
+    /**
+     * 学员更新
+     */
+    private void updateUserEntity(PmpUserEntity userEntity, Long operatorId) {
+        userEntity.setUpdateManager(operatorId);
+        userEntity.setUpdateTime(DateUtil.getCurSecond());
         pmpUserEntityMapper.updateByPrimaryKeySelective(userEntity);
+    }
+
+    /**
+     * 游客更新
+     */
+    private void updateUserTouristsEntity(PmpUserTouristsEntity touristsEntity, Long operatorId) {
+        pmpUserTouristsEntityMapper.updateByPrimaryKeySelective(touristsEntity);
     }
 
     @Override
     public UserPerfectData getFrontUser(String authentication) {
+        UserCacheData userInfo = getFrontUserCache(authentication);
+        if (userInfo.getUserId() == null) {
+            return new UserPerfectData();
+        }
 
-        Long userId = redisService.geFrontUserByToken(authentication);
-
-        return pmpUserExMapper.selectFrontUserData(userId);
+        return pmpUserExMapper.selectFrontUserData(userInfo.getUserId());
     }
 
     @Override
     public String goLogin(UserCheckReq data) {
-
         // 验证登录信息
-        PmpUserEntity user = validUser(data.getLoginName(), data.getLoginPassword());
-        // 登录信息缓存
-        String authentication = cacheRedisFrontUser(user.getUserId());
+        UserCacheData userInfo = validUser(data.getLoginName(), data.getLoginPassword());
+        // 登录信息缓存，用户名作为唯一标识
+        String authentication = cacheRedisFrontUser(userInfo);
         return authentication;
     }
 
@@ -435,9 +525,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<CourseListData> getUserCourseList(String authentication) {
-        Long userId = redisService.geFrontUserByToken(authentication);
+        UserCacheData userInfo = getFrontUserCache(authentication);
         UserSearchReq searchReq = new UserSearchReq();
-        searchReq.setUserId(userId);
+        searchReq.setUserId(userInfo.getUserId());
         return pmpUserExMapper.selectUserCourseList(searchReq);
     }
 
@@ -446,7 +536,8 @@ public class UserServiceImpl implements UserService {
         if (userRefCourseId == null) {
             return null;
         }
-        Long userId = redisService.geFrontUserByToken(authentication);
+        UserCacheData userInfo = getFrontUserCache(authentication);
+        Long userId = userInfo.getUserId();
         // 校验选课
         PmpUserRefCourseEntity userCourse = pmpUserRefCourseEntityMapper.selectByPrimaryKey(userRefCourseId);
         Assert.isTrue(userCourse != null, CommonCodeEnum.PARAM_ERROR);
@@ -466,8 +557,8 @@ public class UserServiceImpl implements UserService {
             entity = new PmpUserCourseApplyEntity();
             // 新增
             entity.setHtmlContent(data.getHtmlContent());
-            Long userId = redisService.geFrontUserByToken(authentication);
-            entity.setUserId(userId);
+            UserCacheData userInfo = getFrontUserCache(authentication);
+            entity.setUserId(userInfo.getUserId());
             entity.setUserRefCourseId(data.getUserRefCourseId());
             pmpUserCourseApplyEntityMapper.insertSelective(entity);
         } else {
@@ -497,6 +588,83 @@ public class UserServiceImpl implements UserService {
         pmpUserTouristsEntityMapper.insert(touristsEntity);
     }
 
+    @Override
+    public void updateUserLoginPassword(UserPasswordData data, String authentication) {
+
+        Assert.isTrue(data.getNewPassword().equals(data.getOldPassword()),
+            CommonCodeEnum.PARAM_ERROR_USER_LOGIN_PASSWORD_CHANGE);
+
+        UserCacheData loginInfo = getFrontUserCache(authentication);
+        boolean flag = false;
+        if (loginInfo.getUserId() != null) {
+            PmpUserEntity userEntity = pmpUserEntityMapper.selectByPrimaryKey(loginInfo.getUserId());
+            Assert.isTrue(EncryptUtils.doCredentialsMatch(data.getOldPassword(), userEntity.getLoginPassword(),
+                userEntity.getLoginSalt()), CommonCodeEnum.PARAM_ERROR_LOGIN_PASSWORD);
+            flag = true;
+            userEntity = new PmpUserEntity();
+            userEntity.setUserId(loginInfo.getUserId());
+            String loginSalt = EncryptUtils.createSalt();
+            userEntity.setLoginSalt(loginSalt);
+            userEntity.setLoginPassword(EncryptUtils.createSysUserPsw(data.getNewPassword(), loginSalt));
+            updateUserEntity(userEntity, null);
+        }
+        if (loginInfo.getTouristsId() != null) {
+            PmpUserTouristsEntity touristsEntity =
+                pmpUserTouristsEntityMapper.selectByPrimaryKey(loginInfo.getTouristsId());
+            Assert.isTrue(flag || EncryptUtils.doCredentialsMatch(data.getOldPassword(),
+                touristsEntity.getLoginPassword(), touristsEntity.getLoginSalt()),
+                CommonCodeEnum.PARAM_ERROR_LOGIN_PASSWORD);
+
+            touristsEntity = new PmpUserTouristsEntity();
+            touristsEntity.setId(loginInfo.getTouristsId());
+            String loginSalt = EncryptUtils.createSalt();
+            touristsEntity.setLoginSalt(loginSalt);
+            touristsEntity.setLoginPassword(EncryptUtils.createSysUserPsw(data.getNewPassword(), loginSalt));
+            updateUserTouristsEntity(touristsEntity, null);
+        }
+        // 清除用户登录信息
+        cleanFrontUserCache(loginInfo.getLoginName());
+    }
+
+    @Override
+    public void insertUserCourse(Long courseId, String authentication) {
+        PmpCourseEntity courseEntity = pmpCourseEntityMapper.selectByPrimaryKey(courseId);
+        Assert.isTrue(courseEntity != null && !courseEntity.getDelOn(), CommonCodeEnum.PARAM_ERROR);
+        UserCacheData loginInfo = getFrontUserCache(authentication);
+        // 查询是否已选过该课程
+        Long refCourseId = pmpUserExMapper.selectUserRefCourseId(loginInfo.getUserId(), courseId);
+        Assert.isTrue(refCourseId == null, CommonCodeEnum.PARAM_ERROR_USER_CHOOSE_COURSE_MULTI);
+        PmpUserRefCourseEntity refCourseEntity = new PmpUserRefCourseEntity();
+        refCourseEntity.setCourseId(courseId);
+        refCourseEntity.setUserId(loginInfo.getUserId());
+        insertUserRefCourseEntity(refCourseEntity, null);
+    }
+
+    /**
+     * 新增学员选课
+     */
+    private void insertUserRefCourseEntity(PmpUserRefCourseEntity refCourseEntity, Long operatorId) {
+        refCourseEntity.setCreateTime(DateUtil.getCurSecond());
+        refCourseEntity.setCreateManager(operatorId);
+        pmpUserRefCourseEntityMapper.insertSelective(refCourseEntity);
+    }
+
+    /**
+     * 登录信息缓存获取
+     */
+    private UserCacheData getFrontUserCache(String authentication) {
+
+        return redisService.geFrontUserByToken(authentication);
+    }
+
+    /**
+     * 登录信息缓存
+     */
+    private void cleanFrontUserCache(String loginName) {
+
+        redisService.delFrontUserUniqueCache(loginName);
+    }
+
     /**
      * description
      * 
@@ -504,6 +672,7 @@ public class UserServiceImpl implements UserService {
      * @date 2020/3/19
      */
     private void validLoginName(String loginName) {
+        Assert.isTrue(!loginName.startsWith("user_"), CommonCodeEnum.PARAM_ERROR_USERNAME_MULTI);
         // 游客表
         PmpUserTouristsEntity touristsEntity = pmpUserExMapper.selectUserTouristsByLoginName(loginName);
         Assert.isTrue(touristsEntity == null, CommonCodeEnum.PARAM_ERROR_USERNAME_MULTI);
@@ -512,19 +681,49 @@ public class UserServiceImpl implements UserService {
         Assert.isTrue(userEntity == null, CommonCodeEnum.PARAM_ERROR_USERNAME_MULTI);
     }
 
-    public PmpUserEntity validUser(String userName, String password) {
-        PmpUserEntity user = pmpUserExMapper.selectUserByName(userName, password, null);
-
-        Assert.isTrue(user != null, CommonCodeEnum.PARAM_ERROR_LOGIN_USERNAME);
+    public UserCacheData validUser(String loginName, String password) {
+        PmpUserEntity user = pmpUserExMapper.selectUserByLoginName(loginName);
+        String validPassword = null;
+        String validSalt = null;
+        Long touristsId = null;
+        Long userId = null;
+        if (user != null) {
+            validPassword = user.getLoginPassword();
+            validSalt = user.getLoginSalt();
+            PmpUserTouristsEntity touristsEntity = pmpUserExMapper.selectUserTouristsByLoginName(loginName);
+            touristsId = touristsEntity.getId();
+            userId = user.getUserId();
+        } else {
+            PmpUserTouristsEntity touristsEntity = pmpUserExMapper.selectUserTouristsByLoginName(loginName);
+            Assert.isTrue(touristsEntity != null, CommonCodeEnum.PARAM_ERROR_LOGIN_USERNAME);
+            validPassword = touristsEntity.getLoginPassword();
+            validSalt = touristsEntity.getLoginSalt();
+            userId = touristsEntity.getUserId();
+            touristsId = touristsEntity.getId();
+        }
         // 验证密码
-        Assert.isTrue(password.equals(user.getIdentityNo()), CommonCodeEnum.PARAM_ERROR_LOGIN_PASSWORD);
-        return user;
+        Assert.isTrue(EncryptUtils.doCredentialsMatch(password, validSalt, validPassword),
+            CommonCodeEnum.PARAM_ERROR_LOGIN_PASSWORD);
+
+        UserCacheData userInfo = new UserCacheData();
+        user.setLoginName(loginName);
+        if (userId != null) {
+            userInfo.setPerfectOn(true);
+        }
+        userInfo.setUserId(userId);
+        userInfo.setTouristsId(touristsId);
+        return userInfo;
     }
 
-    private String cacheRedisFrontUser(Long userId) {
+    /**
+     * 登录信息缓存
+     */
+    private String cacheRedisFrontUser(UserCacheData userInfo) {
 
         String token = createAuthToken();
-        redisService.setFrontUser(token, userId);
+        redisService.setFrontUser(token, userInfo);
+        // 单点登录控制
+        redisService.setFrontUserUniqueLogin(userInfo.getLoginName(), token);
         return token;
     }
 

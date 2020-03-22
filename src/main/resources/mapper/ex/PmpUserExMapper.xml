@@ -225,4 +225,9 @@
         WHERE u.login_name = #{loginName} AND u.del_on = 0
     </select>
 
+    <select id="updateTouristsDelByUser">
+
+        UPDATE pmp_user_tourists ut SET ut.del_on=1 WHERE ut.user_id#{userId}
+    </select>
+
 </mapper>

@@ -2,6 +2,7 @@ package com.arz.pmp.base.framework.core.utils;
 
 import com.alibaba.excel.metadata.BaseRowModel;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.arz.pmp.base.framework.commons.response.RestResponse;
 import com.arz.pmp.base.framework.commons.utils.DateUtil;
 import com.arz.pmp.base.framework.core.utils.excel.ExcelUtil;
@@ -61,7 +62,7 @@ public class WebUtil {
         PrintWriter out = null;
         try {
             out = res.getWriter();
-            out.write(restResponse.toString());
+            out.write(JSONObject.toJSONString(restResponse));
             res.flushBuffer();
         } catch (IOException e) {
             e.printStackTrace();

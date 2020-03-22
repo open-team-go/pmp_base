@@ -59,6 +59,7 @@ public class SysPermEnumClass {
         LOG_ADD("日志添加", "log:create"),
         LOG_UPDATE("日志编辑", "log:update"),
         LOG_DEL("日志删除", "log:delete"),
+        FRONT_USER("前台学员", "user:all"),
         ;
         private String name;
 

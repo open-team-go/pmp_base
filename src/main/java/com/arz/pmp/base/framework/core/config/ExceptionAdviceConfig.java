@@ -5,6 +5,7 @@ import com.arz.pmp.base.framework.commons.exception.BaseException;
 import com.arz.pmp.base.framework.commons.exception.BusinessException;
 import com.arz.pmp.base.framework.commons.exception.ParamException;
 import com.arz.pmp.base.framework.commons.exception.SystemException;
+import com.arz.pmp.base.framework.commons.exception.builder.PermissionException;
 import com.arz.pmp.base.framework.commons.response.RestResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.slf4j.Logger;
@@ -78,6 +79,14 @@ public class ExceptionAdviceConfig {
      */
     @ExceptionHandler(value = ParamException.class)
     public RestResponse paramExpHandle(ParamException e) {
+
+        // 打印堆栈信息
+        logger.error("HERE IS EXCEPTION===={}", e);
+        return RestResponse.error(e.getCode(), e.getMsg());
+    }
+
+    @ExceptionHandler(value = PermissionException.class)
+    public RestResponse paramExpHandle(PermissionException e) {
 
         // 打印堆栈信息
         logger.error("HERE IS EXCEPTION===={}", e);

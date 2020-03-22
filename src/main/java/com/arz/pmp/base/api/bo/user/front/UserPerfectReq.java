@@ -14,12 +14,13 @@ import javax.validation.constraints.Pattern;
 public class UserPerfectReq {
 
     @ApiModelProperty("姓名")
-    @Pattern(regexp = "\\S{1,30}", message = "非空1-100位")
-    @NotBlank
+    @Pattern(regexp = "\\S{1,30}", message = "非空1-30位")
+    @NotBlank(message = "姓名格式不正确")
     private String userName;
 
     @ApiModelProperty("身份证号码")
-    @NotEmpty
+    @NotEmpty(message = Constants.REGEX_IDENTITY_NO_MESSAGE)
+    @Pattern(regexp = Constants.REGEX_IDENTITY_NO, message = Constants.REGEX_IDENTITY_NO_MESSAGE)
     private String identityNo;
 
     @ApiModelProperty("性别（0、女，1、男）")
@@ -57,6 +58,7 @@ public class UserPerfectReq {
 
     @ApiModelProperty("手机号码")
     @Pattern(regexp = Constants.REGEX_PHONE_NO_STR, message = Constants.REGEX_PHONE_NO_MESSAGE)
+    @NotEmpty(message = Constants.REGEX_PHONE_NO_MESSAGE)
     private String phoneNo;
 
     @ApiModelProperty("联系邮箱")

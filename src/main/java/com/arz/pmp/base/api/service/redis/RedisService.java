@@ -1,5 +1,6 @@
 package com.arz.pmp.base.api.service.redis;
 
+import com.arz.pmp.base.api.bo.user.front.UserCacheData;
 import com.arz.pmp.base.entity.PmpAdminEntity;
 
 /**
@@ -53,10 +54,15 @@ public interface RedisService {
 
     // 前台用户
 
-    void setFrontUser(String token, Long userId);
+    void setFrontUser(String token, UserCacheData userInfo);
 
     void delFrontUser(String token);
 
-    Long geFrontUserByToken(String token);
+    UserCacheData geFrontUserByToken(String token);
 
+    void setFrontUserUniqueLogin(String loginName, String token);
+
+    String getFrontUserUniqueToken(String loginName);
+
+    void delFrontUserUniqueCache(String loginName);
 }

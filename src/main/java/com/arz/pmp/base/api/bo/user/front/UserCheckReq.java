@@ -19,7 +19,7 @@ public class UserCheckReq {
     private String loginName;
 
     @ApiModelProperty("登录密码")
-    @NotEmpty
+    @NotEmpty(message = "登录密码不能为空")
     @Length(min = 6, max = 16, message = "密码长度限制6-16位")
     private String loginPassword;
 }

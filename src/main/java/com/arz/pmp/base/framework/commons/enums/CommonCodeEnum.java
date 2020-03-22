@@ -19,8 +19,12 @@ public enum CommonCodeEnum implements StatusCode {
     PARAM_ERROR_LOGIN_USERNAME("用户名不存在", "PARAM_ERROR_LOGIN_USERNAME"),
     PARAM_ERROR_LOGIN_PASSWORD("登录密码错误", "PARAM_ERROR_LOGIN_PASSWORD"),
     PARAM_ERROR_USERNAME_MULTI("用户名重复", "PARAM_ERROR_USERNAME_MULTI"),
+    PARAM_ERROR_USERNAME_ILLEGAL("用户名含有非法字符", "PARAM_ERROR_USERNAME_ILLEGAL"),
     PARAM_ERROR_ADMIN("超级管理员不支持添加、修改、删除操作", "PARAM_ERROR_ADMIN"),
     PARAM_ERROR_USER_MULTI_ERROR("学员信息已存在，请不要重复提交", "PARAM_ERROR_USER_MULTI_ERROR"),
+    PARAM_ERROR_USER_EDITOR("不允许修改手机号、身份证号、姓名信息，如需修改请联系管理人员", "PARAM_ERROR_USER_EDITOR"),
+    PARAM_ERROR_USER_LOGIN_PASSWORD_CHANGE("新的登录密码和旧的登录密码相同", "PARAM_ERROR_USER_LOGIN_PASSWORD_CHANGE"),
+    PARAM_ERROR_USER_CHOOSE_COURSE_MULTI("不允许重复选课", "PARAM_ERROR_USER_CHOOSE_COURSE_MULTI"),
 
     /**
      * 访问权限异常
@@ -58,6 +62,7 @@ public enum CommonCodeEnum implements StatusCode {
      * 系统错误，非程序数据错误，监控日志时，需要关注
      */
     SYSTEM_ERROR_REDIS_ERROR("reids 服务错误", "SYSTEM_ERROR_REDIS_ERROR"),;
+
     private String code;
     private String msg;
 

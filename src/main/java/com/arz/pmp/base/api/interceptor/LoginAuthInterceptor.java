@@ -1,6 +1,7 @@
 package com.arz.pmp.base.api.interceptor;
 
 import com.alibaba.fastjson.JSON;
+import com.arz.pmp.base.api.bo.user.front.UserCacheData;
 import com.arz.pmp.base.api.service.redis.RedisService;
 import com.arz.pmp.base.entity.PmpAdminEntity;
 import com.arz.pmp.base.framework.commons.RestRequest;
@@ -129,8 +130,12 @@ public class LoginAuthInterceptor extends HandlerInterceptorAdapter {
             PmpAdminEntity userInfo = redisService.getOperatorByToken(token);
             return userInfo != null;
         } else {
-            Long userId = redisService.geFrontUserByToken(token);
-            return NumberUtil.isPositive(userId);
+            UserCacheData loginInfo = redisService.geFrontUserByToken(token);
+            if (loginInfo == null) {
+                return false;
+            }
+            String uniqueToken = redisService.getFrontUserUniqueToken(loginInfo.getLoginName());
+            return token.equals(uniqueToken);
         }
 
     }

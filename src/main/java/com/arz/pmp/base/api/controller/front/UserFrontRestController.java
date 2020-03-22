@@ -1,5 +1,7 @@
 package com.arz.pmp.base.api.controller.front;
 
+import com.arz.pmp.base.api.aop.annotation.RequireUserPermissions;
+import com.arz.pmp.base.api.bo.CommonDataReq;
 import com.arz.pmp.base.api.bo.user.front.*;
 import com.arz.pmp.base.api.service.user.UserService;
 import com.arz.pmp.base.entity.PmpUserCourseApplyEntity;
@@ -17,6 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 import javax.validation.Valid;
 import java.util.List;
+
+import static com.arz.pmp.base.framework.core.enums.SysPermEnumClass.PermissionEnum.FRONT_USER;
 
 @Api(value = "前台 用户操作API集", tags = "前台 用户操作API集")
 @RestController
@@ -46,8 +50,15 @@ public class UserFrontRestController {
     @PostMapping("/logOut")
     public RestResponse loginOut(@RequestBody @Valid RestRequest data) {
 
-        Assert.isTrue(data.getBody() != null, CommonCodeEnum.PARAM_ERROR);
         userService.logOut(data.getHeader().getAuthentication());
+        return RestResponse.success();
+    }
+
+    @ApiOperation(value = "用户登录密码 用户修改登录密码", notes = "用户登录密码")
+    @PostMapping("/loginPassword")
+    public RestResponse updateLoginPassword(@RequestBody @Valid RestRequest<UserPasswordData> data) {
+
+        userService.updateUserLoginPassword(data.getBody(), data.getHeader().getAuthentication());
         return RestResponse.success();
     }
 
@@ -71,14 +82,25 @@ public class UserFrontRestController {
 
     @ApiOperation(value = "用户课程 查询用户已选课程", notes = "查询用户已选课程")
     @PostMapping("/course")
+    @RequireUserPermissions({FRONT_USER})
     public RestResponse<CourseListData> getUserCourseList(@RequestBody @Valid RestRequest data) {
 
         List<CourseListData> list = userService.getUserCourseList(data.getHeader().getAuthentication());
         return RestResponse.success(list);
     }
 
+    @ApiOperation(value = "用户课程 用户添加新选课", notes = "用户添加新选课")
+    @PostMapping("/course/add")
+    @RequireUserPermissions({FRONT_USER})
+    public RestResponse insertUserCourse(@RequestBody @Valid RestRequest<CommonDataReq> data) {
+
+        userService.insertUserCourse(data.getBody().getId(), data.getHeader().getAuthentication());
+        return RestResponse.success();
+    }
+
     @ApiOperation(value = "用户课程 课程考试报名信息查询", notes = "课程考试报名信息查询")
     @PostMapping("/course/apply")
+    @RequireUserPermissions({FRONT_USER})
     public RestResponse<PmpUserCourseApplyEntity>
         getUserCourseApply(@RequestBody @Valid RestRequest<CourseApplyData> data) {
 
@@ -89,6 +111,7 @@ public class UserFrontRestController {
 
     @ApiOperation(value = "用户课程 课程考试报名信息更新", notes = "课程考试报名信息更新")
     @PostMapping("/course/apply/up")
+    @RequireUserPermissions({FRONT_USER})
     public RestResponse updateUserCourseApply(@RequestBody @Valid RestRequest<CourseApplyData> data) {
 
         userService.updateUserCourseApply(data.getBody(), data.getHeader().getAuthentication());

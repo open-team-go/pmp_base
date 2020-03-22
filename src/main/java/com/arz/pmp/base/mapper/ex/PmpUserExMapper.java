@@ -39,4 +39,6 @@ public interface PmpUserExMapper {
     PmpUserTouristsEntity selectUserTouristsByLoginName(@Param("loginName") String loginName);
 
     PmpUserEntity selectUserByLoginName(@Param("loginName") String loginName);
+
+    void updateTouristsDelByUser(@Param("userId") Long userId);
 }

@@ -1,8 +1,10 @@
 package com.arz.pmp.base.api.service.redis;
 
+import com.arz.pmp.base.api.bo.user.front.UserCacheData;
 import com.arz.pmp.base.entity.PmpAdminEntity;
+import com.arz.pmp.base.framework.commons.enums.CommonCodeEnum;
+import com.arz.pmp.base.framework.commons.utils.Assert;
 import com.arz.pmp.base.framework.commons.utils.DateUtil;
-import com.arz.pmp.base.framework.commons.utils.NumberUtil;
 import com.arz.pmp.base.framework.redis.RedisKeys;
 import com.arz.pmp.base.framework.redis.RedisUtil;
 import com.arz.pmp.base.framework.redis.TimeConstants;
@@ -121,12 +123,12 @@ public class RedisServiceImpl implements RedisService {
     }
 
     @Override
-    public void setFrontUser(String token, Long userId) {
-        if (StringUtils.isBlank(token) || userId == null) {
+    public void setFrontUser(String token, UserCacheData userInfo) {
+        if (StringUtils.isBlank(token) || userInfo == null) {
             return;
         }
 
-        redisUtil.set(getFrontUserKey(token), userId, getOperatorExpire());
+        redisUtil.set(getFrontUserKey(token), userInfo, getOperatorExpire());
     }
 
     @Override
@@ -137,7 +139,7 @@ public class RedisServiceImpl implements RedisService {
     }
 
     @Override
-    public Long geFrontUserByToken(String token) {
+    public UserCacheData geFrontUserByToken(String token) {
         if (StringUtils.isBlank(token)) {
             return null;
         }
@@ -145,10 +147,34 @@ public class RedisServiceImpl implements RedisService {
         if (value == null) {
             return null;
         }
-        Long userId = NumberUtil.typeChange(value.toString(), Long.class);
+        UserCacheData userInfo = (UserCacheData)value;
         // 延长有效期
-        extendFrontUser(token, userId);
-        return userId;
+        extendFrontUser(token, userInfo);
+        return userInfo;
+    }
+
+    @Override
+    public void setFrontUserUniqueLogin(String loginName, String token) {
+        Assert.isTrue(StringUtils.isNoneBlank(loginName) && StringUtils.isNoneBlank(token), CommonCodeEnum.PARAM_ERROR);
+        redisUtil.set(getFrontUserUniqueKey(loginName), token);
+    }
+
+    @Override
+    public String getFrontUserUniqueToken(String loginName) {
+        Object value = redisUtil.get(getFrontUserUniqueKey(loginName));
+
+        return value == null ? null : value.toString();
+    }
+
+    @Override
+    public void delFrontUserUniqueCache(String loginName) {
+
+        redisUtil.del(getFrontUserUniqueKey(loginName));
+    }
+
+    private String getFrontUserUniqueKey(String loginName) {
+
+        return RedisKeys.FRONT_USER_LOGIN_UNIQUE_PRE + loginName;
     }
 
     private String getFrontUserKey(String token) {
@@ -156,7 +182,7 @@ public class RedisServiceImpl implements RedisService {
         return RedisKeys.FRONT_USER_TOKEN_PRE + token;
     }
 
-    private void extendFrontUser(String token, Long userId) {
+    private void extendFrontUser(String token, UserCacheData loginName) {
 
         long time = redisUtil.getExpire(getFrontUserKey(token));
         // 是否到达延长时间
@@ -164,7 +190,7 @@ public class RedisServiceImpl implements RedisService {
             return;
         }
         // 延长失效时间
-        setFrontUser(token, userId);
+        setFrontUser(token, loginName);
     }
 
     private void delAllPatternKey(String pattern) {
