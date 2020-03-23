@@ -14,12 +14,12 @@ import javax.validation.constraints.Pattern;
 public class UserPerfectReq {
 
     @ApiModelProperty("姓名")
-    @Pattern(regexp = "\\S{1,30}", message = "非空1-30位")
+    @Pattern(regexp = "\\S{1,30}", message = "姓名必填，1-30位")
     @NotBlank(message = "姓名格式不正确")
     private String userName;
 
     @ApiModelProperty("身份证号码")
-    @NotEmpty(message = Constants.REGEX_IDENTITY_NO_MESSAGE)
+    @NotEmpty(message = "身份证号码必填")
     @Pattern(regexp = Constants.REGEX_IDENTITY_NO, message = Constants.REGEX_IDENTITY_NO_MESSAGE)
     private String identityNo;
 

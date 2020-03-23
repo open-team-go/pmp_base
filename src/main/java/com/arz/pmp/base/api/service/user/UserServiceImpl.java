@@ -4,10 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import com.arz.pmp.base.framework.commons.utils.Util;
-import com.arz.pmp.base.mapper.*;
 import org.apache.commons.lang3.StringUtils;
-import org.aspectj.weaver.ast.Or;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +30,7 @@ import com.arz.pmp.base.framework.commons.utils.Assert;
 import com.arz.pmp.base.framework.commons.utils.DateUtil;
 import com.arz.pmp.base.framework.commons.utils.EncryptUtils;
 import com.arz.pmp.base.framework.core.enums.SysPermEnumClass;
+import com.arz.pmp.base.mapper.*;
 import com.arz.pmp.base.mapper.ex.PmpAdminExMapper;
 import com.arz.pmp.base.mapper.ex.PmpCourseExMapper;
 import com.arz.pmp.base.mapper.ex.PmpRoomExMapper;
@@ -117,12 +115,16 @@ public class UserServiceImpl implements UserService {
         String phoneNo = data.getPhoneNo();
         String identityNo = data.getIdentityNo();
         if (StringUtils.isNotBlank(name)) {
-            Long id = validUserUnique(name, identityNo, phoneNo);
+            Long id = validUserUnique(name, null, phoneNo);
+            // 判断是否是学员已存在添加新选课
+            if (addOn && id != null) {
+                addOn = false;
+                userId = id;
+            }
             boolean flag = id == null || (!addOn && id.equals(userId));
             Assert.isTrue(flag, CommonCodeEnum.PARAM_ERROR_USERNAME_MULTI, "已存在同名同手机号学员信息");
         }
         PmpUserEntity entity = mapperFacade.map(data, PmpUserEntity.class);
-        long curTimeSec = DateUtil.getCurSecond();
         // 操作员信息
         Long operatorId = redisService.getOperatorIdByToken(authentication);
 
@@ -139,17 +141,20 @@ public class UserServiceImpl implements UserService {
             insertUserRefCourseEntity(userRefCourseEntity, operatorId);
             return userRefCourseEntity.getId();
         } else {
-            Assert.isTrue(userId != null && userRefCourseId != null, CommonCodeEnum.PARAM_ERROR);
+            Assert.isTrue(userId != null, CommonCodeEnum.PARAM_ERROR);
             updateUserEntity(entity, operatorId);
             // 更新选课信息
             Long targetId = pmpUserExMapper.selectUserRefCourseId(userId, courseId);
-            Assert.isTrue(targetId == null || targetId.equals(userRefCourseId),
-                CommonCodeEnum.PARAM_ERROR_USERNAME_MULTI, "学员不能选择重复课程");
             PmpUserRefCourseEntity userRefCourseEntity = mapperFacade.map(data, PmpUserRefCourseEntity.class);
-            userRefCourseEntity.setId(userRefCourseId);
-            userRefCourseEntity.setUpdateManager(operatorId);
-            userRefCourseEntity.setUpdateTime(curTimeSec);
-            pmpUserRefCourseEntityMapper.updateByPrimaryKeySelective(userRefCourseEntity);
+            userRefCourseEntity.setUserId(userId);
+            // 新增选课
+            if (targetId == null) {
+                insertUserRefCourseEntity(userRefCourseEntity, operatorId);
+            } else {
+                // 更新选课信息
+                userRefCourseEntity.setId(targetId);
+                updateUserRefCourseEntity(userRefCourseEntity, operatorId);
+            }
 
             return userRefCourseId;
         }
@@ -412,18 +417,19 @@ public class UserServiceImpl implements UserService {
             if (oldUser == null || oldUser.getDelOn()) {
                 oldUserId = null;
             }
+            oldUserId = oldUser.getUserId();
             // 不允许前台修改手机号
-            if (StringUtils.isNoneBlank(oldUser.getPhoneNo()) && data.getPhoneNo().equals(oldUser.getPhoneNo())) {
-                Assert.isTrue(true, CommonCodeEnum.PARAM_ERROR_USER_EDITOR);
+            if (StringUtils.isNotBlank(oldUser.getPhoneNo()) && !data.getPhoneNo().equals(oldUser.getPhoneNo())) {
+                Assert.isTrue(false, CommonCodeEnum.PARAM_ERROR_USER_EDITOR);
             }
             // 不允许前台修改身份证号
-            if (StringUtils.isNoneBlank(oldUser.getIdentityNo())
-                && data.getIdentityNo().equals(oldUser.getIdentityNo())) {
-                Assert.isTrue(true, CommonCodeEnum.PARAM_ERROR_USER_EDITOR);
+            if (StringUtils.isNotBlank(oldUser.getIdentityNo())
+                && !data.getIdentityNo().equals(oldUser.getIdentityNo())) {
+                Assert.isTrue(false, CommonCodeEnum.PARAM_ERROR_USER_EDITOR);
             }
             // 不允许前台修改身份证号
-            if (StringUtils.isNoneBlank(oldUser.getUserName()) && data.getUserName().equals(oldUser.getUserName())) {
-                Assert.isTrue(true, CommonCodeEnum.PARAM_ERROR_USER_EDITOR);
+            if (StringUtils.isNotBlank(oldUser.getUserName()) && !data.getUserName().equals(oldUser.getUserName())) {
+                Assert.isTrue(false, CommonCodeEnum.PARAM_ERROR_USER_EDITOR);
             }
 
         } else {
@@ -468,7 +474,7 @@ public class UserServiceImpl implements UserService {
             // 更新缓存信息
             userInfo.setPerfectOn(true);
             userInfo.setUserId(oldUserId);
-            cacheRedisFrontUser(userInfo);
+            cacheRedisFrontUser(userInfo, authentication);
         }
     }
 
@@ -514,7 +520,7 @@ public class UserServiceImpl implements UserService {
         // 验证登录信息
         UserCacheData userInfo = validUser(data.getLoginName(), data.getLoginPassword());
         // 登录信息缓存，用户名作为唯一标识
-        String authentication = cacheRedisFrontUser(userInfo);
+        String authentication = cacheRedisFrontUser(userInfo, null);
         return authentication;
     }
 
@@ -591,15 +597,15 @@ public class UserServiceImpl implements UserService {
     @Override
     public void updateUserLoginPassword(UserPasswordData data, String authentication) {
 
-        Assert.isTrue(data.getNewPassword().equals(data.getOldPassword()),
+        Assert.isTrue(!data.getNewPassword().equals(data.getOldPassword()),
             CommonCodeEnum.PARAM_ERROR_USER_LOGIN_PASSWORD_CHANGE);
 
         UserCacheData loginInfo = getFrontUserCache(authentication);
         boolean flag = false;
         if (loginInfo.getUserId() != null) {
             PmpUserEntity userEntity = pmpUserEntityMapper.selectByPrimaryKey(loginInfo.getUserId());
-            Assert.isTrue(EncryptUtils.doCredentialsMatch(data.getOldPassword(), userEntity.getLoginPassword(),
-                userEntity.getLoginSalt()), CommonCodeEnum.PARAM_ERROR_LOGIN_PASSWORD);
+            Assert.isTrue(EncryptUtils.doCredentialsMatch(data.getOldPassword(), userEntity.getLoginSalt(),
+                userEntity.getLoginPassword()), CommonCodeEnum.PARAM_ERROR_LOGIN_PASSWORD);
             flag = true;
             userEntity = new PmpUserEntity();
             userEntity.setUserId(loginInfo.getUserId());
@@ -611,9 +617,8 @@ public class UserServiceImpl implements UserService {
         if (loginInfo.getTouristsId() != null) {
             PmpUserTouristsEntity touristsEntity =
                 pmpUserTouristsEntityMapper.selectByPrimaryKey(loginInfo.getTouristsId());
-            Assert.isTrue(flag || EncryptUtils.doCredentialsMatch(data.getOldPassword(),
-                touristsEntity.getLoginPassword(), touristsEntity.getLoginSalt()),
-                CommonCodeEnum.PARAM_ERROR_LOGIN_PASSWORD);
+            Assert.isTrue(flag || EncryptUtils.doCredentialsMatch(data.getOldPassword(), touristsEntity.getLoginSalt(),
+                touristsEntity.getLoginPassword()), CommonCodeEnum.PARAM_ERROR_LOGIN_PASSWORD);
 
             touristsEntity = new PmpUserTouristsEntity();
             touristsEntity.setId(loginInfo.getTouristsId());
@@ -647,6 +652,15 @@ public class UserServiceImpl implements UserService {
         refCourseEntity.setCreateTime(DateUtil.getCurSecond());
         refCourseEntity.setCreateManager(operatorId);
         pmpUserRefCourseEntityMapper.insertSelective(refCourseEntity);
+    }
+
+    /**
+     * 更新学员选课
+     */
+    private void updateUserRefCourseEntity(PmpUserRefCourseEntity refCourseEntity, Long operatorId) {
+        refCourseEntity.setUpdateTime(DateUtil.getCurSecond());
+        refCourseEntity.setUpdateManager(operatorId);
+        pmpUserRefCourseEntityMapper.updateByPrimaryKeySelective(refCourseEntity);
     }
 
     /**
@@ -691,7 +705,9 @@ public class UserServiceImpl implements UserService {
             validPassword = user.getLoginPassword();
             validSalt = user.getLoginSalt();
             PmpUserTouristsEntity touristsEntity = pmpUserExMapper.selectUserTouristsByLoginName(loginName);
-            touristsId = touristsEntity.getId();
+            if (touristsEntity != null) {
+                touristsId = touristsEntity.getId();
+            }
             userId = user.getUserId();
         } else {
             PmpUserTouristsEntity touristsEntity = pmpUserExMapper.selectUserTouristsByLoginName(loginName);
@@ -706,7 +722,7 @@ public class UserServiceImpl implements UserService {
             CommonCodeEnum.PARAM_ERROR_LOGIN_PASSWORD);
 
         UserCacheData userInfo = new UserCacheData();
-        user.setLoginName(loginName);
+        userInfo.setLoginName(loginName);
         if (userId != null) {
             userInfo.setPerfectOn(true);
         }
@@ -718,13 +734,14 @@ public class UserServiceImpl implements UserService {
     /**
      * 登录信息缓存
      */
-    private String cacheRedisFrontUser(UserCacheData userInfo) {
-
-        String token = createAuthToken();
-        redisService.setFrontUser(token, userInfo);
+    private String cacheRedisFrontUser(UserCacheData userInfo, String authentication) {
+        if (StringUtils.isBlank(authentication)) {
+            authentication = createAuthToken();
+        }
+        redisService.setFrontUser(authentication, userInfo);
         // 单点登录控制
-        redisService.setFrontUserUniqueLogin(userInfo.getLoginName(), token);
-        return token;
+        redisService.setFrontUserUniqueLogin(userInfo.getLoginName(), authentication);
+        return authentication;
     }
 
     private String createAuthToken() {

@@ -1,5 +1,6 @@
 package com.arz.pmp.base.framework.commons.utils;
 
+import com.arz.pmp.base.framework.commons.constants.Constants;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -39,4 +40,10 @@ public class Util {
         }
         return false;
     }
+
+    public static void main(String[] args) {
+        String path = "/front/user/loginPassword";
+        System.out.println(Constants.REGEX_INTERCEPTOR_AUTH_OFF.matcher(path).matches());
+    }
+
 }

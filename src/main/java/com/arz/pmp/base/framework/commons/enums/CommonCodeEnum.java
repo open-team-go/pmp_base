@@ -33,7 +33,7 @@ public enum CommonCodeEnum implements StatusCode {
     /**
      * 访问权限异常
      */
-    PERMISSION_ERROR_LOGIN("访问权限异常,未登录", "PERMISSION_ERROR_LOGIN"),
+    PERMISSION_ERROR_LOGIN("未登录", "PERMISSION_ERROR_LOGIN"),
 
     /**
      * 业务错误，非正常操作，或者请求数据和系统数据冲突，系统数据错误等

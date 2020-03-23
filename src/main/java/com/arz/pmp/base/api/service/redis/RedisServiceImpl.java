@@ -155,7 +155,7 @@ public class RedisServiceImpl implements RedisService {
 
     @Override
     public void setFrontUserUniqueLogin(String loginName, String token) {
-        Assert.isTrue(StringUtils.isNoneBlank(loginName) && StringUtils.isNoneBlank(token), CommonCodeEnum.PARAM_ERROR);
+        Assert.isTrue(StringUtils.isNotBlank(loginName) && StringUtils.isNotBlank(token), CommonCodeEnum.PARAM_ERROR);
         redisUtil.set(getFrontUserUniqueKey(loginName), token);
     }
 

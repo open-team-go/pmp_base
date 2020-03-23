@@ -6,9 +6,7 @@ import com.arz.pmp.base.api.bo.user.front.*;
 import com.arz.pmp.base.api.service.user.UserService;
 import com.arz.pmp.base.entity.PmpUserCourseApplyEntity;
 import com.arz.pmp.base.framework.commons.RestRequest;
-import com.arz.pmp.base.framework.commons.enums.CommonCodeEnum;
 import com.arz.pmp.base.framework.commons.response.RestResponse;
-import com.arz.pmp.base.framework.commons.utils.Assert;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -55,7 +53,7 @@ public class UserFrontRestController {
     }
 
     @ApiOperation(value = "用户登录密码 用户修改登录密码", notes = "用户登录密码")
-    @PostMapping("/loginPassword")
+    @PostMapping("/password/login")
     public RestResponse updateLoginPassword(@RequestBody @Valid RestRequest<UserPasswordData> data) {
 
         userService.updateUserLoginPassword(data.getBody(), data.getHeader().getAuthentication());
