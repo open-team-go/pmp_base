@@ -144,7 +144,7 @@
         a.phone_no, a.fixed_telephone, a.email, a.backup_email, a.wechat_no, a.qq, a.identity_no, a.zip_code,
         a.user_address, a.graduation_time, a.graduation_school, a.school_major, a.industry, a.com_name,
         a.com_department, a.com_position, urc.invoice_header, urc.invoice_code, a.user_type,
-        urc.admin_id,a.resource_id,a.recommend_name,
+        urc.admin_id,a.resource_id,a.recommend_name,a.login_name,
         urc.course_id, urc.graduation_status, urc.cert_no, urc.cert_en_name, urc.cert_en_pasw, urc.cert_cn_name,
         urc.cert_cn_pasw,
         urc.remark, urc.create_time,urc.consultation_time,urc.consultation_city,

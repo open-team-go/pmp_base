@@ -27,6 +27,9 @@ public class UserDataResp {
     @ApiModelProperty("用户表ID")
     private Long userId;
 
+    @ApiModelProperty("学员登录用户名")
+    private String loginName;
+
     @ApiModelProperty("班级名称")
     private String roomName;
 
