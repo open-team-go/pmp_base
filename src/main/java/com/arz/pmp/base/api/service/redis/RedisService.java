@@ -32,6 +32,12 @@ public interface RedisService {
 
     PmpAdminEntity getOperatorByToken(String appToken);
 
+    void setAdminUserUniqueLogin(String loginName, String token);
+
+    String getAdminUserUniqueToken(String loginName);
+
+    void delAdminUserUniqueCache(String loginName);
+
     /**
      * description 清除分销平台redis缓存
      * 
@@ -65,4 +71,10 @@ public interface RedisService {
     String getFrontUserUniqueToken(String loginName);
 
     void delFrontUserUniqueCache(String loginName);
+
+    int getLoginFailNum(String userName, boolean adminFlag);
+
+    void delLoginFailNum(String userName, boolean adminFlag);
+
+    void updateLoginFailNum(String userName, int num, boolean adminFlag);
 }

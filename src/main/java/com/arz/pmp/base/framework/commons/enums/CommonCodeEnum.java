@@ -34,6 +34,10 @@ public enum CommonCodeEnum implements StatusCode {
      * 访问权限异常
      */
     PERMISSION_ERROR_LOGIN("未登录", "PERMISSION_ERROR_LOGIN"),
+    /**
+     * 禁止登录
+     */
+    PERMISSION_ERROR_LOGIN_REFUSE("此账号今日密码错误次数超限，今日已被限制登录", "PERMISSION_ERROR_LOGIN_REFUSE"),
 
     /**
      * 业务错误，非正常操作，或者请求数据和系统数据冲突，系统数据错误等

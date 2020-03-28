@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.arz.pmp.base.api.bo.adminn.AdminEditorReq;
@@ -51,11 +52,13 @@ public class AdminServiceImpl implements AdminService {
     private RedisService redisService;
     @Autowired
     private MapperFacade mapperFacade;
+    @Value("${service.project.login.fail.max}")
+    private int loginFailMax;
 
     @Override
     public AdminLoginResp goLogin(String userName, String password) {
         // 验证登录信息
-        PmpAdminEntity user = validUser(userName, password);
+        PmpAdminEntity user = validUserLogin(userName, password);
         // 获取角色权限
         Long roleId = user.getRoleId();
         AdminLoginResp resp = new AdminLoginResp();
@@ -198,15 +201,16 @@ public class AdminServiceImpl implements AdminService {
     }
 
     private String cacheRedisAdmin(AdminLoginResp resp) {
-
         // 缓存token
         PmpAdminEntity user = resp.getUserInfo();
         if (user == null) {
             return null;
         }
         String token = createAuthToken();
-
+        // 缓存凭证
         redisService.setOperator(token, user);
+        // 单点登录凭证缓存
+        redisService.setAdminUserUniqueLogin(user.getUserName(), token);
 
         return token;
     }
@@ -223,16 +227,38 @@ public class AdminServiceImpl implements AdminService {
      * @author chen wei
      * @date 2019/11/12
      */
-    public PmpAdminEntity validUser(String userName, String password) {
-        PmpAdminEntity user = pmpAdminExMapper.selectAdminByName(userName);
-
-        Assert.isTrue(user != null, CommonCodeEnum.PARAM_ERROR_LOGIN_USERNAME);
+    public PmpAdminEntity validUserLogin(String userName, String password) {
+        // 登录错误处理
+        int failNum = validLoginRefuse(userName);
         // 验证密码
-        Assert.isTrue(EncryptUtils.doCredentialsMatch(password, user.getSalt(), user.getPassword()),
-            CommonCodeEnum.PARAM_ERROR_LOGIN_PASSWORD);
+        PmpAdminEntity user = pmpAdminExMapper.selectAdminByName(userName);
+        Assert.isTrue(user != null, CommonCodeEnum.PARAM_ERROR_LOGIN_USERNAME);
+        if (!EncryptUtils.doCredentialsMatch(password, user.getSalt(), user.getPassword())) {
+            // 更新登录失败统计
+            redisService.updateLoginFailNum(userName, failNum + 1, true);
+            Assert.isTrue(false, CommonCodeEnum.PARAM_ERROR_LOGIN_PASSWORD);
+        }
+        // 登录成功清除错误次数统计
+        if (failNum > 0) {
+            redisService.delLoginFailNum(userName, true);
+        }
         user.setPassword(null);
         user.setSalt(null);
         return user;
+    }
+
+    /**
+     * description 校验用户名是否被禁止登录
+     * 
+     * @param userName
+     * @author chen wei
+     * @date 2020/3/28
+     */
+    private int validLoginRefuse(String userName) {
+
+        int failNum = redisService.getLoginFailNum(userName, true);
+        Assert.isTrue(failNum < loginFailMax, CommonCodeEnum.PERMISSION_ERROR_LOGIN_REFUSE);
+        return failNum;
     }
 
 }

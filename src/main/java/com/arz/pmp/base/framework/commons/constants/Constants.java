@@ -78,6 +78,11 @@ public final class Constants {
     public static final long ADMIN_DEFAULT_ID = 1;
 
     /**
+     * 用户账户登录限制时长
+     */
+    public static final long LOGIN_FAIL_EXPIRE_TIME = 6 * 60 * 60;
+
+    /**
      * description 正则匹配字符串
      *
      * @author chen wei

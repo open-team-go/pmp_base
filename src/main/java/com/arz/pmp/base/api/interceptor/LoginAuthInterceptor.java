@@ -127,7 +127,11 @@ public class LoginAuthInterceptor extends HandlerInterceptorAdapter {
         // 验证登录缓存
         if (managerFlag) {
             PmpAdminEntity userInfo = redisService.getOperatorByToken(token);
-            return userInfo != null;
+            if (userInfo == null) {
+                return false;
+            }
+            String uniqueToken = redisService.getAdminUserUniqueToken(userInfo.getUserName());
+            return token.equals(uniqueToken);
         } else {
             UserCacheData loginInfo = redisService.geFrontUserByToken(token);
             if (loginInfo == null) {

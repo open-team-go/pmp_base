@@ -116,20 +116,7 @@ public class DateUtil {
         if (!NumberUtil.isPositive(second)) {
             return null;
         }
-
         return dateToStr(new Date(second * 1000), format);
     }
 
-    public static void main(String[] args) {
-        String str = "2020-1-20";
-
-        Long d = DateUtil.getDateSecond(DateUtil.strToDate(str, DateUtil.DateStrFormat.f_2));
-        // try {
-        // Date date = DateUtils.parseDate(str, DateStrFormat.f_2);
-        // Long d = date.getTime() / 1000;
-        System.out.println(d);
-        // } catch (ParseException e) {
-        // e.printStackTrace();
-        // }
-    }
 }

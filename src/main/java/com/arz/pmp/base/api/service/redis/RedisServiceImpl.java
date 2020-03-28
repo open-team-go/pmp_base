@@ -9,6 +9,7 @@ import com.arz.pmp.base.framework.redis.RedisKeys;
 import com.arz.pmp.base.framework.redis.RedisUtil;
 import com.arz.pmp.base.framework.redis.TimeConstants;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -74,6 +75,29 @@ public class RedisServiceImpl implements RedisService {
         // 延长有效期
         extendOperator(appToken, userInfo);
         return userInfo;
+    }
+
+    @Override
+    public void setAdminUserUniqueLogin(String loginName, String token) {
+
+        redisUtil.set(getAdminUserUniqueKey(loginName), token);
+    }
+
+    @Override
+    public String getAdminUserUniqueToken(String loginName) {
+
+        Object value = redisUtil.get(getAdminUserUniqueKey(loginName));
+        return value == null ? null : value.toString();
+    }
+
+    @Override
+    public void delAdminUserUniqueCache(String loginName) {
+
+        redisUtil.del(getAdminUserUniqueKey(loginName));
+    }
+
+    private String getAdminUserUniqueKey(String loginName) {
+        return RedisKeys.SYS_LOGIN_UNIQUE_PRE + loginName;
     }
 
     private boolean isExpire(Long expireSecond) {
@@ -170,6 +194,39 @@ public class RedisServiceImpl implements RedisService {
     public void delFrontUserUniqueCache(String loginName) {
 
         redisUtil.del(getFrontUserUniqueKey(loginName));
+    }
+
+    @Override
+    public int getLoginFailNum(String userName, boolean adminFlag) {
+        if (userName == null || userName.isEmpty()) {
+            return 0;
+        }
+        String key = getUserLoginFailKey(userName, adminFlag);
+        Object value = redisUtil.get(key);
+
+        return value == null ? 0 : (int)value;
+    }
+
+    @Override
+    public void delLoginFailNum(String userName, boolean adminFlag) {
+
+        redisUtil.del(getUserLoginFailKey(userName, adminFlag));
+    }
+
+    @Override
+    public void updateLoginFailNum(String userName, int num, boolean adminFlag) {
+        // 过期时间
+        redisUtil.set(getUserLoginFailKey(userName, adminFlag), num, getLoginFailExpireSec());
+    }
+
+    private long getLoginFailExpireSec() {
+        return DateUtil.getDateSecond(DateUtil.strToDate(
+            DateUtil.dateToStr(DateUtils.addDays(DateUtil.getCurDateTime(), 1), DateUtil.DateStrFormat.f_2),
+            DateUtil.DateStrFormat.f_2)) - DateUtil.getCurSecond();
+    }
+
+    private String getUserLoginFailKey(String userName, boolean adminFlag) {
+        return (adminFlag ? RedisKeys.SYS_OPERATOR_LOGIN_FAIL : RedisKeys.FRONT_USER_LOGIN_FAIL) + userName;
     }
 
     private String getFrontUserUniqueKey(String loginName) {
