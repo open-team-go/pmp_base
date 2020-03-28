@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -78,6 +79,8 @@ public class UserServiceImpl implements UserService {
     private PmpUserCourseApplyEntityMapper pmpUserCourseApplyEntityMapper;
     @Autowired
     private PmpUserTouristsEntityMapper pmpUserTouristsEntityMapper;
+    @Value("${service.project.login.fail.max}")
+    private int loginFailMax;
 
     @Override
     public PageInfo<List<UserDataResp>> getUserListPage(RestRequest<UserSearchReq> req) {
@@ -518,7 +521,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public String goLogin(UserCheckReq data) {
         // 验证登录信息
-        UserCacheData userInfo = validUser(data.getLoginName(), data.getLoginPassword());
+        UserCacheData userInfo = validUserLogin(data.getLoginName(), data.getLoginPassword());
         // 登录信息缓存，用户名作为唯一标识
         String authentication = cacheRedisFrontUser(userInfo, null);
         return authentication;
@@ -695,7 +698,10 @@ public class UserServiceImpl implements UserService {
         Assert.isTrue(userEntity == null, CommonCodeEnum.PARAM_ERROR_USERNAME_MULTI);
     }
 
-    public UserCacheData validUser(String loginName, String password) {
+    public UserCacheData validUserLogin(String loginName, String password) {
+        // 登录错误处理
+        int failNum = validLoginRefuse(loginName);
+
         PmpUserEntity user = pmpUserExMapper.selectUserByLoginName(loginName);
         String validPassword = null;
         String validSalt = null;
@@ -718,8 +724,15 @@ public class UserServiceImpl implements UserService {
             touristsId = touristsEntity.getId();
         }
         // 验证密码
-        Assert.isTrue(EncryptUtils.doCredentialsMatch(password, validSalt, validPassword),
-            CommonCodeEnum.PARAM_ERROR_LOGIN_PASSWORD);
+        if (!EncryptUtils.doCredentialsMatch(password, validSalt, validPassword)) {
+            // 更新登录失败统计
+            redisService.updateLoginFailNum(loginName, failNum + 1, false);
+            Assert.isTrue(false, CommonCodeEnum.PARAM_ERROR_LOGIN_PASSWORD);
+        }
+        // 登录成功清除错误次数统计
+        if (failNum > 0) {
+            redisService.delLoginFailNum(loginName, false);
+        }
 
         UserCacheData userInfo = new UserCacheData();
         userInfo.setLoginName(loginName);
@@ -729,6 +742,20 @@ public class UserServiceImpl implements UserService {
         userInfo.setUserId(userId);
         userInfo.setTouristsId(touristsId);
         return userInfo;
+    }
+
+    /**
+     * description 校验用户名是否被禁止登录
+     *
+     * @param userName
+     * @author chen wei
+     * @date 2020/3/28
+     */
+    private int validLoginRefuse(String userName) {
+
+        int failNum = redisService.getLoginFailNum(userName, false);
+        Assert.isTrue(failNum < loginFailMax, CommonCodeEnum.PERMISSION_ERROR_LOGIN_REFUSE);
+        return failNum;
     }
 
     /**
