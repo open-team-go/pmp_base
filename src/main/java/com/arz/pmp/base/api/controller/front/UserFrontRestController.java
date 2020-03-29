@@ -2,8 +2,11 @@ package com.arz.pmp.base.api.controller.front;
 
 import com.arz.pmp.base.api.aop.annotation.RequireUserPermissions;
 import com.arz.pmp.base.api.bo.CommonDataReq;
+import com.arz.pmp.base.api.bo.course.CourseSearchReq;
 import com.arz.pmp.base.api.bo.user.front.*;
+import com.arz.pmp.base.api.service.course.CourseService;
 import com.arz.pmp.base.api.service.user.UserService;
+import com.arz.pmp.base.entity.PmpCourseEntity;
 import com.arz.pmp.base.entity.PmpUserCourseApplyEntity;
 import com.arz.pmp.base.framework.commons.RestRequest;
 import com.arz.pmp.base.framework.commons.response.RestResponse;
@@ -27,6 +30,9 @@ public class UserFrontRestController {
 
     @Resource
     private UserService userService;
+
+    @Resource
+    private CourseService courseService;
 
     @ApiOperation(value = "用户注册 用户注册", notes = "用户注册")
     @PostMapping("/register")
@@ -94,6 +100,16 @@ public class UserFrontRestController {
 
         userService.insertUserCourse(data.getBody().getId(), data.getHeader().getAuthentication());
         return RestResponse.success();
+    }
+
+    @ApiOperation(value = "用户课程 用户可选课程列表", notes = "用户可选课程列表")
+    @PostMapping("/course/select")
+    @RequireUserPermissions({FRONT_USER})
+    public RestResponse<List<PmpCourseEntity>> getCourse(@RequestBody @Valid RestRequest data) {
+        CourseSearchReq req = new CourseSearchReq();
+        req.setUseOn(true);
+        List<PmpCourseEntity> list = courseService.getCourseAll(req);
+        return RestResponse.success(list);
     }
 
     @ApiOperation(value = "用户课程 课程考试报名信息查询", notes = "课程考试报名信息查询")
