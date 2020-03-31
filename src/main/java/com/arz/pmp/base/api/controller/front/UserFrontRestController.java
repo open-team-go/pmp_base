@@ -2,10 +2,13 @@ package com.arz.pmp.base.api.controller.front;
 
 import com.arz.pmp.base.api.aop.annotation.RequireUserPermissions;
 import com.arz.pmp.base.api.bo.CommonDataReq;
+import com.arz.pmp.base.api.bo.adminn.AdminSearchReq;
 import com.arz.pmp.base.api.bo.course.CourseSearchReq;
 import com.arz.pmp.base.api.bo.user.front.*;
+import com.arz.pmp.base.api.service.admin.AdminService;
 import com.arz.pmp.base.api.service.course.CourseService;
 import com.arz.pmp.base.api.service.user.UserService;
+import com.arz.pmp.base.entity.PmpAdminEntity;
 import com.arz.pmp.base.entity.PmpCourseEntity;
 import com.arz.pmp.base.entity.PmpUserCourseApplyEntity;
 import com.arz.pmp.base.framework.commons.RestRequest;
@@ -33,6 +36,9 @@ public class UserFrontRestController {
 
     @Resource
     private CourseService courseService;
+
+    @Resource
+    private AdminService adminService;
 
     @ApiOperation(value = "用户注册 用户注册", notes = "用户注册")
     @PostMapping("/register")
@@ -96,9 +102,9 @@ public class UserFrontRestController {
     @ApiOperation(value = "用户课程 用户添加新选课", notes = "用户添加新选课")
     @PostMapping("/course/add")
     @RequireUserPermissions({FRONT_USER})
-    public RestResponse insertUserCourse(@RequestBody @Valid RestRequest<CommonDataReq> data) {
+    public RestResponse insertUserCourse(@RequestBody @Valid RestRequest<CourseChoosingData> data) {
 
-        userService.insertUserCourse(data.getBody().getId(), data.getHeader().getAuthentication());
+        userService.insertUserCourse(data.getBody(), data.getHeader().getAuthentication());
         return RestResponse.success();
     }
 
@@ -109,6 +115,16 @@ public class UserFrontRestController {
         CourseSearchReq req = new CourseSearchReq();
         req.setUseOn(true);
         List<PmpCourseEntity> list = courseService.getCourseAll(req);
+        return RestResponse.success(list);
+    }
+
+    @ApiOperation(value = "用户课程顾问 用户课程顾问列表", notes = "用户可选课程列表")
+    @PostMapping("/admin/select")
+    @RequireUserPermissions({FRONT_USER})
+    public RestResponse<List<PmpAdminEntity>> getSalesAdmin(@RequestBody @Valid RestRequest data) {
+        AdminSearchReq req = new AdminSearchReq();
+        req.setRoleId(3l);
+        List<PmpAdminEntity> list = adminService.getAdminList(req, null);
         return RestResponse.success(list);
     }
 

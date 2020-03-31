@@ -65,5 +65,5 @@ public interface UserService {
 
     void updateUserLoginPassword(UserPasswordData data, String authentication);
 
-    void insertUserCourse(Long courseId, String authentication);
+    void insertUserCourse(CourseChoosingData data, String authentication);
 }

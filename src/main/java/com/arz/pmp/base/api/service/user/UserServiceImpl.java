@@ -68,6 +68,8 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private PmpAdminExMapper pmpAdminExMapper;
     @Autowired
+    private PmpAdminEntityMapper pmpAdminEntityMapper;
+    @Autowired
     private PmpCourseExMapper pmpCourseExMapper;
     @Autowired
     private PmpCourseEntityMapper pmpCourseEntityMapper;
@@ -451,6 +453,7 @@ public class UserServiceImpl implements UserService {
             userEntity.setLoginSalt(touristsEntity.getLoginSalt());
             userEntity.setLoginPassword(touristsEntity.getLoginPassword());
             insertUserEntity(userEntity, null);
+            oldUserId = userEntity.getUserId();
             perfectFlag = true;
         } else {
             // 更新学员信息
@@ -477,6 +480,7 @@ public class UserServiceImpl implements UserService {
             // 更新缓存信息
             userInfo.setPerfectOn(true);
             userInfo.setUserId(oldUserId);
+            userInfo.setTouristsId(touristsId);
             cacheRedisFrontUser(userInfo, authentication);
         }
     }
@@ -572,8 +576,8 @@ public class UserServiceImpl implements UserService {
             pmpUserCourseApplyEntityMapper.insertSelective(entity);
         } else {
             Long id = entity.getId();
-            entity.setHtmlContent(data.getHtmlContent());
             entity = new PmpUserCourseApplyEntity();
+            entity.setHtmlContent(data.getHtmlContent());
             entity.setId(id);
             pmpUserCourseApplyEntityMapper.updateByPrimaryKeySelective(entity);
         }
@@ -635,15 +639,21 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void insertUserCourse(Long courseId, String authentication) {
-        PmpCourseEntity courseEntity = pmpCourseEntityMapper.selectByPrimaryKey(courseId);
+    public void insertUserCourse(CourseChoosingData data, String authentication) {
+        PmpCourseEntity courseEntity = pmpCourseEntityMapper.selectByPrimaryKey(data.getId());
         Assert.isTrue(courseEntity != null && !courseEntity.getDelOn(), CommonCodeEnum.PARAM_ERROR);
         UserCacheData loginInfo = getFrontUserCache(authentication);
         // 查询是否已选过该课程
-        Long refCourseId = pmpUserExMapper.selectUserRefCourseId(loginInfo.getUserId(), courseId);
+        Long refCourseId = pmpUserExMapper.selectUserRefCourseId(loginInfo.getUserId(), data.getId());
         Assert.isTrue(refCourseId == null, CommonCodeEnum.PARAM_ERROR_USER_CHOOSE_COURSE_MULTI);
+        // 判断课程顾问
+        PmpAdminEntity adminEntity = pmpAdminEntityMapper.selectByPrimaryKey(data.getAdminId());
+        Assert.isTrue(adminEntity != null || adminEntity.getDelOn() || adminEntity.getRoleId() != 3,
+            CommonCodeEnum.PARAM_ERROR);
+
         PmpUserRefCourseEntity refCourseEntity = new PmpUserRefCourseEntity();
-        refCourseEntity.setCourseId(courseId);
+        refCourseEntity.setCourseId(data.getId());
+        refCourseEntity.setAdminId(data.getAdminId());
         refCourseEntity.setUserId(loginInfo.getUserId());
         insertUserRefCourseEntity(refCourseEntity, null);
     }
