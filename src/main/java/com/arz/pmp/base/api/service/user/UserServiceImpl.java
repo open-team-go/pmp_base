@@ -658,6 +658,17 @@ public class UserServiceImpl implements UserService {
         insertUserRefCourseEntity(refCourseEntity, null);
     }
 
+    @Override
+    public void deleteUserCourse(Long courseId, String authentication) {
+
+        UserCacheData loginInfo = getFrontUserCache(authentication);
+        PmpUserRefCourseEntity userCourse = pmpUserExMapper.selectUserRefCourse(loginInfo.getUserId(), courseId);
+        Assert.isTrue(userCourse != null, CommonCodeEnum.PARAM_ERROR);
+        Assert.isTrue(userCourse.getRoomId() == null, CommonCodeEnum.PARAM_ERROR_USER_COURSE_DEL);
+        // 更新选课
+        pmpUserExMapper.deleteUserCourse(loginInfo.getUserId(), courseId, DateUtil.getCurSecond());
+    }
+
     /**
      * 新增学员选课
      */

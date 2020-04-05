@@ -10,7 +10,7 @@
         LEFT JOIN pmp_teaching_room d ON urc.room_id=d.room_id
         LEFT JOIN pmp_user_education e ON a.education_id=e.education_id
         LEFT JOIN pmp_user_pay_type f ON urc.pay_id=f.pay_id
-        WHERE a.del_on=0
+        WHERE a.del_on=0 AND urc.del_on=0
         <if test="educationAdminId != null and educationAdminId!=0 ">
             AND d.admin_id = #{educationAdminId,jdbcType=BIGINT}
         </if>
@@ -197,10 +197,17 @@
         LIMIT 1;
     </select>
 
+    <select id="selectUserRefCourse" resultType="com.arz.pmp.base.entity.PmpUserRefCourseEntity">
+        SELECT urc.id,urc.course_id,urc.user_id,urc.room_id
+        FROM pmp_user_ref_course urc
+        WHERE urc.user_id = #{userId} AND urc.course_id = #{courseId} AND urc.del_on = 0
+        LIMIT 1;
+    </select>
+
 
     <select id="selectUserCourseList" resultType="com.arz.pmp.base.api.bo.user.front.CourseListData">
         SELECT a.user_id, a.user_name, a.gender,a.phone_no,a.user_type,a.com_name,a.email,
-        urc.consultation_time,urc.consultation_city,urc.pay_total,a.resource_id,
+        urc.consultation_time,urc.consultation_city,urc.pay_total,a.resource_id,urc.course_id,
         b.nickName salesAdminName,c.course_name,c.apply_url,d.room_name,urc.id userRefCourseId,
         (SELECT b_1.nickName FROM pmp_admin b_1 WHERE d.admin_id=b_1.admin_id) educationAdminName,
         (SELECT g.resource_name FROM pmp_user_resource_type g WHERE a.resource_id=g.resource_id) resourceName
@@ -229,5 +236,10 @@
 
         UPDATE pmp_user_tourists ut SET ut.del_on=1 WHERE ut.user_id#{userId}
     </select>
+
+    <update id="deleteUserCourse">
+        UPDATE pmp_user_ref_course a SET a.del_on=1,a.update_time=#{curTime},a.update_manager=null
+        WHERE a.user_id=#{userId} AND a.course_id=#{courseId}
+    </update>
 
 </mapper>

@@ -32,6 +32,8 @@ public interface PmpUserExMapper {
 
     Long selectUserRefCourseId(@Param("userId") Long userId, @Param("courseId") Long courseId);
 
+    PmpUserRefCourseEntity selectUserRefCourse(@Param("userId") Long userId, @Param("courseId") Long courseId);
+
     List<CourseListData> selectUserCourseList(UserSearchReq search);
 
     PmpUserCourseApplyEntity selectUserCourseApply(@Param("userRefCourseId") Long userRefCourseId);
@@ -41,4 +43,7 @@ public interface PmpUserExMapper {
     PmpUserEntity selectUserByLoginName(@Param("loginName") String loginName);
 
     void updateTouristsDelByUser(@Param("userId") Long userId);
+
+    void deleteUserCourse(@Param("userId") Long userId, @Param("courseId") Long courseId,
+        @Param("curTime") Long curTime);
 }

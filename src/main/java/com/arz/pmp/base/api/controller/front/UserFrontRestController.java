@@ -139,6 +139,15 @@ public class UserFrontRestController {
         return RestResponse.success(result);
     }
 
+    @ApiOperation(value = "用户课程 用户删除选课", notes = "用户删除选课")
+    @PostMapping("/course/del")
+    @RequireUserPermissions({FRONT_USER})
+    public RestResponse deleteUserCourse(@RequestBody @Valid RestRequest<CommonDataReq> data) {
+
+        userService.deleteUserCourse(data.getBody().getId(), data.getHeader().getAuthentication());
+        return RestResponse.success();
+    }
+
     @ApiOperation(value = "用户课程 课程考试报名信息更新", notes = "课程考试报名信息更新")
     @PostMapping("/course/apply/up")
     @RequireUserPermissions({FRONT_USER})

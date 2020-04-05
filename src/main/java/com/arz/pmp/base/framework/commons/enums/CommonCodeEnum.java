@@ -25,6 +25,7 @@ public enum CommonCodeEnum implements StatusCode {
     PARAM_ERROR_USER_EDITOR("不允许修改手机号、身份证号、姓名信息，如需修改请联系管理人员", "PARAM_ERROR_USER_EDITOR"),
     PARAM_ERROR_USER_LOGIN_PASSWORD_CHANGE("新的登录密码和旧的登录密码相同", "PARAM_ERROR_USER_LOGIN_PASSWORD_CHANGE"),
     PARAM_ERROR_USER_CHOOSE_COURSE_MULTI("不允许重复选课", "PARAM_ERROR_USER_CHOOSE_COURSE_MULTI"),
+    PARAM_ERROR_USER_COURSE_DEL("已分配班级的课程不支持删除操作", "PARAM_ERROR_USER_COURSE_DEL"),
 
     /**
      * 访问权限异常
