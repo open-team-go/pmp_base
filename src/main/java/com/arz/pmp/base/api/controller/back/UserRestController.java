@@ -5,6 +5,7 @@ import com.arz.pmp.base.api.bo.CommonDataReq;
 import com.arz.pmp.base.api.bo.user.UserDataResp;
 import com.arz.pmp.base.api.bo.user.UserEditorReq;
 import com.arz.pmp.base.api.bo.user.UserSearchReq;
+import com.arz.pmp.base.api.bo.user.UsersStatisticsResp;
 import com.arz.pmp.base.api.service.user.UserService;
 import com.arz.pmp.base.entity.PmpUserEducationEntity;
 import com.arz.pmp.base.entity.PmpUserPayTypeEntity;
@@ -54,6 +55,14 @@ public class UserRestController {
         PageInfo pageInfo = userService.getUserListPage(data);
 
         return RestResponse.success(pageInfo);
+    }
+
+    @ApiOperation(value = "学员 列表查看统计信息", notes = "列表查看统计信息")
+    @PostMapping("/index/statistics")
+    @RequirePermissions({USER_READ})
+    public RestResponse<UsersStatisticsResp> getUserStatistics(@RequestBody @Valid RestRequest data) {
+
+        return RestResponse.success(userService.getUserStatistics(data.getHeader().getAuthentication()));
     }
 
     @ApiOperation(value = "学员 详情查看", notes = "查看学员详细信息")

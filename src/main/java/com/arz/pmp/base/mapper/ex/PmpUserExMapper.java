@@ -2,6 +2,7 @@ package com.arz.pmp.base.mapper.ex;
 
 import com.arz.pmp.base.api.bo.user.UserDataResp;
 import com.arz.pmp.base.api.bo.user.UserSearchReq;
+import com.arz.pmp.base.api.bo.user.UsersStatisticsResp;
 import com.arz.pmp.base.api.bo.user.front.CourseListData;
 import com.arz.pmp.base.api.bo.user.front.UserPerfectData;
 import com.arz.pmp.base.entity.*;
@@ -46,4 +47,7 @@ public interface PmpUserExMapper {
 
     void deleteUserCourse(@Param("userId") Long userId, @Param("courseId") Long courseId,
         @Param("curTime") Long curTime);
+
+    UsersStatisticsResp selectUsersStatistics(@Param("todayTime") Long todayTime,
+        @Param("salesAdminId") Long salesAdminId);
 }

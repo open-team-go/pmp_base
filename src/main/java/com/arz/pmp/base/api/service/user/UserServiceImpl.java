@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import com.arz.pmp.base.api.bo.user.UsersStatisticsResp;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -108,6 +109,15 @@ public class UserServiceImpl implements UserService {
             }).toPageInfo();
         return pageInfo;
 
+    }
+
+    @Override
+    public UsersStatisticsResp getUserStatistics(String authentication) {
+        Long todayTime = DateUtil.getDateSecond(DateUtil.getToday());
+        // 判断是否是销售
+        Long salesAdminId = adminService.getRoleAdminId(authentication, SysPermEnumClass.RoleEnum.SALES);
+        UsersStatisticsResp data = pmpUserExMapper.selectUsersStatistics(todayTime, salesAdminId);
+        return data;
     }
 
     @Override

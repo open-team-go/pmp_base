@@ -119,4 +119,7 @@ public class DateUtil {
         return dateToStr(new Date(second * 1000), format);
     }
 
+    public static Date getToday() {
+        return strToDate(dateToStr(getCurDateTime(), DateStrFormat.f_2), DateStrFormat.f_2);
+    }
 }

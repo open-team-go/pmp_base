@@ -242,4 +242,17 @@
         WHERE a.user_id=#{userId} AND a.course_id=#{courseId}
     </update>
 
+    <select id="selectUsersStatistics" resultType="com.arz.pmp.base.api.bo.user.UsersStatisticsResp">
+        SELECT
+        (SELECT COUNT(*)
+        FROM pmp_user_ref_course urc
+        WHERE urc.del_on=0 AND urc.create_time >= #{todayTime}) 'todayIncrement',
+        (SELECT COUNT(*) FROM pmp_user_ref_course urc
+        WHERE urc.del_on=0
+        <if test="salesAdminId !=null">AND urc.admin_id=#{salesAdminId}</if>
+        AND urc.room_id IS NULL) 'noEducationAdmin',
+        (SELECT COUNT(*) FROM pmp_user_ref_course urc
+        WHERE urc.del_on=0 AND urc.admin_id IS NULL) 'noSalesAdmin';
+    </select>
+
 </mapper>

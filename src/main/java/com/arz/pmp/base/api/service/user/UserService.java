@@ -6,6 +6,7 @@ import com.arz.pmp.base.api.bo.excel.UserImportResp;
 import com.arz.pmp.base.api.bo.user.UserDataResp;
 import com.arz.pmp.base.api.bo.user.UserEditorReq;
 import com.arz.pmp.base.api.bo.user.UserSearchReq;
+import com.arz.pmp.base.api.bo.user.UsersStatisticsResp;
 import com.arz.pmp.base.api.bo.user.front.*;
 import com.arz.pmp.base.entity.PmpUserCourseApplyEntity;
 import com.arz.pmp.base.entity.PmpUserEducationEntity;
@@ -30,6 +31,8 @@ import java.util.List;
 public interface UserService {
 
     PageInfo<List<UserDataResp>> getUserListPage(RestRequest<UserSearchReq> req);
+
+    UsersStatisticsResp getUserStatistics(String authentication);
 
     Long addOrUpUser(UserEditorReq data, boolean addOn, String authentication);
 
