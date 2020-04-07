@@ -213,6 +213,19 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public void deleteUserCourseByAdmin(Long userCourseId, String authentication) {
+        // 操作员信息
+        Long operatorId = redisService.getOperatorIdByToken(authentication);
+        PmpUserRefCourseEntity entity = new PmpUserRefCourseEntity();
+        entity.setId(userCourseId);
+        entity.setDelOn(true);
+        entity.setUpdateTime(DateUtil.getCurSecond());
+        entity.setUpdateManager(operatorId);
+        // 清空选课信息
+        pmpUserRefCourseEntityMapper.updateByPrimaryKeySelective(entity);
+    }
+
+    @Override
     public List<PmpUserEducationEntity> getEducationList() {
         return pmpUserExMapper.selectEducationList(false);
     }

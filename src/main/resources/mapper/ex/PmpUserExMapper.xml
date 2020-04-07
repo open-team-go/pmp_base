@@ -11,14 +11,27 @@
         LEFT JOIN pmp_user_education e ON a.education_id=e.education_id
         LEFT JOIN pmp_user_pay_type f ON urc.pay_id=f.pay_id
         WHERE a.del_on=0 AND urc.del_on=0
-        <if test="educationAdminId != null and educationAdminId!=0 ">
-            AND d.admin_id = #{educationAdminId,jdbcType=BIGINT}
+        <choose>
+            <when test="roomId != null and roomId !=0 ">
+                AND urc.room_id = #{roomId,jdbcType=BIGINT}
+            </when>
+            <when test="roomId==0 ">
+                AND urc.room_id IS NULL
+            </when>
+        </choose>
+        <choose>
+            <when test="salesAdminId != null and salesAdminId!=0 ">
+                AND urc.admin_id = #{salesAdminId,jdbcType=BIGINT}
+            </when>
+            <when test="salesAdminId==0 ">
+                AND urc.admin_id IS NULL
+            </when>
+        </choose>
+        <if test="salesAdminId != null and salesAdminId!=0 ">
+            AND urc.admin_id = #{salesAdminId,jdbcType=BIGINT}
         </if>
         <if test="educationId != null">
             AND a.education_id = #{educationId,jdbcType=BIGINT}
-        </if>
-        <if test="roomId != null">
-            AND urc.room_id = #{roomId,jdbcType=BIGINT}
         </if>
         <if test="keyWord != null and keyWord!='' ">
             AND a.user_name LIKE CONCAT('%',#{keyWord},'%')
@@ -28,9 +41,6 @@
         </if>
         <if test="userType != null and userType!=0 ">
             AND a.user_type = #{userType,jdbcType=INTEGER}
-        </if>
-        <if test="salesAdminId != null and salesAdminId!=0 ">
-            AND urc.admin_id = #{salesAdminId,jdbcType=BIGINT}
         </if>
         <if test="courseId != null and courseId!=0 ">
             AND urc.course_id = #{courseId,jdbcType=BIGINT}
@@ -234,7 +244,7 @@
 
     <select id="updateTouristsDelByUser">
 
-        UPDATE pmp_user_tourists ut SET ut.del_on=1 WHERE ut.user_id#{userId}
+        UPDATE pmp_user_tourists ut SET ut.del_on=1 WHERE ut.user_id=#{userId}
     </select>
 
     <update id="deleteUserCourse">

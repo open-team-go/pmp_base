@@ -38,6 +38,8 @@ public interface UserService {
 
     void deleteUser(Long UserId, String authentication);
 
+    void deleteUserCourseByAdmin(Long userCourseId, String authentication);
+
     List<PmpUserEducationEntity> getEducationList();
 
     List<PmpUserPayTypeEntity> getPayTypeList();

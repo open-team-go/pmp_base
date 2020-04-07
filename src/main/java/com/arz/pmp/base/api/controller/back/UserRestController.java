@@ -99,14 +99,14 @@ public class UserRestController {
         return RestResponse.success(id);
     }
 
-    @ApiOperation(value = "学员 学员删除", notes = "学员删除")
+    @ApiOperation(value = "学员 学员选课删除", notes = "学员选课删除")
     @PostMapping("/delete")
     @RequirePermissions({USER_DEL})
     @SysLog(type = SysLogEnumClass.OptionTypeEnum.DELETE, module = SysLogEnumClass.OptionModuleEnum.SYS_USER,
         describe = "删除学员信息")
     public RestResponse deleteUser(@RequestBody @Valid RestRequest<CommonDataReq> data) {
 
-        userService.deleteUser(data.getBody().getId(), data.getHeader().getAuthentication());
+        userService.deleteUserCourseByAdmin(data.getBody().getId(), data.getHeader().getAuthentication());
 
         return RestResponse.success();
     }
