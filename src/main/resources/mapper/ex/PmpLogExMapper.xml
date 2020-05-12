@@ -10,7 +10,7 @@
         LEFT JOIN pmp_admin b ON a.admin_id=b.admin_id
         WHERE a.del_on=0
         <if test="keyWord !=null and keyWord!=''">
-            AND (a.opt_desc LIKE CONCAT('%',#{keyWord},'%') OR b.nickName LIKE CONCAT('%',#{keyWord},'%') )
+            AND a.opt_desc LIKE CONCAT('%',#{keyWord},'%')
         </if>
         <if test="adminId !=null and adminId!=0">
             AND a.admin_id = #{adminId}
@@ -30,7 +30,7 @@
         <if test="endTime !=null and endTime!=0">
             AND #{endTime} >= a.create_time
         </if>
-        ORDER BY a.create_time DESC , a.log_id DESC
+        ORDER BY 1 DESC
     </select>
 
 </mapper>
