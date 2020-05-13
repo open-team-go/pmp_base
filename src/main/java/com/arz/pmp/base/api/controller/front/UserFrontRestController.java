@@ -123,7 +123,7 @@ public class UserFrontRestController {
     @RequireUserPermissions({FRONT_USER})
     public RestResponse<List<PmpAdminEntity>> getSalesAdmin(@RequestBody @Valid RestRequest data) {
         AdminSearchReq req = new AdminSearchReq();
-        req.setRoleId(3l);
+        req.setRoleId(3L);
         List<PmpAdminEntity> list = adminService.getAdminList(req, null);
         return RestResponse.success(list);
     }
@@ -132,10 +132,10 @@ public class UserFrontRestController {
     @PostMapping("/course/apply")
     @RequireUserPermissions({FRONT_USER})
     public RestResponse<PmpUserCourseApplyEntity>
-        getUserCourseApply(@RequestBody @Valid RestRequest<CourseApplyData> data) {
+    getUserCourseApply(@RequestBody @Valid RestRequest<CourseApplyData> data) {
 
         PmpUserCourseApplyEntity result =
-            userService.getUserCourseApply(data.getBody().getUserRefCourseId(), data.getHeader().getAuthentication());
+                userService.getUserCourseApply(data.getBody().getUserRefCourseId(), data.getHeader().getAuthentication());
         return RestResponse.success(result);
     }
 

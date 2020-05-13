@@ -106,8 +106,9 @@ public class ExcelUtil {
             throw new BusinessException(CommonCodeEnum.SYSTEM_ERROR_EXCEL_PARSING_ERROR.getCode(), message);
         } finally {
             try {
-                if (inputStream != null)
+                if (inputStream != null) {
                     inputStream.close();
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }

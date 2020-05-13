@@ -30,9 +30,9 @@ import static com.arz.pmp.base.framework.core.enums.SysPermEnumClass.PermissionE
  *
  * @author chen wei
  * @version 1.0
- *          <p>
- *          Copyright: Copyright (c) 2019
- *          </p>
+ * <p>
+ * Copyright: Copyright (c) 2019
+ * </p>
  * @date 2019/11/26 21:42
  */
 @Api(value = "后端 日志操作API集", tags = "日志操作API集")

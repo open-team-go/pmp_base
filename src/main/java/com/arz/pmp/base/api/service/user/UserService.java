@@ -23,9 +23,9 @@ import java.util.List;
  *
  * @author chen wei
  * @version 1.0
- *          <p>
- *          Copyright: Copyright (c) 2019
- *          </p>
+ * <p>
+ * Copyright: Copyright (c) 2019
+ * </p>
  * @date 2019/11/14 17:31
  */
 public interface UserService {
@@ -36,7 +36,7 @@ public interface UserService {
 
     Long addOrUpUser(UserEditorReq data, boolean addOn, String authentication);
 
-    void deleteUser(Long UserId, String authentication);
+    void deleteUser(Long userId, String authentication);
 
     void deleteUserCourseByAdmin(Long userCourseId, String authentication);
 

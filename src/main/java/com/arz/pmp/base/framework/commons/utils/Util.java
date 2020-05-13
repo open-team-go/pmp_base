@@ -42,8 +42,7 @@ public class Util {
     }
 
     public static void main(String[] args) {
-        String path = "/front/user/loginPassword";
-        System.out.println(Constants.REGEX_INTERCEPTOR_AUTH_OFF.matcher(path).matches());
+
     }
 
 }

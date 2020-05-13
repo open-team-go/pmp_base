@@ -47,9 +47,9 @@ import ma.glasnost.orika.MapperFacade;
  *
  * @author chen wei
  * @version 1.0
- *          <p>
- *          Copyright: Copyright (c) 2019
- *          </p>
+ * <p>
+ * Copyright: Copyright (c) 2019
+ * </p>
  * @date 2019/11/14 17:31
  */
 @Service
@@ -93,20 +93,20 @@ public class UserServiceImpl implements UserService {
 
         // 判斷是否是教务人员
         Long educationAdminId =
-            adminService.getRoleAdminId(req.getHeader().getAuthentication(), SysPermEnumClass.RoleEnum.EDUCATION);
+                adminService.getRoleAdminId(req.getHeader().getAuthentication(), SysPermEnumClass.RoleEnum.EDUCATION);
         if (educationAdminId != null) {
             search.setEducationAdminId(educationAdminId);
         }
         Long salesAdminId =
-            adminService.getRoleAdminId(req.getHeader().getAuthentication(), SysPermEnumClass.RoleEnum.SALES);
+                adminService.getRoleAdminId(req.getHeader().getAuthentication(), SysPermEnumClass.RoleEnum.SALES);
         if (salesAdminId != null) {
             search.setSalesAdminId(salesAdminId);
         }
 
         PageInfo pageInfo = PageHelper.startPage(requestHeader.confirmCurrentPage(), requestHeader.confirmShowNum())
-            .doSelectPage(() -> {
-                pmpUserExMapper.selectUserList(search);
-            }).toPageInfo();
+                .doSelectPage(() -> {
+                    pmpUserExMapper.selectUserList(search);
+                }).toPageInfo();
         return pageInfo;
 
     }
@@ -176,7 +176,9 @@ public class UserServiceImpl implements UserService {
 
     }
 
-    /** 后台构建新学员时默认登录信息 */
+    /**
+     * 后台构建新学员时默认登录信息
+     */
     private void updateUserDefaultLoginInfo(Long userId, Long operatorId) {
         PmpUserEntity userEntity = new PmpUserEntity();
         userEntity.setUserId(userId);
@@ -361,7 +363,7 @@ public class UserServiceImpl implements UserService {
             String identityNo = null;
             String phoneNo = item.getPhoneNo();
             if (StringUtils.isBlank(userName) || StringUtils.isBlank(phoneNo)
-                || !Constants.REGEX_PHONE_NO.matcher(phoneNo).matches()) {
+                    || !Constants.REGEX_PHONE_NO.matcher(phoneNo).matches()) {
                 // || StringUtils.isBlank(identityNo)
                 // || !identityNo.matches(Constants.REGEX_IDENTITY_NO)
                 logger.info("用户数据导入不处理信息====user=={}", item);
@@ -452,7 +454,7 @@ public class UserServiceImpl implements UserService {
             }
             // 不允许前台修改身份证号
             if (StringUtils.isNotBlank(oldUser.getIdentityNo())
-                && !data.getIdentityNo().equals(oldUser.getIdentityNo())) {
+                    && !data.getIdentityNo().equals(oldUser.getIdentityNo())) {
                 Assert.isTrue(false, CommonCodeEnum.PARAM_ERROR_USER_EDITOR);
             }
             // 不允许前台修改身份证号
@@ -470,7 +472,7 @@ public class UserServiceImpl implements UserService {
         Long touristsId = null;
         if (oldUserId == null) {
             PmpUserTouristsEntity touristsEntity =
-                pmpUserExMapper.selectUserTouristsByLoginName(userInfo.getLoginName());
+                    pmpUserExMapper.selectUserTouristsByLoginName(userInfo.getLoginName());
             touristsId = touristsEntity.getId();
             userEntity.setLoginName(touristsEntity.getLoginName());
             userEntity.setLoginSalt(touristsEntity.getLoginSalt());
@@ -483,7 +485,7 @@ public class UserServiceImpl implements UserService {
             userEntity.setUserId(oldUserId);
             if (!userInfo.isPerfectOn()) {
                 PmpUserTouristsEntity touristsEntity =
-                    pmpUserExMapper.selectUserTouristsByLoginName(userInfo.getLoginName());
+                        pmpUserExMapper.selectUserTouristsByLoginName(userInfo.getLoginName());
                 touristsId = touristsEntity.getId();
                 userEntity.setLoginName(touristsEntity.getLoginName());
                 userEntity.setLoginSalt(touristsEntity.getLoginSalt());
@@ -628,14 +630,14 @@ public class UserServiceImpl implements UserService {
     public void updateUserLoginPassword(UserPasswordData data, String authentication) {
 
         Assert.isTrue(!data.getNewPassword().equals(data.getOldPassword()),
-            CommonCodeEnum.PARAM_ERROR_USER_LOGIN_PASSWORD_CHANGE);
+                CommonCodeEnum.PARAM_ERROR_USER_LOGIN_PASSWORD_CHANGE);
 
         UserCacheData loginInfo = getFrontUserCache(authentication);
         boolean flag = false;
         if (loginInfo.getUserId() != null) {
             PmpUserEntity userEntity = pmpUserEntityMapper.selectByPrimaryKey(loginInfo.getUserId());
             Assert.isTrue(EncryptUtils.doCredentialsMatch(data.getOldPassword(), userEntity.getLoginSalt(),
-                userEntity.getLoginPassword()), CommonCodeEnum.PARAM_ERROR_LOGIN_PASSWORD);
+                    userEntity.getLoginPassword()), CommonCodeEnum.PARAM_ERROR_LOGIN_PASSWORD);
             flag = true;
             userEntity = new PmpUserEntity();
             userEntity.setUserId(loginInfo.getUserId());
@@ -646,9 +648,9 @@ public class UserServiceImpl implements UserService {
         }
         if (loginInfo.getTouristsId() != null) {
             PmpUserTouristsEntity touristsEntity =
-                pmpUserTouristsEntityMapper.selectByPrimaryKey(loginInfo.getTouristsId());
+                    pmpUserTouristsEntityMapper.selectByPrimaryKey(loginInfo.getTouristsId());
             Assert.isTrue(flag || EncryptUtils.doCredentialsMatch(data.getOldPassword(), touristsEntity.getLoginSalt(),
-                touristsEntity.getLoginPassword()), CommonCodeEnum.PARAM_ERROR_LOGIN_PASSWORD);
+                    touristsEntity.getLoginPassword()), CommonCodeEnum.PARAM_ERROR_LOGIN_PASSWORD);
 
             touristsEntity = new PmpUserTouristsEntity();
             touristsEntity.setId(loginInfo.getTouristsId());
@@ -671,8 +673,8 @@ public class UserServiceImpl implements UserService {
         Assert.isTrue(refCourseId == null, CommonCodeEnum.PARAM_ERROR_USER_CHOOSE_COURSE_MULTI);
         // 判断课程顾问
         PmpAdminEntity adminEntity = pmpAdminEntityMapper.selectByPrimaryKey(data.getAdminId());
-        Assert.isTrue(adminEntity != null || adminEntity.getDelOn() || adminEntity.getRoleId() != 3,
-            CommonCodeEnum.PARAM_ERROR);
+        Assert.isTrue(adminEntity != null && !adminEntity.getDelOn() && adminEntity.getRoleId() == 3,
+                CommonCodeEnum.PARAM_ERROR);
 
         PmpUserRefCourseEntity refCourseEntity = new PmpUserRefCourseEntity();
         refCourseEntity.setCourseId(data.getId());
@@ -728,7 +730,7 @@ public class UserServiceImpl implements UserService {
 
     /**
      * description
-     * 
+     *
      * @author chen wei
      * @date 2020/3/19
      */

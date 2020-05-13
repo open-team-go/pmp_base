@@ -28,7 +28,7 @@ public interface RoomService {
 
     Long addOrUpRoom(RoomEditorReq data, boolean addOn, String authentication);
 
-    void deleteRoom(Long RoomId, String authentication);
+    void deleteRoom(Long roomId, String authentication);
 
     List<PmpTeachingTypeEntity> getTypeList();
 
