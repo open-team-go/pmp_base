@@ -11,6 +11,8 @@ public class PmpUserRefCourseEntity {
 
     private Long roomId;
 
+    private Long roomChooseTime;
+
     private Boolean invoiceOn;
 
     private String invoiceHeader;
@@ -107,6 +109,14 @@ public class PmpUserRefCourseEntity {
 
     public void setRoomId(Long roomId) {
         this.roomId = roomId;
+    }
+
+    public Long getRoomChooseTime() {
+        return roomChooseTime;
+    }
+
+    public void setRoomChooseTime(Long roomChooseTime) {
+        this.roomChooseTime = roomChooseTime;
     }
 
     public Boolean getInvoiceOn() {

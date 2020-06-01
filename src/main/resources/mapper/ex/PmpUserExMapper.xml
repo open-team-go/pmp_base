@@ -69,10 +69,16 @@
         <if test="userRefCourseId != null">
             AND urc.id = #{userRefCourseId,jdbcType=BIGINT}
         </if>
+        <if test="roomStartTime != null">
+            AND urc.room_choose_time >= #{roomStartTime,jdbcType=BIGINT}
+        </if>
+        <if test="roomEndTime != null">
+            AND #{roomEndTime,jdbcType=BIGINT} >= urc.room_choose_time
+        </if>
         <if test="userId != null">
             AND a.user_id = #{userId,jdbcType=BIGINT}
         </if>
-        ORDER BY urc.create_time DESC,urc.admin_id,c.sort
+        ORDER BY urc.id DESC
     </sql>
     <select id="selectUserByName" resultType="com.arz.pmp.base.entity.PmpUserEntity">
         SELECT a.user_id,a.phone_no,a.identity_no

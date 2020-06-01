@@ -9,9 +9,9 @@ import lombok.Data;
  *
  * @author chen wei
  * @version 1.0
- *          <p>
- *          Copyright: Copyright (c) 2019
- *          </p>
+ * <p>
+ * Copyright: Copyright (c) 2019
+ * </p>
  * @date 2019/11/14 17:34
  */
 @ApiModel
@@ -56,6 +56,12 @@ public class UserSearchReq {
 
     @ApiModelProperty("注册结束时间")
     private Long endTime;
+
+    @ApiModelProperty("注册开始时间")
+    private Long roomStartTime;
+
+    @ApiModelProperty("注册结束时间")
+    private Long roomEndTime;
 
     @ApiModelProperty("是否开票")
     private Boolean invoiceOn;

@@ -33,9 +33,9 @@ import static com.arz.pmp.base.framework.core.enums.SysPermEnumClass.PermissionE
  *
  * @author chen wei
  * @version 1.0
- *          <p>
- *          Copyright: Copyright (c) 2019
- *          </p>
+ * <p>
+ * Copyright: Copyright (c) 2019
+ * </p>
  * @date 2019/11/11 21:42
  */
 @Api(value = "后端 学员操作API集", tags = "后端 学员操作API集")
@@ -50,7 +50,7 @@ public class UserRestController {
     @PostMapping("/index")
     @RequirePermissions({USER_READ})
     public RestResponse<PageInfo<List<UserDataResp>>>
-        getUserListPage(@RequestBody @Valid RestRequest<UserSearchReq> data) {
+    getUserListPage(@RequestBody @Valid RestRequest<UserSearchReq> data) {
 
         PageInfo pageInfo = userService.getUserListPage(data);
 
@@ -79,7 +79,7 @@ public class UserRestController {
     @PostMapping("/add")
     @RequirePermissions({USER_ADD})
     @SysLog(type = SysLogEnumClass.OptionTypeEnum.ADD, module = SysLogEnumClass.OptionModuleEnum.SYS_USER,
-        describe = "添加学员信息")
+            describe = "添加学员信息")
     public RestResponse<Long> addUser(@RequestBody @Valid RestRequest<UserEditorReq> data) {
 
         Long id = userService.addOrUpUser(data.getBody(), true, data.getHeader().getAuthentication());
@@ -91,7 +91,7 @@ public class UserRestController {
     @PostMapping("/update")
     @RequirePermissions({USER_UPDATE})
     @SysLog(type = SysLogEnumClass.OptionTypeEnum.UPDATE, module = SysLogEnumClass.OptionModuleEnum.SYS_USER,
-        describe = "更新学员信息")
+            describe = "更新学员信息")
     public RestResponse<Long> updateUser(@RequestBody @Valid RestRequest<UserEditorReq> data) {
 
         Long id = userService.addOrUpUser(data.getBody(), false, data.getHeader().getAuthentication());
@@ -103,7 +103,7 @@ public class UserRestController {
     @PostMapping("/delete")
     @RequirePermissions({USER_DEL})
     @SysLog(type = SysLogEnumClass.OptionTypeEnum.DELETE, module = SysLogEnumClass.OptionModuleEnum.SYS_USER,
-        describe = "删除学员信息")
+            describe = "删除学员信息")
     public RestResponse deleteUser(@RequestBody @Valid RestRequest<CommonDataReq> data) {
 
         userService.deleteUserCourseByAdmin(data.getBody().getId(), data.getHeader().getAuthentication());

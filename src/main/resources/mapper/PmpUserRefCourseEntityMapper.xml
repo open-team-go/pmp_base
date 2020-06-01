@@ -6,6 +6,7 @@
     <result column="user_id" jdbcType="BIGINT" property="userId" />
     <result column="pay_id" jdbcType="BIGINT" property="payId" />
     <result column="room_id" jdbcType="BIGINT" property="roomId" />
+    <result column="room_choose_time" jdbcType="BIGINT" property="roomChooseTime" />
     <result column="invoice_on" jdbcType="BIT" property="invoiceOn" />
     <result column="invoice_header" jdbcType="VARCHAR" property="invoiceHeader" />
     <result column="invoice_code" jdbcType="VARCHAR" property="invoiceCode" />
@@ -41,8 +42,8 @@
     <result column="del_on" jdbcType="BIT" property="delOn" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, user_id, pay_id, room_id, invoice_on, invoice_header, invoice_code, admin_id, 
-    course_id, graduation_status, cert_no, cert_en_name, cert_en_pasw, cert_cn_name, 
+    id, user_id, pay_id, room_id, room_choose_time, invoice_on, invoice_header, invoice_code, 
+    admin_id, course_id, graduation_status, cert_no, cert_en_name, cert_en_pasw, cert_cn_name, 
     cert_cn_pasw, cert_start_time, cert_end_time, remark, exam_name, exam_place, ease_out, 
     ease_in, withdraw_on, audit_on, receive_type, re_examine_on, examination_time, pay_total, 
     pay_time, pay_remarks, consultation_time, consultation_city, create_time, update_time, 
@@ -63,26 +64,26 @@
       SELECT LAST_INSERT_ID()
     </selectKey>
     insert into pmp_user_ref_course (user_id, pay_id, room_id, 
-      invoice_on, invoice_header, invoice_code, 
-      admin_id, course_id, graduation_status, 
-      cert_no, cert_en_name, cert_en_pasw, 
-      cert_cn_name, cert_cn_pasw, cert_start_time, 
-      cert_end_time, remark, exam_name, 
-      exam_place, ease_out, ease_in, 
-      withdraw_on, audit_on, receive_type, 
+      room_choose_time, invoice_on, invoice_header, 
+      invoice_code, admin_id, course_id, 
+      graduation_status, cert_no, cert_en_name, 
+      cert_en_pasw, cert_cn_name, cert_cn_pasw, 
+      cert_start_time, cert_end_time, remark, 
+      exam_name, exam_place, ease_out, 
+      ease_in, withdraw_on, audit_on, receive_type, 
       re_examine_on, examination_time, pay_total, 
       pay_time, pay_remarks, consultation_time, 
       consultation_city, create_time, update_time, 
       create_manager, update_manager, del_on
       )
     values (#{userId,jdbcType=BIGINT}, #{payId,jdbcType=BIGINT}, #{roomId,jdbcType=BIGINT}, 
-      #{invoiceOn,jdbcType=BIT}, #{invoiceHeader,jdbcType=VARCHAR}, #{invoiceCode,jdbcType=VARCHAR}, 
-      #{adminId,jdbcType=BIGINT}, #{courseId,jdbcType=BIGINT}, #{graduationStatus,jdbcType=INTEGER}, 
-      #{certNo,jdbcType=VARCHAR}, #{certEnName,jdbcType=VARCHAR}, #{certEnPasw,jdbcType=VARCHAR}, 
-      #{certCnName,jdbcType=VARCHAR}, #{certCnPasw,jdbcType=VARCHAR}, #{certStartTime,jdbcType=BIGINT}, 
-      #{certEndTime,jdbcType=BIGINT}, #{remark,jdbcType=VARCHAR}, #{examName,jdbcType=VARCHAR}, 
-      #{examPlace,jdbcType=VARCHAR}, #{easeOut,jdbcType=BIT}, #{easeIn,jdbcType=BIT}, 
-      #{withdrawOn,jdbcType=BIT}, #{auditOn,jdbcType=BIT}, #{receiveType,jdbcType=INTEGER}, 
+      #{roomChooseTime,jdbcType=BIGINT}, #{invoiceOn,jdbcType=BIT}, #{invoiceHeader,jdbcType=VARCHAR}, 
+      #{invoiceCode,jdbcType=VARCHAR}, #{adminId,jdbcType=BIGINT}, #{courseId,jdbcType=BIGINT}, 
+      #{graduationStatus,jdbcType=INTEGER}, #{certNo,jdbcType=VARCHAR}, #{certEnName,jdbcType=VARCHAR}, 
+      #{certEnPasw,jdbcType=VARCHAR}, #{certCnName,jdbcType=VARCHAR}, #{certCnPasw,jdbcType=VARCHAR}, 
+      #{certStartTime,jdbcType=BIGINT}, #{certEndTime,jdbcType=BIGINT}, #{remark,jdbcType=VARCHAR}, 
+      #{examName,jdbcType=VARCHAR}, #{examPlace,jdbcType=VARCHAR}, #{easeOut,jdbcType=BIT}, 
+      #{easeIn,jdbcType=BIT}, #{withdrawOn,jdbcType=BIT}, #{auditOn,jdbcType=BIT}, #{receiveType,jdbcType=INTEGER}, 
       #{reExamineOn,jdbcType=BIT}, #{examinationTime,jdbcType=BIGINT}, #{payTotal,jdbcType=DECIMAL}, 
       #{payTime,jdbcType=BIGINT}, #{payRemarks,jdbcType=VARCHAR}, #{consultationTime,jdbcType=BIGINT}, 
       #{consultationCity,jdbcType=VARCHAR}, #{createTime,jdbcType=BIGINT}, #{updateTime,jdbcType=BIGINT}, 
@@ -103,6 +104,9 @@
       </if>
       <if test="roomId != null">
         room_id,
+      </if>
+      <if test="roomChooseTime != null">
+        room_choose_time,
       </if>
       <if test="invoiceOn != null">
         invoice_on,
@@ -213,6 +217,9 @@
       </if>
       <if test="roomId != null">
         #{roomId,jdbcType=BIGINT},
+      </if>
+      <if test="roomChooseTime != null">
+        #{roomChooseTime,jdbcType=BIGINT},
       </if>
       <if test="invoiceOn != null">
         #{invoiceOn,jdbcType=BIT},
@@ -327,6 +334,9 @@
       <if test="roomId != null">
         room_id = #{roomId,jdbcType=BIGINT},
       </if>
+      <if test="roomChooseTime != null">
+        room_choose_time = #{roomChooseTime,jdbcType=BIGINT},
+      </if>
       <if test="invoiceOn != null">
         invoice_on = #{invoiceOn,jdbcType=BIT},
       </if>
@@ -434,6 +444,7 @@
     set user_id = #{userId,jdbcType=BIGINT},
       pay_id = #{payId,jdbcType=BIGINT},
       room_id = #{roomId,jdbcType=BIGINT},
+      room_choose_time = #{roomChooseTime,jdbcType=BIGINT},
       invoice_on = #{invoiceOn,jdbcType=BIT},
       invoice_header = #{invoiceHeader,jdbcType=VARCHAR},
       invoice_code = #{invoiceCode,jdbcType=VARCHAR},

@@ -142,7 +142,6 @@ public class UserServiceImpl implements UserService {
         PmpUserEntity entity = mapperFacade.map(data, PmpUserEntity.class);
         // 操作员信息
         Long operatorId = redisService.getOperatorIdByToken(authentication);
-
         // 新增
         if (addOn) {
             Assert.isTrue(StringUtils.isNotBlank(name), CommonCodeEnum.PARAM_ERROR);
@@ -159,18 +158,8 @@ public class UserServiceImpl implements UserService {
             Assert.isTrue(userId != null, CommonCodeEnum.PARAM_ERROR);
             updateUserEntity(entity, operatorId);
             // 更新选课信息
-            Long targetId = pmpUserExMapper.selectUserRefCourseId(userId, courseId);
             PmpUserRefCourseEntity userRefCourseEntity = mapperFacade.map(data, PmpUserRefCourseEntity.class);
-            userRefCourseEntity.setUserId(userId);
-            // 新增选课
-            if (targetId == null) {
-                insertUserRefCourseEntity(userRefCourseEntity, operatorId);
-            } else {
-                // 更新选课信息
-                userRefCourseEntity.setId(targetId);
-                updateUserRefCourseEntity(userRefCourseEntity, operatorId);
-            }
-
+            insertOrUpUserCourse(userId, courseId, userRefCourseEntity, operatorId);
             return userRefCourseId;
         }
 
@@ -416,24 +405,26 @@ public class UserServiceImpl implements UserService {
             if (courseId == null) {
                 continue;
             }
-            Long userRefCourseId = pmpUserExMapper.selectUserRefCourseId(userId, item.getCourseId());
             PmpUserRefCourseEntity userRefCourseEntity = mapperFacade.map(item, PmpUserRefCourseEntity.class);
-            if (userRefCourseId == null) {
-                // 新增选课
-                userRefCourseEntity.setUserId(userId);
-                insertUserRefCourseEntity(userRefCourseEntity, managerId);
-            } else {
-                // 更新选课信息
-                userRefCourseEntity.setUpdateTime(curTime);
-                userRefCourseEntity.setId(userRefCourseId);
-                userRefCourseEntity.setUpdateManager(managerId);
-                pmpUserRefCourseEntityMapper.updateByPrimaryKeySelective(userRefCourseEntity);
-            }
+            insertOrUpUserCourse(userId, courseId, userRefCourseEntity, managerId);
 
         }
         result.setAddCount(i);
         result.setUpdateCount(j);
         return result;
+    }
+
+    private void insertOrUpUserCourse(Long userId, Long courseId, PmpUserRefCourseEntity userRefCourseEntity, Long managerId) {
+        PmpUserRefCourseEntity oldCourse = pmpUserExMapper.selectUserRefCourse(userId, courseId);
+        if (oldCourse == null) {
+            // 新增选课
+            userRefCourseEntity.setUserId(userId);
+            insertUserRefCourseEntity(userRefCourseEntity, managerId);
+        } else {
+            // 更新选课信息
+            userRefCourseEntity.setId(oldCourse.getId());
+            updateUserRefCourseEntity(userRefCourseEntity, managerId, oldCourse.getRoomId());
+        }
     }
 
     @Override
@@ -700,15 +691,21 @@ public class UserServiceImpl implements UserService {
     private void insertUserRefCourseEntity(PmpUserRefCourseEntity refCourseEntity, Long operatorId) {
         refCourseEntity.setCreateTime(DateUtil.getCurSecond());
         refCourseEntity.setCreateManager(operatorId);
+        if (refCourseEntity.getRoomId() != null) {
+            refCourseEntity.setRoomChooseTime(refCourseEntity.getCreateTime());
+        }
         pmpUserRefCourseEntityMapper.insertSelective(refCourseEntity);
     }
 
     /**
      * 更新学员选课
      */
-    private void updateUserRefCourseEntity(PmpUserRefCourseEntity refCourseEntity, Long operatorId) {
+    private void updateUserRefCourseEntity(PmpUserRefCourseEntity refCourseEntity, Long operatorId, Long oldRoomId) {
         refCourseEntity.setUpdateTime(DateUtil.getCurSecond());
         refCourseEntity.setUpdateManager(operatorId);
+        if (refCourseEntity.getRoomId() != null && !refCourseEntity.getRoomId().equals(oldRoomId)) {
+            refCourseEntity.setRoomChooseTime(refCourseEntity.getUpdateTime());
+        }
         pmpUserRefCourseEntityMapper.updateByPrimaryKeySelective(refCourseEntity);
     }
 
