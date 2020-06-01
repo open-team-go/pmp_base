@@ -15,7 +15,7 @@ public interface PmpUserExMapper {
     List<UserDataResp> selectUserList(UserSearchReq search);
 
     PmpUserEntity selectUserByName(@Param("userName") String userName, @Param("identityNo") String identityNo,
-        @Param("phoneNo") String phoneNo);
+                                   @Param("phoneNo") String phoneNo);
 
     List<PmpUserEducationEntity> selectEducationList(@Param("delOn") Boolean delOn);
 
@@ -46,8 +46,10 @@ public interface PmpUserExMapper {
     void updateTouristsDelByUser(@Param("userId") Long userId);
 
     void deleteUserCourse(@Param("userId") Long userId, @Param("courseId") Long courseId,
-        @Param("curTime") Long curTime);
+                          @Param("curTime") Long curTime);
 
     UsersStatisticsResp selectUsersStatistics(@Param("todayTime") Long todayTime,
-        @Param("salesAdminId") Long salesAdminId);
+                                              @Param("salesAdminId") Long salesAdminId);
+
+    int selectRoomChoosingCount(@Param("todayTime") Long todayTime, @Param("list") List<Long> roomId);
 }

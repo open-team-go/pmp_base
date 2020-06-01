@@ -14,6 +14,9 @@ public class UsersStatisticsResp {
     @ApiModelProperty("未分配课程顾问选课数")
     private Integer noSalesAdmin;
 
+    @ApiModelProperty("今日新增选班数")
+    private Integer todayRoomChoosing;
+
     @ApiModelProperty("未分配班级选课数")
     private Integer noEducationAdmin;
 }

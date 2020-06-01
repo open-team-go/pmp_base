@@ -271,4 +271,20 @@
         WHERE urc.del_on=0 AND urc.admin_id IS NULL) 'noSalesAdmin';
     </select>
 
+    <select id="selectRoomChoosingCount" resultType="int">
+        SELECT COUNT(*)
+        FROM pmp_user_ref_course urc
+        WHERE urc.room_choose_time>=#{todayTime} AND urc.del_on=0
+        <if test="list !=null and list.size!=0">
+            AND urc.room_id IN
+            <include refid="Sql_foreach_in"></include>
+        </if>
+    </select>
+
+    <sql id="Sql_foreach_in">
+        <foreach collection="list" open="(" close=")" separator="," item="item">
+            #{item}
+        </foreach>
+    </sql>
+
 </mapper>

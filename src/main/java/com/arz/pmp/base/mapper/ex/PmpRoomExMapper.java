@@ -18,5 +18,6 @@ public interface PmpRoomExMapper {
 
     List<PmpTeachingRoomEntity> selectRoomSimpleList(RoomSearchReq search);
 
+    List<Long> selectRoomIdsByAdminId(@Param("adminId") Long adminId);
 
 }

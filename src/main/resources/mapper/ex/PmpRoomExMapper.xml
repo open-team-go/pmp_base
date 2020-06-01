@@ -42,9 +42,9 @@
         <result column="contact_phone" jdbcType="VARCHAR" property="contactPhone"/>
     </resultMap>
     <resultMap id="CourseBaseMap" type="com.arz.pmp.base.entity.PmpCourseEntity">
-        <id column="course_id" jdbcType="BIGINT" property="courseId" />
-        <result column="course_name" jdbcType="VARCHAR" property="courseName" />
-        <result column="course_desc" jdbcType="VARCHAR" property="courseDesc" />
+        <id column="course_id" jdbcType="BIGINT" property="courseId"/>
+        <result column="course_name" jdbcType="VARCHAR" property="courseName"/>
+        <result column="course_desc" jdbcType="VARCHAR" property="courseDesc"/>
     </resultMap>
     <resultMap id="RoomDataMap" type="com.arz.pmp.base.api.bo.room.RoomDataResp">
         <id column="room_id" jdbcType="BIGINT" property="roomId"/>
@@ -130,6 +130,9 @@
         FROM pmp_teaching_type a
         WHERE a.del_on = 0
         ORDER BY a.sort, a.type_id
+    </select>
+    <select id="selectRoomIdsByAdminId" resultType="java.lang.Long">
+        SELECT room_id FROM pmp_teaching_room WHERE admin_id=#{adminId} AND del_on=0
     </select>
 
 </mapper>

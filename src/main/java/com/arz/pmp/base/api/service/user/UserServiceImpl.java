@@ -117,6 +117,13 @@ public class UserServiceImpl implements UserService {
         // 判断是否是销售
         Long salesAdminId = adminService.getRoleAdminId(authentication, SysPermEnumClass.RoleEnum.SALES);
         UsersStatisticsResp data = pmpUserExMapper.selectUsersStatistics(todayTime, salesAdminId);
+        //
+        Long educationAdminId = adminService.getRoleAdminId(authentication, SysPermEnumClass.RoleEnum.EDUCATION);
+        List<Long> roomIds = null;
+        if (educationAdminId != null) {
+            roomIds = pmpRoomExMapper.selectRoomIdsByAdminId(educationAdminId);
+        }
+        data.setTodayRoomChoosing(pmpUserExMapper.selectRoomChoosingCount(todayTime, roomIds));
         return data;
     }
 
