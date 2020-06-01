@@ -185,4 +185,7 @@ public class UserDataResp {
 
     @ApiModelProperty("修改时间")
     private Long updateTime;
+
+    @ApiModelProperty("选班时间")
+    private Long roomChooseTime;
 }

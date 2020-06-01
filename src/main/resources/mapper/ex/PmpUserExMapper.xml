@@ -163,7 +163,7 @@
         urc.admin_id,a.resource_id,a.recommend_name,a.login_name,
         urc.course_id, urc.graduation_status, urc.cert_no, urc.cert_en_name, urc.cert_en_pasw, urc.cert_cn_name,
         urc.cert_cn_pasw,
-        urc.remark, urc.create_time,urc.consultation_time,urc.consultation_city,
+        urc.remark, urc.create_time,urc.consultation_time,urc.consultation_city,urc.room_choose_time,
         b.nickName salesAdminName,b.admin_id,c.course_name,d.room_name,e.education_name,f.pay_name,
         urc.examination_time,urc.pay_total,urc.pay_time,urc.invoice_on,urc.pay_remarks,urc.id userRefCourseId,
         (SELECT b_1.nickName FROM pmp_admin b_1 WHERE d.admin_id=b_1.admin_id) educationAdminName,
