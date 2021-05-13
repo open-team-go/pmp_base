@@ -118,8 +118,5 @@ public final class Constants {
         public static final String SYS_ROLE_EDUCATION = "EDUCATION";
     }
 
-    public static void main(String[] args) {
-        String a = "18961851450";
-        System.out.println(REGEX_PHONE_NO.matcher(a).matches());
-    }
+    public static final String REQUEST_ID = "requestId";
 }

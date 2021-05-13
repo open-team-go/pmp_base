@@ -1,6 +1,5 @@
 package com.arz.pmp.base.framework.commons.utils;
 
-import com.arz.pmp.base.framework.commons.constants.Constants;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -39,10 +38,6 @@ public class Util {
             return ArrayUtils.getLength(pObj) == 0;
         }
         return false;
-    }
-
-    public static void main(String[] args) {
-
     }
 
 }
