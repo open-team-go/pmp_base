@@ -2,8 +2,8 @@
 <!-- status=debug 可以查看log4j的装配过程 -->
 <configuration status="OFF" monitorInterval="1800" packages="org.apache.logging.log4j.core">
     <properties>
-        <property name="LOG_PATH">/var</property>
-        <property name="project_name">pmp.service.arz.com</property>
+        <property name="LOG_PATH">/var/logs</property>
+        <property name="project_name">www.wxarzhe.com</property>
         <!--<property name="pattern">[%level] [%date{ISO8601}] [%logger] [%thread] [] [%X{requestId}] [%X{serverIp}] %msg%n</property>-->
         <Property name="splitSize">10 MB</Property>
         <Property name="PID">????</Property>
@@ -21,8 +21,8 @@
         </Console>
 
         <RollingRandomAccessFile name="LogstashFile"
-                                 fileName="${LOG_PATH}/logs/${project_name}/logstash.log"
-                                 filePattern="${LOG_PATH}/logs/${project_name}/logstash/%d{yyyy-MM-dd}_logstash.log">
+                                 fileName="${LOG_PATH}/${project_name}/logstash.log"
+                                 filePattern="${LOG_PATH}/${project_name}/logstash/%d{yyyy-MM-dd}_logstash.log">
             <PatternLayout pattern="${FILE_LOG_PATTERN}"/>
             <Policies>
                 <TimeBasedTriggeringPolicy interval="6" modulate="true"/>
@@ -36,8 +36,8 @@
         </RollingRandomAccessFile>
 
         <RollingRandomAccessFile name="RollingInfoFile"
-                                 fileName="${LOG_PATH}/logs/${project_name}/info.log"
-                                 filePattern="${LOG_PATH}/logs/${project_name}/info_%d{yyyy-MM-dd}.log">
+                                 fileName="${LOG_PATH}/${project_name}/info.log"
+                                 filePattern="${LOG_PATH}/${project_name}/info_%d{yyyy-MM-dd}.log">
             <PatternLayout pattern="${FILE_LOG_PATTERN}"/>
             <Policies>
                 <TimeBasedTriggeringPolicy interval="6" modulate="true"/>
@@ -53,8 +53,8 @@
         </RollingRandomAccessFile>
 
         <RollingRandomAccessFile name="RollingErrorFile"
-                                 fileName="${LOG_PATH}/logs/${project_name}/error.log"
-                                 filePattern="${LOG_PATH}/logs/${project_name}/error_%d{yyyy-MM-dd}.log">
+                                 fileName="${LOG_PATH}/${project_name}/error.log"
+                                 filePattern="${LOG_PATH}/${project_name}/error_%d{yyyy-MM-dd}.log">
             <PatternLayout pattern="${FILE_LOG_PATTERN}"/>
             <Policies>
                 <TimeBasedTriggeringPolicy interval="6" modulate="true"/>
@@ -68,8 +68,8 @@
         </RollingRandomAccessFile>
 
         <RollingRandomAccessFile name="RollingDebugFile"
-                                 fileName="${LOG_PATH}/logs/${project_name}/debug.log"
-                                 filePattern="${LOG_PATH}/logs/${project_name}/debug_%d{yyyy-MM-dd}.log">
+                                 fileName="${LOG_PATH}/${project_name}/debug.log"
+                                 filePattern="${LOG_PATH}/${project_name}/debug_%d{yyyy-MM-dd}.log">
             <PatternLayout pattern="${FILE_LOG_PATTERN}"/>
             <Policies>
                 <TimeBasedTriggeringPolicy interval="6" modulate="true"/>
